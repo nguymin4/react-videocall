@@ -1,0 +1,87 @@
+@mixin constructor($property, $specs...) {
+	-webkit-#{$property}: $specs;
+	-moz-#{$property}: $specs;
+	-o-#{$property}: $specs;
+	#{$property}: $specs;
+}
+
+@mixin border-radius($specs) {
+	@include constructor(border-radius, #{$specs})
+}
+
+@mixin box-shadow($specs) {
+	@include constructor(box-shadow, $specs)
+}
+
+@mixin transition($specs...) {
+	@include constructor(transition, $specs)
+}
+
+@mixin transform($specs) {
+	@include constructor(transform, $specs)
+}
+
+@mixin transform-style($specs) {
+	@include constructor(transform-style, $specs)
+}
+
+@mixin perspective($specs) {
+	@include constructor(perspective, $specs)
+}
+
+@mixin blur($specs) {
+	@include constructor(filter, blur($specs))
+}
+
+@mixin forceGpu() {
+	@include constructor(transform, translateZ(0))
+}
+
+@mixin bg-gradient($specs...) {
+	background: -webkit-linear-gradient($specs);
+	background: -moz-linear-gradient($specs);
+	background: -o-linear-gradient($specs);
+	background: linear-gradient($specs);
+}
+
+@mixin animation($animate...) {
+    $max: length($animate);
+    $animations: '';
+
+    @for $i from 1 through $max {
+        $animations: #{$animations + nth($animate, $i)};
+
+        @if $i < $max {
+            $animations: #{$animations + ", "};
+        }
+    }
+    -webkit-animation: $animations;
+    -moz-animation:    $animations;
+    -o-animation:      $animations;
+    animation:         $animations;
+}
+
+@mixin keyframes($animationName) {
+    @-webkit-keyframes #{$animationName} {
+        @content;
+    }
+    @-moz-keyframes #{$animationName} {
+        @content;
+    }
+    @-o-keyframes #{$animationName} {
+        @content;
+    }
+    @keyframes #{$animationName} {
+        @content;
+    }
+}
+
+$no-duration: "0s !important";
+@mixin no-animation() {
+	@include transition(#{"none !important"});
+	@include animation(#{"none !important"});
+	// @include constructor(transition-duration, #{$no-duration});
+	// @include constructor(transition-delay, #{$no-duration});
+	// @include constructor(animation-duration, #{$no-duration});
+	// @include constructor(animation-delay, #{$no-duration});
+}

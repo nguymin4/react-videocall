@@ -1,0 +1,16 @@
+{
+  "name": "electron-videocall",
+  "description": "Server for electron-videocall app",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "main": "main.js",
+  "author": {
+    "name": "Minh Son Nguyen",
+    "email": "minh.son.nguyen.1209@gmail.com",
+    "url": "https://nguymin4.github.io"
+  },
+  "license": "MIT"
+}
