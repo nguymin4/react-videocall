@@ -14,11 +14,15 @@ module.exports = {
 	"browser-sync": {
 		"dev": `<script async src="${bsHost}/browser-sync/browser-sync-client.${bsVersion}.js"></script>`,
 		"build": ""
+	},
+	"server-socket" : {
+		"dev": "http://localhost:5000/socket.io/socket.io.js",
+		"build": "http://localhost:5000/socket.io/socket.io.js"
 	}
 };
 
 /**
- * Creates a object contains link to file used in dev and production.
+ * Creates a object generate links to file used in development and production.
  * @constructor
  * @param {string} path path to file
  */

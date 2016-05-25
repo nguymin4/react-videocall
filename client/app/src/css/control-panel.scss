@@ -1,0 +1,48 @@
+.control-panel {
+	@media screen and (max-width: 900px) {
+		.pull-left, .pull-right {
+			width: 100%;
+			text-align: center;
+		}
+		
+		.pull-right {
+			margin-top: 20px;
+		}
+	}
+
+	.btn-action {
+		$height: 72px;
+		
+		height: $height;
+		width: $height;
+		margin: 20px 20px 0px 0px;
+		line-height: $height;
+		text-align: center;
+		font-size: 1.75em;
+		border-radius: 50%;
+		border: solid 2px $main-color;
+		cursor: pointer;
+		transition-duration: 0.25s;
+		
+		&:hover {
+			background-color: rgba($main-color, 0.2);	
+		}
+	}
+
+	.txt-clientId {
+		display: block;
+		width: 400px;
+		height: 40px;
+		padding: 5px 10px;
+		margin: 40px auto 0px auto;
+		color: $main-color;
+		font-size: 1.4em;
+		background-color: transparent;
+		border-radius: 5px;
+		border: none;
+		border-bottom: solid 1px $main-color;
+		@include input-placeholder(rgba($main-color, 0.8));
+	}
+
+}
+

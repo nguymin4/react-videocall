@@ -76,12 +76,24 @@
     }
 }
 
-$no-duration: "0s !important";
 @mixin no-animation() {
 	@include transition(#{"none !important"});
 	@include animation(#{"none !important"});
-	// @include constructor(transition-duration, #{$no-duration});
-	// @include constructor(transition-delay, #{$no-duration});
-	// @include constructor(animation-duration, #{$no-duration});
-	// @include constructor(animation-delay, #{$no-duration});
+	
+	$no-duration: "0s !important";
 }
+
+@mixin input-placeholder($color) {
+	&::-webkit-input-placeholder {
+		color: $color;
+	}
+
+	&::-moz-placeholder {  /* Firefox 19+ */
+		color: $color;  
+	}
+
+	&:-ms-input-placeholder {  
+		color: $color;  
+	}
+}
+	

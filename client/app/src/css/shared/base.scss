@@ -2,10 +2,10 @@
 
 html, body {
 	height:100%;
-	background-color:$main-color;
-	color:$secondary-color;
+	width: 100%;
+	color: $main-color;
 	font-size: $main-font-size;
-	font-family: "Open Sans", "Ubuntu", sans-serif;
+	// font-family: "Open Sans", "Ubuntu", sans-serif;
 	letter-spacing: 0.5px;
 	
 	.no-animation {
@@ -13,6 +13,10 @@ html, body {
 			@include no-animation();
 		}
 	}
+}
+
+input {
+	outline: none;
 }
 
 @import "misc";

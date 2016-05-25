@@ -1,0 +1,19 @@
+@import "variables";
+@import "shared/base";
+
+html {
+	min-width: 500px;
+	background: url("https://lh3.googleusercontent.com/zKxwxf3RzlInhR_wLUtqo9Bjk8jS9TW8nIP0dXttTxTvKpFO4YiF8dCHFnRb51XfQ5UwSW-Glh8CpFQTsVA=w1920-h1080-p-k-nd-no") center no-repeat;
+}
+
+body {
+	background: rgba(#000000, 0.6);
+	padding: 20px;
+}
+
+#root {
+	margin-top: 40px;
+}
+
+@import "control-panel";
+@import "video-panel";
