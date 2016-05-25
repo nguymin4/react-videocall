@@ -6,7 +6,15 @@
     "type": "git",
     "url": ""
   },
+  "scripts": {
+    "start": "node main.js"
+  },
   "main": "main.js",
+  "dependencies": {
+    "express": "^4.13.4",
+    "node-uuid": "^1.4.7",
+    "socket.io": "^1.4.6"
+  },
   "author": {
     "name": "Minh Son Nguyen",
     "email": "minh.son.nguyen.1209@gmail.com",
