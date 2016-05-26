@@ -1,6 +1,6 @@
 {
-  "name": "electron-videocall",
-  "description": "Server for electron-videocall app",
+  "name": "react-videocall",
+  "description": "Server for react-videocall app",
   "version": "1.0.0",
   "repository": {
     "type": "git",

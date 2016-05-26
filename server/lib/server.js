@@ -1,3 +1,5 @@
+var path = require("path");
+
 var express = require("express"),
 	app = express(),
 	server = require("http").createServer(app),
@@ -6,9 +8,11 @@ var express = require("express"),
 
 var userIds = {};
 
+app.use("/", express.static(process.cwd() + "/../client"));
+
 module.exports.run = function (config) {
 	server.listen(config.PORT);
-	console.log("Server is listening at :", config.PORT);
+	console.log("Server is listening at :" + config.PORT);
 	io.listen(server, { log: true })
 		.on("connection", initSocket);
 };
@@ -29,6 +33,7 @@ function initSocket(socket) {
 		else socket.emit("call.failed");
 	}).on("disconnect", () => {
 		delete userIds[id];
+		console.log(id, "disconnected");
 	});
 
 	return socket;

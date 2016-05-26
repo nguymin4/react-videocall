@@ -28,15 +28,15 @@ class App extends Component {
 			<div className="control-panel">
 				<div className="pull-left">
 					<input type="text" className="txt-clientId"
-						placeholder="Your friend ID" />
+						spellcheck="false" placeholder="Your friend ID" />
 					<i className="btn-action fa fa-video-camera"
 						onClick={myVideo.turnOn}></i>
 					<i className="btn-action fa fa-phone"
 						onClick={myVideo.turnOn}></i>
 				</div>
 				<div className="pull-right">
-					<input type="text" className="txt-clientId"
-						value={this.state.id} />
+					<input type="text" className="txt-clientId" 
+						spellcheck="false" value={this.state.id} />
 					<h4>
 						<i className="btn-copy fa fa-clipboard"></i> Copy your ID
 					</h4>

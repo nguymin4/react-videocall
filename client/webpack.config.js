@@ -36,7 +36,6 @@ module.exports = {
 		"flux/utils": "fluxUtils",
 		"webrtc": "webrtc"
 	},
-	target: "electron-renderer",
 	module: {
 		loaders: [{
 			test: /\.jsx?$/,

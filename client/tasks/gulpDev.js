@@ -33,7 +33,7 @@ module.exports = function (env, config) {
 			socket : {
 				domain: "http://localhost:3001"
 			},
-			open: false,
+			open: true,
 			files: [output.css + "/**/*.css"]
 		}, done);
 	});
