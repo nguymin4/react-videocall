@@ -6,6 +6,10 @@
 		"es6": true,
 		"jasmine": true
 	},
+	"globals": {
+		"RTCPeerConnection": true,
+		"io": true
+	},
 	"extends": "eslint:recommended",
 	"parserOptions": {
 		"sourceType": "module",

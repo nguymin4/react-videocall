@@ -24,13 +24,14 @@ module.exports.run = function (config) {
 function initSocket(socket) {
 	var id;
 	socket.on("init", (data, fn) => {
-		id = uuid.v4();
+		id = uuid.v4().substr(0, 13);
 		userIds[id] = socket;
 		socket.emit("init", { id: id });
-	}).on("call.to", data => {
+	}).on("call", data => {
+		data["from"] = id;
 		var to = userIds[data.to];
-		if (to) to.emit("call.from", data);
-		else socket.emit("call.failed");
+		if (to) to.emit("call", data);
+		else socket.emit("call", { failed: true });
 	}).on("disconnect", () => {
 		delete userIds[id];
 		console.log(id, "disconnected");

@@ -1,0 +1,19 @@
+{
+  "name": "react-videocall",
+  "version": "1.0.0",
+  "description": "React VideoCall App",
+  "main": " ",
+  "scripts": {
+    "start": "cd server && npm install  && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nguymin4/react-videocall.git"
+  },
+  "author": "Minh Son Nguyen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nguymin4/react-videocall/issues"
+  },
+  "homepage": "https://github.com/nguymin4/react-videocall#readme"
+}

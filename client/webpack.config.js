@@ -8,8 +8,9 @@ var isProduction = process.argv.indexOf("--build") !== -1 ||
 var plugins = [
 	new webpack.DefinePlugin({
 		SOCKET_HOST: JSON.stringify(isProduction ?
-			process.env.HOST || "192.168.1.102" + ":" + process.env.PORT || socketConfig["PORT"] :
-			"localhost:" + socketConfig["PORT"])
+			// process.env.HOST + ":" + process.env.PORT :
+			"" :
+			"localhost" + ":" + socketConfig["PORT"])
     })
 ];
 
