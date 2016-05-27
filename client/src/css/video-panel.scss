@@ -3,8 +3,24 @@
 	top: 0;
 	left: 0;
 	display: none;
+	width: 100%;
+	height: 100%;
+	// background-color: $secondary-color;
 	
 	video {
 		position: absolute;
+	}
+	
+	#localVideo {
+		bottom: 0;
+		right: 0;
+		width: 40%;
+		height: 40%;
+	}
+	
+	#peerVideo {
+		width: 100%;
+		height: 100%;
+		// background-color: black;
 	}
 }

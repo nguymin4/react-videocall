@@ -9,15 +9,18 @@
 </head>
 
 <body>
-	<h1>Hi,</h1>
-	<h3>Get started by calling a friend below</h3>
+	<nav class="navbar-header">
+		<span class="navbar-brand">
+			<img src="dist/img/icon1.png" /> React VideoCall
+		</a>
+	</nav>
+
 	<div id="root"></div>
-	
+
 	<!-- Scripts -->
 	<script type="text/javascript" src="${vendor.js}"></script>
-	<script src="${server-socket}"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.6/socket.io.min.js"></script>
 	<script type="text/javascript" src="${app.js}"></script>
-	${browser-sync}
 </body>
 
 </html>

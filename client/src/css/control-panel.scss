@@ -1,5 +1,10 @@
 .control-panel {
-	@media screen and (max-width: 900px) {
+	padding-top: 80px;
+	font-size: 1.75em;
+	
+	@media screen and (max-width: 767px) {
+		padding-top: 40px;
+		
 		.pull-left, .pull-right {
 			width: 100%;
 			text-align: center;
@@ -11,14 +16,13 @@
 	}
 
 	.btn-action {
-		$height: 72px;
+		$height: 60px;
 		
 		height: $height;
 		width: $height;
-		margin: 20px 20px 0px 0px;
+		margin: 20px 30px 0px 0px;
 		line-height: $height;
 		text-align: center;
-		font-size: 1.75em;
 		border-radius: 50%;
 		border: solid 2px $main-color;
 		cursor: pointer;
@@ -30,15 +34,12 @@
 	}
 
 	.txt-clientId {
-		display: block;
-		width: 400px;
+		width: 300px;
 		height: 40px;
-		padding: 5px 10px;
 		margin: 40px auto 0px auto;
 		color: $main-color;
-		font-size: 1.4em;
+		font-size: 0.9em;
 		background-color: transparent;
-		border-radius: 5px;
 		border: none;
 		border-bottom: solid 1px $main-color;
 		@include input-placeholder(rgba($main-color, 0.8));

@@ -1,10 +1,19 @@
 var path = require("path");
 var webpack = require("webpack");
+var socketConfig = require("../server/config.json");
+
 var isProduction = process.argv.indexOf("--build") !== -1 ||
 	process.env["NODE_ENV"] === "Production";
 
-var plugins = [];
-if (isProduction)
+var plugins = [
+	new webpack.DefinePlugin({
+		SOCKET_HOST: JSON.stringify(isProduction ?
+			process.env.HOST || "192.168.1.102" + ":" + process.env.PORT || socketConfig["PORT"] :
+			"localhost:" + socketConfig["PORT"])
+    })
+];
+
+if (isProduction) {
 	plugins.push(new webpack.optimize.UglifyJsPlugin({
 		sourceMap: false,
 		mangle: false,
@@ -15,6 +24,7 @@ if (isProduction)
 			warnings: true
 		}
 	}));
+}
 
 module.exports = {
 	context: __dirname,

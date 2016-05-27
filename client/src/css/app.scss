@@ -2,17 +2,31 @@
 @import "shared/base";
 
 html {
-	min-width: 500px;
+	min-width: 400px;
 	background: url("https://lh3.googleusercontent.com/zKxwxf3RzlInhR_wLUtqo9Bjk8jS9TW8nIP0dXttTxTvKpFO4YiF8dCHFnRb51XfQ5UwSW-Glh8CpFQTsVA=w1920-h1080-p-k-nd-no") center no-repeat;
 }
 
 body {
 	background: rgba(#000000, 0.6);
-	padding: 20px;
+	padding: 0px 20px;
+}
+
+.navbar-brand {
+	font-size: 1.5em;
+	img {
+		display: inline-block;
+		width: 50px;
+	}
 }
 
 #root {
-	margin-top: 40px;
+	h2 {
+		margin-top: 0px;
+	}
+	
+	h4 {
+		margin-top: 20px;
+	}
 }
 
 @import "control-panel";

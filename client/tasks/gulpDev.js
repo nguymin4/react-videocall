@@ -30,9 +30,6 @@ module.exports = function (env, config) {
 		browserSync.init({
 			proxy: "http://localhost:3000",
 			port: 3001,
-			socket : {
-				domain: "http://localhost:3001"
-			},
 			open: true,
 			files: [output.css + "/**/*.css"]
 		}, done);
