@@ -32,6 +32,10 @@ function initSocket(socket) {
 		var to = userIds[data.to];
 		if (to) to.emit("call", data);
 		else socket.emit("call", { failed: true });
+	}).on("end", data => {
+		data["from"] = id;
+		var to = userIds[data.to];
+		if (to) to.emit("end");
 	}).on("disconnect", () => {
 		delete userIds[id];
 		console.log(id, "disconnected");

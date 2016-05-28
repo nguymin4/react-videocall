@@ -2,10 +2,17 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	display: none;
-	width: 100%;
-	height: 100%;
-	// background-color: $secondary-color;
+	width: 100vw;
+	height: 100vh;
+	opacity: 0;
+	z-index: -1;
+	@include transition(opacity 0.5s);
+	@include bg-gradient(top, #074055 0%, #030D10 100%);
+	
+	&.active {
+		z-index: auto;
+		opacity: 1;	
+	}
 	
 	video {
 		position: absolute;
@@ -14,13 +21,55 @@
 	#localVideo {
 		bottom: 0;
 		right: 0;
-		width: 40%;
-		height: 40%;
+		width: 20%;
+		height: 20%;
 	}
 	
 	#peerVideo {
 		width: 100%;
 		height: 100%;
-		// background-color: black;
+	}
+}
+
+.video-control {
+	position: absolute;
+	bottom: 20px;
+	height: 72px;
+	width: 100%;
+	opacity: 0;
+	@include transition(opacity 0.5s);
+	text-align: center;
+	
+	&:hover {
+		opacity: 1;
+	}
+	
+	.btn-action {
+		$height: 50px;
+		height: $height;
+		width: $height;
+		line-height: $height;
+		margin: 0px 8px;
+		font-size: 1.4em;
+		text-align: center;
+		border-radius: 50%;
+		cursor: pointer;
+		transition-duration: 0.25s;
+		
+		&:hover {
+			opacity: 0.9;	
+		}
+		
+		&.hangup {
+			background-color: $red;
+		}
+		
+		&.cam, &.mic {
+			background-color: $blue;
+			
+			&.disable {
+				background-color: $red;
+			}
+		}
 	}
 }

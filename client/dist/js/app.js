@@ -65,7 +65,11 @@
 
 	/** @type {Socket} */
 	var socket = io(("localhost:5000"));
+
+	/** @type {RTCPeerConnection} */
+	var pc;
 	var friendID;
+	var calls = {};
 
 	var App = function (_Component) {
 		_inherits(App, _Component);
@@ -76,7 +80,8 @@
 			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this, props));
 
 			_this.state = {
-				id: ""
+				id: "",
+				callStatus: ""
 			};
 			return _this;
 		}
@@ -91,7 +96,7 @@
 				}).on("call", function (data) {
 					if (!pc) {
 						friendID = data["from"];
-						start(false);
+						start.call(_this2, false, { video: true, audio: true });
 					}
 					var obj;
 					if (data.sdp) {
@@ -101,7 +106,7 @@
 						obj = new RTCIceCandidate(data.candidate);
 						pc.addIceCandidate(obj);
 					}
-				}).emit("init");
+				}).on("end", stop.bind(this, false)).emit("init");
 			}
 		}, {
 			key: "renderControlPanel",
@@ -132,16 +137,42 @@
 						"div",
 						null,
 						_react2.default.createElement("input", { type: "text", className: "txt-clientId",
-							spellcheck: "false", placeholder: "Your friend ID",
+							spellCheck: false, placeholder: "Your friend ID",
 							onChange: this.onFriendIDChange }),
 						_react2.default.createElement(
 							"div",
 							null,
 							_react2.default.createElement("i", { className: "btn-action fa fa-video-camera",
-								onClick: start.bind(true) }),
+								onClick: start.bind(this, true, { video: true, audio: true }) }),
 							_react2.default.createElement("i", { className: "btn-action fa fa-phone",
-								onClick: start.bind(true) })
+								onClick: start.bind(this, true, { video: false, audio: true }) })
 						)
+					)
+				);
+			}
+		}, {
+			key: "renderVideoPanel",
+			value: function renderVideoPanel() {
+				var _this3 = this;
+
+				return _react2.default.createElement(
+					"div",
+					{ className: "video-panel " + this.state.callStatus },
+					_react2.default.createElement("video", { id: "peerVideo", ref: "peerVideo", autoPlay: true }),
+					_react2.default.createElement("video", { id: "localVideo", ref: "localVideo", autoPlay: true }),
+					_react2.default.createElement(
+						"div",
+						{ className: "video-control" },
+						_react2.default.createElement("i", { className: "btn-action cam fa fa-video-camera",
+							onClick: function onClick(e) {
+								return _this3.toggleMediaDevices(e, "Video");
+							} }),
+						_react2.default.createElement("i", { className: "btn-action mic fa fa-microphone",
+							onClick: function onClick(e) {
+								return _this3.toggleMediaDevices(e, "Audio");
+							} }),
+						_react2.default.createElement("i", { className: "btn-action hangup fa fa-phone",
+							onClick: stop.bind(this, true) })
 					)
 				);
 			}
@@ -152,12 +183,7 @@
 					"div",
 					null,
 					this.renderControlPanel(),
-					_react2.default.createElement(
-						"div",
-						{ className: "video-panel" },
-						_react2.default.createElement("video", { id: "peerVideo", autoplay: "true" }),
-						_react2.default.createElement("video", { id: "localVideo", autoplay: "true" })
-					)
+					this.renderVideoPanel()
 				);
 			}
 		}, {
@@ -165,39 +191,45 @@
 			value: function onFriendIDChange(event) {
 				friendID = event.target.value;
 			}
+		}, {
+			key: "toggleMediaDevices",
+			value: function toggleMediaDevices(event, deviceType) {
+				var btn = event.target;
+				btn.className = btn.className.indexOf("disable") === -1 ? btn.className + " disable" : btn.className.replace(/\s?disable/g, "");
+
+				/** @type {MediaStream} */
+				var media = calls[friendID];
+
+				/** @type {MediaStreamTrack} */
+				var device = media["get" + deviceType + "Tracks"]()[0];
+				if (device.kind === "audio") this.refs.localVideo.muted = device.enabled;
+				device.enabled = !device.enabled;
+			}
 		}]);
 
 		return App;
 	}(_react.Component);
 
-	/** @type {RTCPeerConnection} */
+	function start(isCaller, config) {
+		var _this4 = this;
 
-
-	var pc;
-
-	function start(isCaller) {
 		var pc_config = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
-		var localVideo = document.getElementById("localVideo");
-		var peerVideo = document.getElementById("peerVideo");
-
 		pc = new RTCPeerConnection(pc_config);
 		pc.onicecandidate = function (event) {
-			socket.emit("call", { to: friendID, candidate: event.candidate });
+			return socket.emit("call", {
+				to: friendID,
+				candidate: event.candidate
+			});
 		};
 
 		pc.onaddstream = function (event) {
-			peerVideo.src = URL.createObjectURL(event.stream);
-			peerVideo.play();
+			return _this4.refs.peerVideo.src = URL.createObjectURL(event.stream);
 		};
 
-		document.getElementsByClassName("video-panel")[0].style.display = "block";
-
-		navigator.getUserMedia({
-			video: true, audio: true
-		}, function (stream) {
-			localVideo.src = URL.createObjectURL(stream);
-			localVideo.play();
+		navigator.getUserMedia(config, function (stream) {
+			_this4.refs.localVideo.src = URL.createObjectURL(stream);
 			pc.addStream(stream);
+			calls[friendID] = stream;
 			if (isCaller) pc.createOffer().then(getDescription);else pc.createAnswer().then(getDescription.bind(pc.remoteDescription));
 		}, function (err) {
 			return console.log(err);
@@ -207,6 +239,22 @@
 			pc.setLocalDescription(desc);
 			socket.emit("call", { to: friendID, sdp: desc });
 		}
+
+		this.setState({ callStatus: "active" });
+	}
+
+	function stop(isStarter) {
+		if (isStarter) socket.emit("end", { to: friendID });
+
+		/** @type {MediaStream} */
+		var media = calls[friendID];
+		media.getTracks().forEach(function (track) {
+			return track.stop();
+		});
+
+		pc.close();
+		pc = null;
+		this.setState({ callStatus: "" });
 	}
 
 	(0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById("root"));
