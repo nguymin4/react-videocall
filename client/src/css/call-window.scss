@@ -1,4 +1,4 @@
-.video-panel {
+.call-window {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -11,7 +11,11 @@
 	
 	&.active {
 		z-index: auto;
-		opacity: 1;	
+		opacity: 1;
+		
+		.video-control {
+			z-index: auto;
+		}
 	}
 	
 	video {
@@ -39,6 +43,7 @@
 	opacity: 0;
 	@include transition(opacity 0.5s);
 	text-align: center;
+	z-index: -1;
 	
 	&:hover {
 		opacity: 1;

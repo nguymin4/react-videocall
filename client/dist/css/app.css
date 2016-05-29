@@ -48,25 +48,25 @@ body {
   margin-top: 20px;
 }
 
-.control-panel {
+.main-window {
   padding-top: 80px;
   font-size: 1.75em;
 }
 
 @media screen and (max-width: 767px) {
-  .control-panel {
+  .main-window {
     padding-top: 40px;
   }
-  .control-panel .pull-left, .control-panel .pull-right {
+  .main-window .pull-left, .main-window .pull-right {
     width: 100%;
     text-align: center;
   }
-  .control-panel .pull-right {
+  .main-window .pull-right {
     margin-top: 20px;
   }
 }
 
-.control-panel .btn-action {
+.main-window .btn-action {
   height: 60px;
   width: 60px;
   margin: 20px 30px 0px 0px;
@@ -78,11 +78,11 @@ body {
   transition-duration: 0.25s;
 }
 
-.control-panel .btn-action:hover {
+.main-window .btn-action:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-.control-panel .txt-clientId {
+.main-window .txt-clientId {
   width: 300px;
   height: 40px;
   margin: 40px auto 0px auto;
@@ -93,20 +93,20 @@ body {
   border-bottom: solid 1px #FFFFFF;
 }
 
-.control-panel .txt-clientId::-webkit-input-placeholder {
+.main-window .txt-clientId::-webkit-input-placeholder {
   color: rgba(255, 255, 255, 0.8);
 }
 
-.control-panel .txt-clientId::-moz-placeholder {
+.main-window .txt-clientId::-moz-placeholder {
   /* Firefox 19+ */
   color: rgba(255, 255, 255, 0.8);
 }
 
-.control-panel .txt-clientId:-ms-input-placeholder {
+.main-window .txt-clientId:-ms-input-placeholder {
   color: rgba(255, 255, 255, 0.8);
 }
 
-.video-panel {
+.call-window {
   position: absolute;
   top: 0;
   left: 0;
@@ -124,23 +124,27 @@ body {
   background: linear-gradient(top, #074055 0%, #030D10 100%);
 }
 
-.video-panel.active {
+.call-window.active {
   z-index: auto;
   opacity: 1;
 }
 
-.video-panel video {
+.call-window.active .video-control {
+  z-index: auto;
+}
+
+.call-window video {
   position: absolute;
 }
 
-.video-panel #localVideo {
+.call-window #localVideo {
   bottom: 0;
   right: 0;
   width: 20%;
   height: 20%;
 }
 
-.video-panel #peerVideo {
+.call-window #peerVideo {
   width: 100%;
   height: 100%;
 }
@@ -156,6 +160,7 @@ body {
   -o-transition: opacity 0.5s;
   transition: opacity 0.5s;
   text-align: center;
+  z-index: -1;
 }
 
 .video-control:hover {
