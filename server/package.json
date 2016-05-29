@@ -12,7 +12,6 @@
   "main": "main.js",
   "dependencies": {
     "express": "^4.13.4",
-    "node-uuid": "^1.4.7",
     "socket.io": "^1.4.6"
   },
   "author": {
