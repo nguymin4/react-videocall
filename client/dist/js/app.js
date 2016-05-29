@@ -225,7 +225,9 @@
 						null,
 						_react2.default.createElement("input", { type: "text", className: "txt-clientId",
 							spellCheck: false, placeholder: "Your friend ID",
-							onChange: this._onFriendIDChange }),
+							onChange: function onChange(event) {
+								return friendID = event.target.value;
+							} }),
 						_react2.default.createElement(
 							"div",
 							null,
@@ -237,11 +239,11 @@
 					)
 				);
 			}
-		}, {
-			key: "_onFriendIDChange",
-			value: function _onFriendIDChange(event) {
-				friendID = event.target.value;
-			}
+			/**
+	   * Start the call with or without video
+	   * @param {Boolean} video
+	   */
+
 		}, {
 			key: "callWithVideo",
 			value: function callWithVideo(video) {
@@ -326,6 +328,11 @@
 					)
 				);
 			}
+			/**
+	   * Turn on/off a media device
+	   * @param {String} deviceType - Type of the device eg: Video, Audio
+	   */
+
 		}, {
 			key: "toggleMediaDevice",
 			value: function toggleMediaDevice(event, deviceType) {
@@ -375,6 +382,8 @@
 		/**
 	     * Create a PeerConnection.
 	     * @param {String} friendID - ID of the friend you want to call.
+	  * @param {Element} localVideo - HTML Element for displaying your own video
+	  * @param {Element} peerVideo - HTML Element for displaying your friend video
 	     */
 
 		function PeerConnection(friendID, localVideo, peerVideo) {
@@ -396,6 +405,12 @@
 			this.mediaDevice = new _MediaDevice2.default(localVideo);
 			this.friendID = friendID;
 		}
+		/**
+	  * Starting the call
+	  * @param {Boolean} isCaller
+	  * @param {Object} config - configuration for the call {audio: boolean, video: boolean}
+	  */
+
 
 		_createClass(PeerConnection, [{
 			key: "start",
@@ -416,6 +431,11 @@
 
 				return this;
 			}
+			/**
+	   * Stop the call
+	   * @param {Boolean} isStarter
+	   */
+
 		}, {
 			key: "stop",
 			value: function stop(isStarter) {
@@ -425,6 +445,10 @@
 				this.pc = null;
 				return this;
 			}
+			/**
+	   * @param {Object} sdp - Session description
+	   */
+
 		}, {
 			key: "setRemoteDescription",
 			value: function setRemoteDescription(sdp) {
@@ -432,6 +456,10 @@
 				this.pc.setRemoteDescription(sdp);
 				return this;
 			}
+			/**
+	   * @param {Object} candidate - ICE Candidate
+	   */
+
 		}, {
 			key: "addIceCandidate",
 			value: function addIceCandidate(candidate) {
@@ -469,12 +497,22 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var MediaDevice = function () {
+		/**
+	  * Manage all media devices
+	  * @param {Element} localVideo - HTML Element for displaying your own video
+	  */
+
 		function MediaDevice(localVideo) {
 			_classCallCheck(this, MediaDevice);
 
 			this.callbacks = [];
 			this.localVideo = localVideo;
 		}
+		/**
+	  * Start media devices and send stream
+	  * @param {object} config - Configuration allows to turn off device after starting
+	  */
+
 
 		_createClass(MediaDevice, [{
 			key: "start",
@@ -496,12 +534,23 @@
 				});
 				return this;
 			}
+			/**
+	   * Register to the event when media devices start streaming
+	   * @param {Function} fn - Listener
+	   */
+
 		}, {
 			key: "onStream",
 			value: function onStream(fn) {
 				this.callbacks.push(fn);
 				return this;
 			}
+			/**
+	   * Turn on/off a device
+	   * @param {String} type - Type of the device
+	   * @param {Boolean} [on] - State of the device
+	   */
+
 		}, {
 			key: "toggle",
 			value: function toggle(type, on) {
@@ -515,6 +564,10 @@
 				});
 				return this;
 			}
+			/**
+	   * Stop all media track of devices
+	   */
+
 		}, {
 			key: "stop",
 			value: function stop() {
@@ -540,9 +593,19 @@
 		value: true
 	});
 	var ulti = {
+		/**
+	  * Check if the object is empty
+	  * @param {Object} obj - The object to be checked
+	  */
+
 		isEmpty: function isEmpty(obj) {
 			return Object.getOwnPropertyNames(obj).length === 0;
 		},
+
+		/**
+	  * Capitalize a string
+	  * @param {String} text - The string to be capitalized
+	  */
 		capitalize: function capitalize(text) {
 			return text.charAt(0).toUpperCase() + text.substr(1);
 		}

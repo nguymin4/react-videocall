@@ -20,16 +20,16 @@ class App extends Component {
 		socket
 			.on("init", data => this.setState({ clientId: data.id }))
 			.on("call", data => {
-				if (ulti.isEmpty(this.pc)) 
+				if (ulti.isEmpty(this.pc))
 					this.startCall(false, data["from"], { video: true, audio: true });
-				
+
 				if (data.sdp) this.pc.setRemoteDescription(data.sdp);
 				else this.pc.addIceCandidate(data.candidate);
 			})
 			.on("end", this.endCall.bind(this, false))
 			.emit("init");
 	}
-	
+
 	render() {
 		return (
 			<div>

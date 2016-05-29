@@ -17,7 +17,7 @@ class MainWindow extends Component {
 				<div>
 					<input type="text" className="txt-clientId"
 						spellCheck={false} placeholder="Your friend ID"
-						onChange={this._onFriendIDChange}/>
+						onChange={(event) => friendID = event.target.value}/>
 					<div>
 						<i className="btn-action fa fa-video-camera"
 							onClick={this.callWithVideo(true) }></i>
@@ -28,9 +28,10 @@ class MainWindow extends Component {
 			</div>
 		);
 	}
-	_onFriendIDChange(event) {
-		friendID = event.target.value;
-	}
+	/**
+	 * Start the call with or without video
+	 * @param {Boolean} video
+	 */
 	callWithVideo(video) {
 		var config = { audio: true };
 		config.video = video;

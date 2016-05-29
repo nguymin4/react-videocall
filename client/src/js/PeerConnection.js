@@ -7,6 +7,8 @@ class PeerConnection {
 	/**
      * Create a PeerConnection.
      * @param {String} friendID - ID of the friend you want to call.
+	 * @param {Element} localVideo - HTML Element for displaying your own video
+	 * @param {Element} peerVideo - HTML Element for displaying your friend video
      */
 	constructor(friendID, localVideo, peerVideo) {
 		this.pc = new RTCPeerConnection(pc_config);
@@ -19,7 +21,11 @@ class PeerConnection {
 		this.mediaDevice = new MediaDevice(localVideo);
 		this.friendID = friendID;
 	}
-
+	/**
+	 * Starting the call
+	 * @param {Boolean} isCaller
+	 * @param {Object} config - configuration for the call {audio: boolean, video: boolean}
+	 */
 	start(isCaller, config) {
 		var pc = this.pc;
 
@@ -38,7 +44,10 @@ class PeerConnection {
 
 		return this;
 	}
-
+	/**
+	 * Stop the call
+	 * @param {Boolean} isStarter
+	 */
 	stop(isStarter) {
 		if (isStarter) socket.emit("end", { to: this.friendID });
 		this.mediaDevice.stop();
@@ -46,13 +55,17 @@ class PeerConnection {
 		this.pc = null;
 		return this;
 	}
-
+	/**
+	 * @param {Object} sdp - Session description
+	 */
 	setRemoteDescription(sdp) {
 		sdp = new RTCSessionDescription(sdp);
 		this.pc.setRemoteDescription(sdp);
 		return this;
 	}
-
+	/**
+	 * @param {Object} candidate - ICE Candidate
+	 */
 	addIceCandidate(candidate) {
 		if (candidate) {
 			candidate = new RTCIceCandidate(candidate);

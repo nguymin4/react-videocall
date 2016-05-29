@@ -17,6 +17,10 @@ class CallWindow extends Component {
 			</div>
 		);
 	}
+	/**
+	 * Turn on/off a media device
+	 * @param {String} deviceType - Type of the device eg: Video, Audio
+	 */
 	toggleMediaDevice(event, deviceType) {
 		event.target.classList.toggle("disable");
 		this.props.mediaDevice.toggle(deviceType);
