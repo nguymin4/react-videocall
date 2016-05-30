@@ -43,8 +43,7 @@ module.exports = {
 	externals: {
 		"react": "React",
 		"react-dom": "ReactDOM",
-		"flux": "flux",
-		"flux/utils": "fluxUtils",
+		"classnames": "classnames",
 		"webrtc": "webrtc"
 	},
 	module: {
