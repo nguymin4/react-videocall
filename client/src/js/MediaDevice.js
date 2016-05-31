@@ -6,7 +6,7 @@ import Emitter from "./Emitter";
 class MediaDevice extends Emitter {
 	/**
 	 * Start media devices and send stream
-	 * @param {object} config - Configuration allows to turn off device after starting
+	 * @param {Object} config - Configuration allows to turn off device after starting
 	 */
 	start(config) {
 		navigator.getUserMedia({

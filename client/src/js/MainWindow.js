@@ -4,6 +4,7 @@ var friendID;
 
 class MainWindow extends Component {
 	render() {
+		document.title = `${this.props.clientId} - VideoCall`;
 		return (
 			<div className="container main-window">
 				<div>

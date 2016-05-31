@@ -1,0 +1,35 @@
+.call-modal {
+	position: absolute;
+	width: 400px;
+	padding: 20px;
+	left: calc(50vw - 200px);
+	top: calc(50vh - 60px);
+	@include bg-gradient(top, #074055 0%, #030D10 100%);
+	@include border-radius(5px);
+	text-align: center;
+	display: none;
+	
+	&.active {
+		display: block;
+		z-index: 9999;
+		@include animation(blinking 1s infinite ease);
+	}
+	
+	.btn-action:not(.hangup) {
+		background-color: $green;
+	}
+	
+	span.caller {
+		color: $blue;
+	}
+	
+	p {
+		font-size: 1.5em;
+	}
+}
+
+@include keyframes(blinking) {
+	0% {@include transform(scale(1))}
+	50% {@include transform(scale(0.95))}
+	100% {@include transform(scale(1))}
+}

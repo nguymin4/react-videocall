@@ -16,11 +16,10 @@ class CallWindow extends Component {
 		];
 	}
 	componentWillReceiveProps(nextProps) {
-
 		// Initialize when the call started
 		if (!this.props.config && nextProps.config) {
 			var config = nextProps.config;
-			var mediaDevice = this.props.mediaDevice;
+			var mediaDevice = nextProps.mediaDevice;
 			mediaDevice.setLocalVideo(this.refs.localVideo);
 			for (var type in config)
 				mediaDevice.toggle(ulti.capitalize(type), config[type]);
@@ -60,9 +59,9 @@ class CallWindow extends Component {
 	 * @param {String} deviceType - Type of the device eg: Video, Audio
 	 */
 	toggleMediaDevice(deviceType) {
-		var newState = {};
-		newState[deviceType] = !this.state[deviceType];
-		this.setState(newState);
+		this.setState({
+			[deviceType]: !this.state[deviceType]
+		});
 		this.props.mediaDevice.toggle(deviceType);
 	}
 }

@@ -29,17 +29,12 @@ class PeerConnection extends Emitter {
 	start(isCaller, config) {
 		var pc = this.pc;
 
-		var getDescription = desc => {
-			pc.setLocalDescription(desc);
-			socket.emit("call", { to: this.friendID, sdp: desc });
-		};
-
 		this.mediaDevice
 			.on("stream", stream => {
-				this.emit("localStream", URL.createObjectURL(stream));
 				pc.addStream(stream);
-				if (isCaller) pc.createOffer().then(getDescription);
-				else pc.createAnswer().then(getDescription);
+				this.emit("localStream", URL.createObjectURL(stream));
+				if (isCaller) socket.emit("request", { to: this.friendID });
+				else this.createOffer();
 			})
 			.start(config);
 
@@ -57,6 +52,27 @@ class PeerConnection extends Emitter {
 		this.off();
 		return this;
 	}
+	
+	createOffer() {
+		this.pc.createOffer()
+			.then(this.getDescription.bind(this))
+			.catch(err => console.log(err));
+		return this;
+	}
+	
+	createAnswer() {
+		this.pc.createAnswer()
+			.then(this.getDescription.bind(this))
+			.catch(err => console.log(err));
+		return this;
+	}
+
+	getDescription(desc) {
+		this.pc.setLocalDescription(desc);
+		socket.emit("call", { to: this.friendID, sdp: desc });
+		return this;
+	}
+
 	/**
 	 * @param {Object} sdp - Session description
 	 */

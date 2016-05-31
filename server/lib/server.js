@@ -29,16 +29,17 @@ function initSocket(socket) {
 				socket.emit("init", { id: id });
 			});
 		})
+		.on("request", data => {
+			sendTo(data.to, to => to.emit("request", { from: id }));
+		})
 		.on("call", data => {
 			data["from"] = id;
-			var to = userIds[data.to];
-			if (to) to.emit("call", data);
-			else socket.emit("call", { failed: true });
+			sendTo(data.to,
+				to => to.emit("call", data),
+				() => socket.emit("failed"));
 		})
 		.on("end", data => {
-			data["from"] = id;
-			var to = userIds[data.to];
-			if (to) to.emit("end");
+			sendTo(data.to, to => to.emit("end"));
 		})
 		.on("disconnect", () => {
 			delete userIds[id];
@@ -55,4 +56,15 @@ function randomID(callback) {
 	var id = haiku();
 	if (id in userIds) setTimeout(() => haiku(callback), 5);
 	else callback(id);
+}
+
+/**
+ * Send data to friend
+ */
+function sendTo(to, done, fail) {
+	done = typeof done === "function" ? done : function () { };
+	fail = typeof fail === "function" ? fail : function () { };
+	to = userIds[to];
+	if (to) done(to);
+	else fail();
 }

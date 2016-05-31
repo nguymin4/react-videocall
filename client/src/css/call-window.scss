@@ -48,7 +48,9 @@
 	&:hover {
 		opacity: 1;
 	}
-	
+}
+
+.video-control, .call-modal {
 	.btn-action {
 		$height: 50px;
 		height: $height;
