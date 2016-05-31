@@ -1,24 +1,24 @@
 import MediaDevice from "./MediaDevice";
+import Emitter from "./Emitter";
 import socket from "./socket";
 
 const pc_config = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
 
-class PeerConnection {
+class PeerConnection extends Emitter {
 	/**
      * Create a PeerConnection.
      * @param {String} friendID - ID of the friend you want to call.
-	 * @param {Element} localVideo - HTML Element for displaying your own video
-	 * @param {Element} peerVideo - HTML Element for displaying your friend video
      */
-	constructor(friendID, localVideo, peerVideo) {
+	constructor(friendID) {
+		super();
 		this.pc = new RTCPeerConnection(pc_config);
 		this.pc.onicecandidate = event => socket.emit("call", {
 			to: this.friendID,
 			candidate: event.candidate
 		});
-		this.pc.onaddstream = event => peerVideo.src = URL.createObjectURL(event.stream);
-		
-		this.mediaDevice = new MediaDevice(localVideo);
+		this.pc.onaddstream = event => this.emit("peerStream", URL.createObjectURL(event.stream));
+
+		this.mediaDevice = new MediaDevice();
 		this.friendID = friendID;
 	}
 	/**
@@ -35,7 +35,8 @@ class PeerConnection {
 		};
 
 		this.mediaDevice
-			.onStream(stream => {
+			.on("stream", stream => {
+				this.emit("localStream", URL.createObjectURL(stream));
 				pc.addStream(stream);
 				if (isCaller) pc.createOffer().then(getDescription);
 				else pc.createAnswer().then(getDescription);
@@ -53,6 +54,7 @@ class PeerConnection {
 		this.mediaDevice.stop();
 		this.pc.close();
 		this.pc = null;
+		this.off();
 		return this;
 	}
 	/**

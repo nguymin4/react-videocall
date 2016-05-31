@@ -62,15 +62,15 @@
 
 	var _CallWindow2 = _interopRequireDefault(_CallWindow);
 
-	var _PeerConnection = __webpack_require__(5);
+	var _PeerConnection = __webpack_require__(7);
 
 	var _PeerConnection2 = _interopRequireDefault(_PeerConnection);
 
-	var _socket = __webpack_require__(8);
+	var _socket = __webpack_require__(10);
 
 	var _socket2 = _interopRequireDefault(_socket);
 
-	var _ulti = __webpack_require__(7);
+	var _ulti = __webpack_require__(6);
 
 	var _ulti2 = _interopRequireDefault(_ulti);
 
@@ -92,7 +92,10 @@
 
 			_this.state = {
 				clientId: "",
-				status: ""
+				status: "",
+				localSrc: "",
+				peerSrc: "",
+				config: null
 			};
 			_this.pc = {};
 			return _this;
@@ -120,6 +123,9 @@
 					_react2.default.createElement(_MainWindow2.default, { clientId: this.state.clientId,
 						startCall: this.startCall.bind(this) }),
 					_react2.default.createElement(_CallWindow2.default, { status: this.state.status,
+						localSrc: this.state.localSrc,
+						peerSrc: this.state.peerSrc,
+						config: this.state.config,
 						mediaDevice: this.pc.mediaDevice,
 						endCall: this.endCall.bind(this, true) })
 				);
@@ -127,11 +133,13 @@
 		}, {
 			key: "startCall",
 			value: function startCall(isCaller, friendID, config) {
-				var node = (0, _reactDom.findDOMNode)(this);
-				var localVideo = node.querySelector("#localVideo");
-				var peerVideo = node.querySelector("#peerVideo");
-				this.pc = new _PeerConnection2.default(friendID, localVideo, peerVideo);
-				this.pc.start(isCaller, config);
+				var _this3 = this;
+
+				this.pc = new _PeerConnection2.default(friendID).on("localStream", function (src) {
+					return _this3.setState({ localSrc: src, config: config });
+				}).on("peerStream", function (src) {
+					return _this3.setState({ peerSrc: src });
+				}).start(isCaller, config);
 				this.setState({ status: "active" });
 			}
 		}, {
@@ -139,7 +147,12 @@
 			value: function endCall(isStarter) {
 				this.pc.stop(isStarter);
 				this.pc = {};
-				this.setState({ status: "" });
+				this.setState({
+					status: "",
+					localSrc: "",
+					peerSrc: "",
+					config: null
+				});
 			}
 		}]);
 
@@ -283,6 +296,14 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _classnames = __webpack_require__(5);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _ulti = __webpack_require__(6);
+
+	var _ulti2 = _interopRequireDefault(_ulti);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -294,36 +315,73 @@
 	var CallWindow = function (_Component) {
 		_inherits(CallWindow, _Component);
 
-		function CallWindow() {
+		function CallWindow(props) {
 			_classCallCheck(this, CallWindow);
 
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(CallWindow).apply(this, arguments));
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CallWindow).call(this, props));
+
+			_this.state = {
+				Video: true,
+				Audio: true
+			};
+
+			_this.btns = [{ type: "Video", icon: "fa-video-camera" }, { type: "Audio", icon: "fa-microphone" }];
+			return _this;
 		}
 
 		_createClass(CallWindow, [{
+			key: "componentWillReceiveProps",
+			value: function componentWillReceiveProps(nextProps) {
+
+				// Initialize when the call started
+				if (!this.props.config && nextProps.config) {
+					var config = nextProps.config;
+					var mediaDevice = this.props.mediaDevice;
+					mediaDevice.setLocalVideo(this.refs.localVideo);
+					for (var type in config) {
+						mediaDevice.toggle(_ulti2.default.capitalize(type), config[type]);
+					}this.setState({
+						Video: config.video,
+						Audio: config.audio
+					});
+				}
+			}
+		}, {
+			key: "renderControlButtons",
+			value: function renderControlButtons() {
+				var _this2 = this;
+
+				var getClass = function getClass(icon, type) {
+					return (0, _classnames2.default)("btn-action fa " + icon, {
+						"disable": !_this2.state[type]
+					});
+				};
+
+				return this.btns.map(function (btn) {
+					return _react2.default.createElement("i", { key: "btn" + btn.type,
+						className: getClass(btn.icon, btn.type),
+						onClick: function onClick() {
+							return _this2.toggleMediaDevice(btn.type);
+						} });
+				});
+			}
+		}, {
 			key: "render",
 			value: function render() {
-				var _this2 = this;
+				var _this3 = this;
 
 				return _react2.default.createElement(
 					"div",
 					{ className: "call-window " + this.props.status },
-					_react2.default.createElement("video", { id: "peerVideo", autoPlay: true }),
-					_react2.default.createElement("video", { id: "localVideo", autoPlay: true }),
+					_react2.default.createElement("video", { id: "peerVideo", ref: "peerVideo", src: this.props.peerSrc, autoPlay: true }),
+					_react2.default.createElement("video", { id: "localVideo", ref: "localVideo", src: this.props.localSrc, autoPlay: true }),
 					_react2.default.createElement(
 						"div",
 						{ className: "video-control" },
-						_react2.default.createElement("i", { className: "btn-action cam fa fa-video-camera",
-							onClick: function onClick(e) {
-								return _this2.toggleMediaDevice(e, "Video");
-							} }),
-						_react2.default.createElement("i", { className: "btn-action mic fa fa-microphone",
-							onClick: function onClick(e) {
-								return _this2.toggleMediaDevice(e, "Audio");
-							} }),
+						this.renderControlButtons(),
 						_react2.default.createElement("i", { className: "btn-action hangup fa fa-phone",
 							onClick: function onClick() {
-								return _this2.props.endCall(true);
+								return _this3.props.endCall(true);
 							} })
 					)
 				);
@@ -335,8 +393,10 @@
 
 		}, {
 			key: "toggleMediaDevice",
-			value: function toggleMediaDevice(event, deviceType) {
-				event.target.classList.toggle("disable");
+			value: function toggleMediaDevice(deviceType) {
+				var newState = {};
+				newState[deviceType] = !this.state[deviceType];
+				this.setState(newState);
 				this.props.mediaDevice.toggle(deviceType);
 			}
 		}]);
@@ -346,6 +406,9 @@
 
 	CallWindow.propTypes = {
 		status: _react.PropTypes.string.isRequired,
+		localSrc: _react.PropTypes.string,
+		peerSrc: _react.PropTypes.string,
+		config: _react.PropTypes.object,
 		mediaDevice: _react.PropTypes.object,
 		endCall: _react.PropTypes.func.isRequired
 	};
@@ -354,237 +417,12 @@
 
 /***/ },
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _MediaDevice = __webpack_require__(6);
-
-	var _MediaDevice2 = _interopRequireDefault(_MediaDevice);
-
-	var _socket = __webpack_require__(8);
-
-	var _socket2 = _interopRequireDefault(_socket);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var pc_config = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
-
-	var PeerConnection = function () {
-		/**
-	     * Create a PeerConnection.
-	     * @param {String} friendID - ID of the friend you want to call.
-	  * @param {Element} localVideo - HTML Element for displaying your own video
-	  * @param {Element} peerVideo - HTML Element for displaying your friend video
-	     */
-
-		function PeerConnection(friendID, localVideo, peerVideo) {
-			var _this = this;
-
-			_classCallCheck(this, PeerConnection);
-
-			this.pc = new RTCPeerConnection(pc_config);
-			this.pc.onicecandidate = function (event) {
-				return _socket2.default.emit("call", {
-					to: _this.friendID,
-					candidate: event.candidate
-				});
-			};
-			this.pc.onaddstream = function (event) {
-				return peerVideo.src = URL.createObjectURL(event.stream);
-			};
-
-			this.mediaDevice = new _MediaDevice2.default(localVideo);
-			this.friendID = friendID;
-		}
-		/**
-	  * Starting the call
-	  * @param {Boolean} isCaller
-	  * @param {Object} config - configuration for the call {audio: boolean, video: boolean}
-	  */
-
-
-		_createClass(PeerConnection, [{
-			key: "start",
-			value: function start(isCaller, config) {
-				var _this2 = this;
-
-				var pc = this.pc;
-
-				var getDescription = function getDescription(desc) {
-					pc.setLocalDescription(desc);
-					_socket2.default.emit("call", { to: _this2.friendID, sdp: desc });
-				};
-
-				this.mediaDevice.onStream(function (stream) {
-					pc.addStream(stream);
-					if (isCaller) pc.createOffer().then(getDescription);else pc.createAnswer().then(getDescription);
-				}).start(config);
-
-				return this;
-			}
-			/**
-	   * Stop the call
-	   * @param {Boolean} isStarter
-	   */
-
-		}, {
-			key: "stop",
-			value: function stop(isStarter) {
-				if (isStarter) _socket2.default.emit("end", { to: this.friendID });
-				this.mediaDevice.stop();
-				this.pc.close();
-				this.pc = null;
-				return this;
-			}
-			/**
-	   * @param {Object} sdp - Session description
-	   */
-
-		}, {
-			key: "setRemoteDescription",
-			value: function setRemoteDescription(sdp) {
-				sdp = new RTCSessionDescription(sdp);
-				this.pc.setRemoteDescription(sdp);
-				return this;
-			}
-			/**
-	   * @param {Object} candidate - ICE Candidate
-	   */
-
-		}, {
-			key: "addIceCandidate",
-			value: function addIceCandidate(candidate) {
-				if (candidate) {
-					candidate = new RTCIceCandidate(candidate);
-					this.pc.addIceCandidate(candidate);
-				}
-				return this;
-			}
-		}]);
-
-		return PeerConnection;
-	}();
-
-	exports.default = PeerConnection;
+	module.exports = classnames;
 
 /***/ },
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _ulti = __webpack_require__(7);
-
-	var _ulti2 = _interopRequireDefault(_ulti);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var MediaDevice = function () {
-		/**
-	  * Manage all media devices
-	  * @param {Element} localVideo - HTML Element for displaying your own video
-	  */
-
-		function MediaDevice(localVideo) {
-			_classCallCheck(this, MediaDevice);
-
-			this.callbacks = [];
-			this.localVideo = localVideo;
-		}
-		/**
-	  * Start media devices and send stream
-	  * @param {object} config - Configuration allows to turn off device after starting
-	  */
-
-
-		_createClass(MediaDevice, [{
-			key: "start",
-			value: function start(config) {
-				var _this = this;
-
-				navigator.getUserMedia({
-					video: true, audio: true
-				}, function (stream) {
-					_this.stream = stream;
-					_this.localVideo.src = URL.createObjectURL(stream);
-					for (var type in config) {
-						_this.toggle(_ulti2.default.capitalize(type), config[type]);
-					}_this.callbacks.forEach(function (cb) {
-						return cb(stream);
-					});
-				}, function (err) {
-					return console.log(err);
-				});
-				return this;
-			}
-			/**
-	   * Register to the event when media devices start streaming
-	   * @param {Function} fn - Listener
-	   */
-
-		}, {
-			key: "onStream",
-			value: function onStream(fn) {
-				this.callbacks.push(fn);
-				return this;
-			}
-			/**
-	   * Turn on/off a device
-	   * @param {String} type - Type of the device
-	   * @param {Boolean} [on] - State of the device
-	   */
-
-		}, {
-			key: "toggle",
-			value: function toggle(type, on) {
-				var _this2 = this;
-
-				var len = arguments.length;
-				this.stream["get" + type + "Tracks"]().forEach(function (track) {
-					var state = len === 2 ? on : !track.enabled;
-					if (type === "Audio") _this2.localVideo.muted = !state;
-					track.enabled = state;
-				});
-				return this;
-			}
-			/**
-	   * Stop all media track of devices
-	   */
-
-		}, {
-			key: "stop",
-			value: function stop() {
-				this.stream.getTracks().forEach(function (track) {
-					return track.stop();
-				});
-				return this;
-			}
-		}]);
-
-		return MediaDevice;
-	}();
-
-	exports.default = MediaDevice;
-
-/***/ },
-/* 7 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -614,7 +452,307 @@
 	exports.default = ulti;
 
 /***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _MediaDevice = __webpack_require__(8);
+
+	var _MediaDevice2 = _interopRequireDefault(_MediaDevice);
+
+	var _Emitter2 = __webpack_require__(9);
+
+	var _Emitter3 = _interopRequireDefault(_Emitter2);
+
+	var _socket = __webpack_require__(10);
+
+	var _socket2 = _interopRequireDefault(_socket);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var pc_config = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
+
+	var PeerConnection = function (_Emitter) {
+		_inherits(PeerConnection, _Emitter);
+
+		/**
+	     * Create a PeerConnection.
+	     * @param {String} friendID - ID of the friend you want to call.
+	     */
+
+		function PeerConnection(friendID) {
+			_classCallCheck(this, PeerConnection);
+
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PeerConnection).call(this));
+
+			_this.pc = new RTCPeerConnection(pc_config);
+			_this.pc.onicecandidate = function (event) {
+				return _socket2.default.emit("call", {
+					to: _this.friendID,
+					candidate: event.candidate
+				});
+			};
+			_this.pc.onaddstream = function (event) {
+				return _this.emit("peerStream", URL.createObjectURL(event.stream));
+			};
+
+			_this.mediaDevice = new _MediaDevice2.default();
+			_this.friendID = friendID;
+			return _this;
+		}
+		/**
+	  * Starting the call
+	  * @param {Boolean} isCaller
+	  * @param {Object} config - configuration for the call {audio: boolean, video: boolean}
+	  */
+
+
+		_createClass(PeerConnection, [{
+			key: "start",
+			value: function start(isCaller, config) {
+				var _this2 = this;
+
+				var pc = this.pc;
+
+				var getDescription = function getDescription(desc) {
+					pc.setLocalDescription(desc);
+					_socket2.default.emit("call", { to: _this2.friendID, sdp: desc });
+				};
+
+				this.mediaDevice.on("stream", function (stream) {
+					_this2.emit("localStream", URL.createObjectURL(stream));
+					pc.addStream(stream);
+					if (isCaller) pc.createOffer().then(getDescription);else pc.createAnswer().then(getDescription);
+				}).start(config);
+
+				return this;
+			}
+			/**
+	   * Stop the call
+	   * @param {Boolean} isStarter
+	   */
+
+		}, {
+			key: "stop",
+			value: function stop(isStarter) {
+				if (isStarter) _socket2.default.emit("end", { to: this.friendID });
+				this.mediaDevice.stop();
+				this.pc.close();
+				this.pc = null;
+				this.off();
+				return this;
+			}
+			/**
+	   * @param {Object} sdp - Session description
+	   */
+
+		}, {
+			key: "setRemoteDescription",
+			value: function setRemoteDescription(sdp) {
+				sdp = new RTCSessionDescription(sdp);
+				this.pc.setRemoteDescription(sdp);
+				return this;
+			}
+			/**
+	   * @param {Object} candidate - ICE Candidate
+	   */
+
+		}, {
+			key: "addIceCandidate",
+			value: function addIceCandidate(candidate) {
+				if (candidate) {
+					candidate = new RTCIceCandidate(candidate);
+					this.pc.addIceCandidate(candidate);
+				}
+				return this;
+			}
+		}]);
+
+		return PeerConnection;
+	}(_Emitter3.default);
+
+	exports.default = PeerConnection;
+
+/***/ },
 /* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _Emitter2 = __webpack_require__(9);
+
+	var _Emitter3 = _interopRequireDefault(_Emitter2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * Manage all media devices
+	 */
+
+	var MediaDevice = function (_Emitter) {
+		_inherits(MediaDevice, _Emitter);
+
+		function MediaDevice() {
+			_classCallCheck(this, MediaDevice);
+
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(MediaDevice).apply(this, arguments));
+		}
+
+		_createClass(MediaDevice, [{
+			key: "start",
+
+			/**
+	   * Start media devices and send stream
+	   * @param {object} config - Configuration allows to turn off device after starting
+	   */
+			value: function start(config) {
+				var _this2 = this;
+
+				navigator.getUserMedia({
+					video: true, audio: true
+				}, function (stream) {
+					_this2.stream = stream;
+					_this2.emit("stream", stream);
+				}, function (err) {
+					return console.log(err);
+				});
+				return this;
+			}
+			/**
+	   * Set HTML Element to display your own video
+	   * @param {Element} localVideo
+	   */
+
+		}, {
+			key: "setLocalVideo",
+			value: function setLocalVideo(localVideo) {
+				this.localVideo = localVideo;
+				return this;
+			}
+			/**
+	   * Turn on/off a device
+	   * @param {String} type - Type of the device
+	   * @param {Boolean} [on] - State of the device
+	   */
+
+		}, {
+			key: "toggle",
+			value: function toggle(type, on) {
+				var _this3 = this;
+
+				var len = arguments.length;
+				this.stream["get" + type + "Tracks"]().forEach(function (track) {
+					var state = len === 2 ? on : !track.enabled;
+					if (type === "Audio") _this3.localVideo.muted = !state;
+					track.enabled = state;
+				});
+				return this;
+			}
+			/**
+	   * Stop all media track of devices
+	   */
+
+		}, {
+			key: "stop",
+			value: function stop() {
+				this.stream.getTracks().forEach(function (track) {
+					return track.stop();
+				});
+				return this;
+			}
+		}]);
+
+		return MediaDevice;
+	}(_Emitter3.default);
+
+	exports.default = MediaDevice;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Emitter = function () {
+		function Emitter() {
+			_classCallCheck(this, Emitter);
+
+			this._events = {};
+		}
+
+		_createClass(Emitter, [{
+			key: "emit",
+			value: function emit(event) {
+				if (this._events[event]) {
+					var args = Array.prototype.slice.call(arguments, 1);
+					this._events[event].forEach(function (fn) {
+						return fn.apply(null, args);
+					});
+				}
+				return this;
+			}
+		}, {
+			key: "on",
+			value: function on(event, fn) {
+				if (this._events[event]) this._events[event].push(fn);else this._events[event] = [fn];
+				return this;
+			}
+		}, {
+			key: "off",
+			value: function off(event, fn) {
+				if (!event) this._event = {};else {
+					if (fn && typeof fn === "function") {
+						var listeners = this._events[event];
+						var index = listeners.findIndex(function (_fn) {
+							return _fn === fn;
+						});
+						listeners.splice(index, 1);
+					} else this._events[event] = [];
+				}
+				return this;
+			}
+		}]);
+
+		return Emitter;
+	}();
+
+	exports.default = Emitter;
+
+/***/ },
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";

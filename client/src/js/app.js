@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {render, findDOMNode} from "react-dom";
+import {render} from "react-dom";
 import MainWindow from "./MainWindow";
 import CallWindow from "./CallWindow";
 import PeerConnection from "./PeerConnection";
@@ -11,7 +11,10 @@ class App extends Component {
 		super(props);
 		this.state = {
 			clientId: "",
-			status: ""
+			status: "",
+			localSrc: "",
+			peerSrc: "",
+			config: null
 		};
 		this.pc = {};
 	}
@@ -36,6 +39,9 @@ class App extends Component {
 				<MainWindow clientId={this.state.clientId}
 					startCall={this.startCall.bind(this) } />
 				<CallWindow status={this.state.status}
+					localSrc={this.state.localSrc}
+					peerSrc={this.state.peerSrc}
+					config={this.state.config}
 					mediaDevice={this.pc.mediaDevice}
 					endCall={this.endCall.bind(this, true) }/>
 			</div>
@@ -43,18 +49,22 @@ class App extends Component {
 	}
 
 	startCall(isCaller, friendID, config) {
-		var node = findDOMNode(this);
-		var localVideo = node.querySelector("#localVideo");
-		var peerVideo = node.querySelector("#peerVideo");
-		this.pc = new PeerConnection(friendID, localVideo, peerVideo);
-		this.pc.start(isCaller, config);
+		this.pc = new PeerConnection(friendID)
+			.on("localStream", src => this.setState({ localSrc: src, config: config }))
+			.on("peerStream", src => this.setState({ peerSrc: src }))
+			.start(isCaller, config);
 		this.setState({ status: "active" });
 	}
 
 	endCall(isStarter) {
 		this.pc.stop(isStarter);
 		this.pc = {};
-		this.setState({ status: "" });
+		this.setState({
+			status: "", 
+			localSrc: "",
+			peerSrc: "",
+			config: null
+		});
 	}
 }
 

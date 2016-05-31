@@ -1,16 +1,54 @@
 import React, {Component, PropTypes} from "react";
+import classnames from "classnames";
+import ulti from "./ulti";
 
 class CallWindow extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			Video: true,
+			Audio: true
+		};
+
+		this.btns = [
+			{ type: "Video", icon: "fa-video-camera" },
+			{ type: "Audio", icon: "fa-microphone" }
+		];
+	}
+	componentWillReceiveProps(nextProps) {
+
+		// Initialize when the call started
+		if (!this.props.config && nextProps.config) {
+			var config = nextProps.config;
+			var mediaDevice = this.props.mediaDevice;
+			mediaDevice.setLocalVideo(this.refs.localVideo);
+			for (var type in config)
+				mediaDevice.toggle(ulti.capitalize(type), config[type]);
+			this.setState({
+				Video: config.video,
+				Audio: config.audio
+			});
+		}
+	}
+
+	renderControlButtons() {
+		var getClass = (icon, type) => classnames(`btn-action fa ${icon}`, {
+			"disable": !this.state[type]
+		});
+
+		return this.btns.map(btn => (
+			<i key={`btn${btn.type}`}
+				className={getClass(btn.icon, btn.type) }
+				onClick={() => this.toggleMediaDevice(btn.type) }></i>
+		));
+	}
 	render() {
 		return (
 			<div className={"call-window " + this.props.status}>
-				<video id="peerVideo" autoPlay></video>
-				<video id="localVideo" autoPlay></video>
+				<video id="peerVideo" ref="peerVideo" src={this.props.peerSrc} autoPlay></video>
+				<video id="localVideo" ref="localVideo" src={this.props.localSrc} autoPlay></video>
 				<div className="video-control">
-					<i className="btn-action cam fa fa-video-camera"
-						onClick={e => this.toggleMediaDevice(e, "Video") }></i>
-					<i className="btn-action mic fa fa-microphone"
-						onClick={e => this.toggleMediaDevice(e, "Audio") }></i>
+					{this.renderControlButtons() }
 					<i className="btn-action hangup fa fa-phone"
 						onClick={() => this.props.endCall(true) }></i>
 				</div>
@@ -21,14 +59,19 @@ class CallWindow extends Component {
 	 * Turn on/off a media device
 	 * @param {String} deviceType - Type of the device eg: Video, Audio
 	 */
-	toggleMediaDevice(event, deviceType) {
-		event.target.classList.toggle("disable");
+	toggleMediaDevice(deviceType) {
+		var newState = {};
+		newState[deviceType] = !this.state[deviceType];
+		this.setState(newState);
 		this.props.mediaDevice.toggle(deviceType);
 	}
 }
 
 CallWindow.propTypes = {
 	status: PropTypes.string.isRequired,
+	localSrc: PropTypes.string,
+	peerSrc: PropTypes.string,
+	config: PropTypes.object,
 	mediaDevice: PropTypes.object,
 	endCall: PropTypes.func.isRequired
 };

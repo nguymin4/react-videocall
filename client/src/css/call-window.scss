@@ -67,9 +67,10 @@
 		
 		&.hangup {
 			background-color: $red;
+			@include transform(rotate(135deg));
 		}
 		
-		&.cam, &.mic {
+		&:not(.hangup) {
 			background-color: $blue;
 			
 			&.disable {

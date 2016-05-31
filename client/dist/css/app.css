@@ -185,12 +185,16 @@ body {
 
 .video-control .btn-action.hangup {
   background-color: #E81123;
+  -webkit-transform: rotate(135deg);
+  -moz-transform: rotate(135deg);
+  -o-transform: rotate(135deg);
+  transform: rotate(135deg);
 }
 
-.video-control .btn-action.cam, .video-control .btn-action.mic {
+.video-control .btn-action:not(.hangup) {
   background-color: #00AFF0;
 }
 
-.video-control .btn-action.cam.disable, .video-control .btn-action.mic.disable {
+.video-control .btn-action:not(.hangup).disable {
   background-color: #E81123;
 }

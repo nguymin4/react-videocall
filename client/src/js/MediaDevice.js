@@ -1,14 +1,9 @@
-import ulti from "./ulti";
+import Emitter from "./Emitter";
 
-class MediaDevice {
-	/**
-	 * Manage all media devices
-	 * @param {Element} localVideo - HTML Element for displaying your own video
-	 */
-	constructor(localVideo) {
-		this.callbacks = [];
-		this.localVideo = localVideo;
-	}
+/**
+ * Manage all media devices
+ */
+class MediaDevice extends Emitter {
 	/**
 	 * Start media devices and send stream
 	 * @param {object} config - Configuration allows to turn off device after starting
@@ -18,18 +13,16 @@ class MediaDevice {
 			video: true, audio: true
 		}, stream => {
 			this.stream = stream;
-			this.localVideo.src = URL.createObjectURL(stream);
-			for (var type in config) this.toggle(ulti.capitalize(type), config[type]);
-			this.callbacks.forEach(cb => cb(stream));
+			this.emit("stream", stream);
 		}, err => console.log(err));
 		return this;
 	}
 	/**
-	 * Register to the event when media devices start streaming
-	 * @param {Function} fn - Listener
+	 * Set HTML Element to display your own video
+	 * @param {Element} localVideo
 	 */
-	onStream(fn) {
-		this.callbacks.push(fn);
+	setLocalVideo(localVideo) {
+		this.localVideo = localVideo;
 		return this;
 	}
 	/**
