@@ -10,11 +10,28 @@
 	@include bg-gradient(top, #074055 0%, #030D10 100%);
 	
 	&.active {
-		z-index: auto;
 		opacity: 1;
+		z-index: auto;
 		
 		.video-control {
 			z-index: auto;
+			@include animation(in-fadeout 3s ease);
+		}
+	}
+	
+	.video-control {
+		position: absolute;
+		bottom: 20px;
+		height: 72px;
+		width: 100%;
+		text-align: center;
+		opacity: 0;
+		z-index: -1;
+		@include transition(opacity 0.5s);
+		
+		
+		&:hover {
+			opacity: 1;
 		}
 	}
 	
@@ -35,19 +52,10 @@
 	}
 }
 
-.video-control {
-	position: absolute;
-	bottom: 20px;
-	height: 72px;
-	width: 100%;
-	opacity: 0;
-	@include transition(opacity 0.5s);
-	text-align: center;
-	z-index: -1;
-	
-	&:hover {
-		opacity: 1;
-	}
+@include keyframes(in-fadeout) {
+	0% {opacity: 1}
+	75% {opacity: 1}
+	100% {opacity: 0}
 }
 
 .video-control, .call-modal {

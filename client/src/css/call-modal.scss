@@ -12,7 +12,7 @@
 	&.active {
 		display: block;
 		z-index: 9999;
-		@include animation(blinking 1s infinite ease);
+		@include animation(blinking 3s infinite linear);
 	}
 	
 	.btn-action:not(.hangup) {
@@ -29,7 +29,8 @@
 }
 
 @include keyframes(blinking) {
-	0% {@include transform(scale(1))}
-	50% {@include transform(scale(0.95))}
+	25% {@include transform(scale(0.96))}
+	50% {@include transform(scale(1))}
+	75% {@include transform(scale(0.96))}
 	100% {@include transform(scale(1))}
 }

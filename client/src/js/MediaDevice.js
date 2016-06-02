@@ -9,20 +9,18 @@ class MediaDevice extends Emitter {
 	 * @param {Object} config - Configuration allows to turn off device after starting
 	 */
 	start(config) {
-		navigator.getUserMedia({
-			video: true, audio: true
-		}, stream => {
+		var constraints = {
+			video: {
+				facingMode: "user",
+				height: {min: 360, ideal: 720, max: 1080}
+			},
+			audio: true
+		};
+
+		navigator.getUserMedia(constraints, stream => {
 			this.stream = stream;
 			this.emit("stream", stream);
 		}, err => console.log(err));
-		return this;
-	}
-	/**
-	 * Set HTML Element to display your own video
-	 * @param {Element} localVideo
-	 */
-	setLocalVideo(localVideo) {
-		this.localVideo = localVideo;
 		return this;
 	}
 	/**
@@ -34,7 +32,6 @@ class MediaDevice extends Emitter {
 		var len = arguments.length;
 		this.stream[`get${type}Tracks`]().forEach(track => {
 			var state = len === 2 ? on : !track.enabled;
-			if (type === "Audio") this.localVideo.muted = !state;
 			track.enabled = state;
 		});
 		return this;

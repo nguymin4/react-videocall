@@ -5,9 +5,7 @@ Demo app: https://morning-escarpment-67980.herokuapp.com/
   
 Video call to your friend without registering. 
 Simply send your friend your auto-generated unique ID to make the call.  
-
-The app is "Fire-n-Forget" which means that there is no logging at server-side. 
-And everytime you open a new tab, the server give you a totally different unique ID.
+Everytime you open a new tab, the server gives you a totally different unique ID.
 
 
 **Front-end Technologies:**

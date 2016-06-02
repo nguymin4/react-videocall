@@ -355,10 +355,8 @@
 				// Initialize when the call started
 				if (!this.props.config && nextProps.config) {
 					var config = nextProps.config;
-					var mediaDevice = nextProps.mediaDevice;
-					mediaDevice.setLocalVideo(this.refs.localVideo);
 					for (var type in config) {
-						mediaDevice.toggle(_ulti2.default.capitalize(type), config[type]);
+						nextProps.mediaDevice.toggle(_ulti2.default.capitalize(type), config[type]);
 					}this.setState({
 						Video: config.video,
 						Audio: config.audio
@@ -391,9 +389,9 @@
 
 				return _react2.default.createElement(
 					"div",
-					{ className: "call-window " + this.props.status },
+					{ className: (0, _classnames2.default)("call-window", this.props.status) },
 					_react2.default.createElement("video", { id: "peerVideo", ref: "peerVideo", src: this.props.peerSrc, autoPlay: true }),
-					_react2.default.createElement("video", { id: "localVideo", ref: "localVideo", src: this.props.localSrc, autoPlay: true }),
+					_react2.default.createElement("video", { id: "localVideo", ref: "localVideo", src: this.props.localSrc, autoPlay: true, muted: true }),
 					_react2.default.createElement(
 						"div",
 						{ className: "video-control" },
@@ -754,25 +752,20 @@
 			value: function start(config) {
 				var _this2 = this;
 
-				navigator.getUserMedia({
-					video: true, audio: true
-				}, function (stream) {
+				var constraints = {
+					video: {
+						facingMode: "user",
+						height: { min: 360, ideal: 720, max: 1080 }
+					},
+					audio: true
+				};
+
+				navigator.getUserMedia(constraints, function (stream) {
 					_this2.stream = stream;
 					_this2.emit("stream", stream);
 				}, function (err) {
 					return console.log(err);
 				});
-				return this;
-			}
-			/**
-	   * Set HTML Element to display your own video
-	   * @param {Element} localVideo
-	   */
-
-		}, {
-			key: "setLocalVideo",
-			value: function setLocalVideo(localVideo) {
-				this.localVideo = localVideo;
 				return this;
 			}
 			/**
@@ -784,12 +777,9 @@
 		}, {
 			key: "toggle",
 			value: function toggle(type, on) {
-				var _this3 = this;
-
 				var len = arguments.length;
 				this.stream["get" + type + "Tracks"]().forEach(function (track) {
 					var state = len === 2 ? on : !track.enabled;
-					if (type === "Audio") _this3.localVideo.muted = !state;
 					track.enabled = state;
 				});
 				return this;

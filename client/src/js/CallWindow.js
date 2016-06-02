@@ -19,10 +19,10 @@ class CallWindow extends Component {
 		// Initialize when the call started
 		if (!this.props.config && nextProps.config) {
 			var config = nextProps.config;
-			var mediaDevice = nextProps.mediaDevice;
-			mediaDevice.setLocalVideo(this.refs.localVideo);
 			for (var type in config)
-				mediaDevice.toggle(ulti.capitalize(type), config[type]);
+				nextProps.mediaDevice
+					.toggle(ulti.capitalize(type), config[type]);
+
 			this.setState({
 				Video: config.video,
 				Audio: config.audio
@@ -43,9 +43,9 @@ class CallWindow extends Component {
 	}
 	render() {
 		return (
-			<div className={"call-window " + this.props.status}>
+			<div className={classnames("call-window", this.props.status) }>
 				<video id="peerVideo" ref="peerVideo" src={this.props.peerSrc} autoPlay></video>
-				<video id="localVideo" ref="localVideo" src={this.props.localSrc} autoPlay></video>
+				<video id="localVideo" ref="localVideo" src={this.props.localSrc} autoPlay muted></video>
 				<div className="video-control">
 					{this.renderControlButtons() }
 					<i className="btn-action hangup fa fa-phone"

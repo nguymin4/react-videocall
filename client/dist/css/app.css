@@ -125,12 +125,34 @@ body {
 }
 
 .call-window.active {
-  z-index: auto;
   opacity: 1;
+  z-index: auto;
 }
 
 .call-window.active .video-control {
   z-index: auto;
+  -webkit-animation: in-fadeout 3s ease;
+  -moz-animation: in-fadeout 3s ease;
+  -o-animation: in-fadeout 3s ease;
+  animation: in-fadeout 3s ease;
+}
+
+.call-window .video-control {
+  position: absolute;
+  bottom: 20px;
+  height: 72px;
+  width: 100%;
+  text-align: center;
+  opacity: 0;
+  z-index: -1;
+  -webkit-transition: opacity 0.5s;
+  -moz-transition: opacity 0.5s;
+  -o-transition: opacity 0.5s;
+  transition: opacity 0.5s;
+}
+
+.call-window .video-control:hover {
+  opacity: 1;
 }
 
 .call-window video {
@@ -149,22 +171,52 @@ body {
   height: 100%;
 }
 
-.video-control {
-  position: absolute;
-  bottom: 20px;
-  height: 72px;
-  width: 100%;
-  opacity: 0;
-  -webkit-transition: opacity 0.5s;
-  -moz-transition: opacity 0.5s;
-  -o-transition: opacity 0.5s;
-  transition: opacity 0.5s;
-  text-align: center;
-  z-index: -1;
+@-webkit-keyframes in-fadeout {
+  0% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
-.video-control:hover {
-  opacity: 1;
+@-moz-keyframes in-fadeout {
+  0% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-o-keyframes in-fadeout {
+  0% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes in-fadeout {
+  0% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .video-control .btn-action, .call-modal .btn-action {
@@ -220,10 +272,10 @@ body {
 .call-modal.active {
   display: block;
   z-index: 9999;
-  -webkit-animation: blinking 1s infinite ease;
-  -moz-animation: blinking 1s infinite ease;
-  -o-animation: blinking 1s infinite ease;
-  animation: blinking 1s infinite ease;
+  -webkit-animation: blinking 3s infinite linear;
+  -moz-animation: blinking 3s infinite linear;
+  -o-animation: blinking 3s infinite linear;
+  animation: blinking 3s infinite linear;
 }
 
 .call-modal .btn-action:not(.hangup) {
@@ -239,17 +291,23 @@ body {
 }
 
 @-webkit-keyframes blinking {
-  0% {
+  25% {
+    -webkit-transform: scale(0.96);
+    -moz-transform: scale(0.96);
+    -o-transform: scale(0.96);
+    transform: scale(0.96);
+  }
+  50% {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     -o-transform: scale(1);
     transform: scale(1);
   }
-  50% {
-    -webkit-transform: scale(0.95);
-    -moz-transform: scale(0.95);
-    -o-transform: scale(0.95);
-    transform: scale(0.95);
+  75% {
+    -webkit-transform: scale(0.96);
+    -moz-transform: scale(0.96);
+    -o-transform: scale(0.96);
+    transform: scale(0.96);
   }
   100% {
     -webkit-transform: scale(1);
@@ -260,17 +318,23 @@ body {
 }
 
 @-moz-keyframes blinking {
-  0% {
+  25% {
+    -webkit-transform: scale(0.96);
+    -moz-transform: scale(0.96);
+    -o-transform: scale(0.96);
+    transform: scale(0.96);
+  }
+  50% {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     -o-transform: scale(1);
     transform: scale(1);
   }
-  50% {
-    -webkit-transform: scale(0.95);
-    -moz-transform: scale(0.95);
-    -o-transform: scale(0.95);
-    transform: scale(0.95);
+  75% {
+    -webkit-transform: scale(0.96);
+    -moz-transform: scale(0.96);
+    -o-transform: scale(0.96);
+    transform: scale(0.96);
   }
   100% {
     -webkit-transform: scale(1);
@@ -281,17 +345,23 @@ body {
 }
 
 @-o-keyframes blinking {
-  0% {
+  25% {
+    -webkit-transform: scale(0.96);
+    -moz-transform: scale(0.96);
+    -o-transform: scale(0.96);
+    transform: scale(0.96);
+  }
+  50% {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     -o-transform: scale(1);
     transform: scale(1);
   }
-  50% {
-    -webkit-transform: scale(0.95);
-    -moz-transform: scale(0.95);
-    -o-transform: scale(0.95);
-    transform: scale(0.95);
+  75% {
+    -webkit-transform: scale(0.96);
+    -moz-transform: scale(0.96);
+    -o-transform: scale(0.96);
+    transform: scale(0.96);
   }
   100% {
     -webkit-transform: scale(1);
@@ -302,17 +372,23 @@ body {
 }
 
 @keyframes blinking {
-  0% {
+  25% {
+    -webkit-transform: scale(0.96);
+    -moz-transform: scale(0.96);
+    -o-transform: scale(0.96);
+    transform: scale(0.96);
+  }
+  50% {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     -o-transform: scale(1);
     transform: scale(1);
   }
-  50% {
-    -webkit-transform: scale(0.95);
-    -moz-transform: scale(0.95);
-    -o-transform: scale(0.95);
-    transform: scale(0.95);
+  75% {
+    -webkit-transform: scale(0.96);
+    -moz-transform: scale(0.96);
+    -o-transform: scale(0.96);
+    transform: scale(0.96);
   }
   100% {
     -webkit-transform: scale(1);
