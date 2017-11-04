@@ -1,6 +1,6 @@
 var path = require("path");
 var webpack = require("webpack");
-var socketConfig = require("../server/config.json");
+var socketConfig = require("../config.json");
 
 var isProduction = process.argv.indexOf("--build") !== -1 ||
 	process.env["NODE_ENV"] === "Production";
