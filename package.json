@@ -4,7 +4,7 @@
   "description": "React VideoCall App",
   "main": " ",
   "scripts": {
-    "start": "cd server && npm install  && npm start"
+    "start": "cd server && yarn start"
   },
   "repository": {
     "type": "git",
