@@ -19,5 +19,10 @@
     "email": "minh.son.nguyen.1209@gmail.com",
     "url": "https://nguymin4.github.io"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "4.10.0",
+    "eslint-config-airbnb-base": "12.1.0",
+    "eslint-plugin-import": "2.8.0"
+  }
 }
