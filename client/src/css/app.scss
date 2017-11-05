@@ -35,6 +35,12 @@ body {
 	}
 }
 
+.btn-action {
+  outline: none;
+  border: none;
+}
+
+
 @import "main-window";
 @import "call-window";
 @import "call-modal";

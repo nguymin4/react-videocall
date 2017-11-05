@@ -4,15 +4,24 @@ import PropTypes from 'proptypes';
 let friendID;
 
 class MainWindow extends Component {
+  /**
+   * Start the call with or without video
+   * @param {Boolean} video
+   */
+  callWithVideo(video) {
+    const config = { audio: true };
+    config.video = video;
+    return () => this.props.startCall(true, friendID, config);
+  }
   render() {
-    document.title = `${this.props.clientId} - VideoCall`;
+    const { clientId } = this.props;
+    document.title = `${clientId} - VideoCall`;
     return (
       <div className="container main-window">
         <div>
           <h3>
-						Hi, your ID is <span className="txt-clientId">
-  {this.props.clientId}
-</span>
+            Hi, your ID is &nbsp;
+            <span className="txt-clientId">{clientId}</span>
           </h3>
           <h4>Get started by calling a friend below</h4>
         </div>
@@ -25,11 +34,11 @@ class MainWindow extends Component {
             onChange={event => friendID = event.target.value}
           />
           <div>
-            <i
+            <button
               className="btn-action fa fa-video-camera"
               onClick={this.callWithVideo(true)}
             />
-            <i
+            <button
               className="btn-action fa fa-phone"
               onClick={this.callWithVideo(false)}
             />
@@ -37,15 +46,6 @@ class MainWindow extends Component {
         </div>
       </div>
     );
-  }
-  /**
-	 * Start the call with or without video
-	 * @param {Boolean} video
-	 */
-  callWithVideo(video) {
-    const config = { audio: true };
-    config.video = video;
-    return () => this.props.startCall(true, friendID, config);
   }
 }
 

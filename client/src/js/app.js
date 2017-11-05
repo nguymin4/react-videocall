@@ -19,6 +19,9 @@ class App extends Component {
     };
     this.pc = {};
     this.config = null;
+    this.startCallHandler = this.startCall.bind(this);
+    this.endCallHandler = this.endCall.bind(this);
+    this.rejectCallHandler = this.rejectCall.bind(this);
   }
 
   componentDidMount() {
@@ -33,31 +36,6 @@ class App extends Component {
       })
       .on('end', this.endCall.bind(this, false))
       .emit('init');
-  }
-
-  render() {
-    return (
-      <div >
-        <MainWindow
-          clientId={this.state.clientId}
-          startCall={this.startCall.bind(this)}
-        />
-        <CallWindow
-          status={this.state.callWindow}
-          localSrc={this.state.localSrc}
-          peerSrc={this.state.peerSrc}
-          config={this.config}
-          mediaDevice={this.pc.mediaDevice}
-          endCall={this.endCall.bind(this, true)}
-        />
-        <CallModal
-          status={this.state.callModal}
-          startCall={this.startCall.bind(this)}
-          rejectCall={this.rejectCall.bind(this)}
-          callFrom={this.state.callFrom}
-        />
-      </div >
-    );
   }
 
   startCall(isCaller, friendID, config) {
@@ -86,6 +64,31 @@ class App extends Component {
       localSrc: '',
       peerSrc: ''
     });
+  }
+
+  render() {
+    return (
+      <div >
+        <MainWindow
+          clientId={this.state.clientId}
+          startCall={this.startCallHandler}
+        />
+        <CallWindow
+          status={this.state.callWindow}
+          localSrc={this.state.localSrc}
+          peerSrc={this.state.peerSrc}
+          config={this.config}
+          mediaDevice={this.pc.mediaDevice}
+          endCall={this.endCallHandler}
+        />
+        <CallModal
+          status={this.state.callModal}
+          startCall={this.startCallHandler}
+          rejectCall={this.rejectCallHandler}
+          callFrom={this.state.callFrom}
+        />
+      </div >
+    );
   }
 }
 

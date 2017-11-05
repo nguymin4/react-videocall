@@ -48,6 +48,10 @@ module.exports = {
             presets: ['react', 'env']
           }
         }
+      },
+      {
+        test: require.resolve('webrtc-adapter'),
+        use: 'expose-loader'
       }
     ]
   },

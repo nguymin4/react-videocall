@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'proptypes';
 import classnames from 'classnames';
-import ulti from './ulti';
+import _ from 'lodash';
 
 class CallWindow extends Component {
   constructor(props) {
@@ -19,11 +19,9 @@ class CallWindow extends Component {
   componentWillReceiveProps(nextProps) {
     // Initialize when the call started
     if (!this.props.config && nextProps.config) {
-      const config = nextProps.config;
-      for (const type in config) {
-        nextProps.mediaDevice
-          .toggle(ulti.capitalize(type), config[type]);
-      }
+      const { config, mediaDevice } = nextProps;
+      _.forEach(config, (conf, type) =>
+        mediaDevice.toggle(_.capitalize(type), conf));
 
       this.setState({
         Video: config.video,
@@ -32,13 +30,24 @@ class CallWindow extends Component {
     }
   }
 
+  /**
+   * Turn on/off a media device
+   * @param {String} deviceType - Type of the device eg: Video, Audio
+   */
+  toggleMediaDevice(deviceType) {
+    this.setState({
+      [deviceType]: !this.state[deviceType]
+    });
+    this.props.mediaDevice.toggle(deviceType);
+  }
+
   renderControlButtons() {
     const getClass = (icon, type) => classnames(`btn-action fa ${icon}`, {
       disable: !this.state[type]
     });
 
     return this.btns.map(btn => (
-      <i
+      <button
         key={`btn${btn.type}`}
         className={getClass(btn.icon, btn.type)}
         onClick={() => this.toggleMediaDevice(btn.type)}
@@ -46,13 +55,14 @@ class CallWindow extends Component {
     ));
   }
   render() {
+    const { status, peerSrc, localSrc } = this.props;
     return (
-      <div className={classnames('call-window', this.props.status)}>
-        <video id="peerVideo" ref="peerVideo" src={this.props.peerSrc} autoPlay />
-        <video id="localVideo" ref="localVideo" src={this.props.localSrc} autoPlay muted />
+      <div className={classnames('call-window', status)}>
+        <video id="peerVideo" src={peerSrc} autoPlay />
+        <video id="localVideo" src={localSrc} autoPlay muted />
         <div className="video-control">
-          {this.renderControlButtons() }
-          <i
+          {this.renderControlButtons()}
+          <button
             className="btn-action hangup fa fa-phone"
             onClick={() => this.props.endCall(true)}
           />
@@ -60,24 +70,14 @@ class CallWindow extends Component {
       </div>
     );
   }
-  /**
-	 * Turn on/off a media device
-	 * @param {String} deviceType - Type of the device eg: Video, Audio
-	 */
-  toggleMediaDevice(deviceType) {
-    this.setState({
-      [deviceType]: !this.state[deviceType]
-    });
-    this.props.mediaDevice.toggle(deviceType);
-  }
 }
 
 CallWindow.propTypes = {
   status: PropTypes.string.isRequired,
-  localSrc: PropTypes.string,
-  peerSrc: PropTypes.string,
-  config: PropTypes.object,
-  mediaDevice: PropTypes.object,
+  localSrc: PropTypes.string.isRequired,
+  peerSrc: PropTypes.string.isRequired,
+  config: PropTypes.object, // eslint-disable-line
+  mediaDevice: PropTypes.object, // eslint-disable-line
   endCall: PropTypes.func.isRequired
 };
 

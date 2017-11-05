@@ -8,21 +8,21 @@
 	@include border-radius(5px);
 	text-align: center;
 	display: none;
-	
+
 	&.active {
 		display: block;
 		z-index: 9999;
 		@include animation(blinking 3s infinite linear);
 	}
-	
+
 	.btn-action:not(.hangup) {
 		background-color: $green;
 	}
-	
+
 	span.caller {
 		color: $blue;
 	}
-	
+
 	p {
 		font-size: 1.5em;
 	}

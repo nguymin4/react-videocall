@@ -2,7 +2,7 @@ import MediaDevice from './MediaDevice';
 import Emitter from './Emitter';
 import socket from './socket';
 
-const pc_config = { iceServers: [{ url: 'stun:stun.l.google.com:19302' }] };
+const PC_CONFIG = { iceServers: [{ url: 'stun:stun.l.google.com:19302' }] };
 
 class PeerConnection extends Emitter {
   /**
@@ -11,7 +11,7 @@ class PeerConnection extends Emitter {
      */
   constructor(friendID) {
     super();
-    this.pc = new RTCPeerConnection(pc_config);
+    this.pc = new RTCPeerConnection(PC_CONFIG);
     this.pc.onicecandidate = event => socket.emit('call', {
       to: this.friendID,
       candidate: event.candidate
@@ -22,16 +22,14 @@ class PeerConnection extends Emitter {
     this.friendID = friendID;
   }
   /**
-	 * Starting the call
-	 * @param {Boolean} isCaller
-	 * @param {Object} config - configuration for the call {audio: boolean, video: boolean}
-	 */
+   * Starting the call
+   * @param {Boolean} isCaller
+   * @param {Object} config - configuration for the call {audio: boolean, video: boolean}
+   */
   start(isCaller, config) {
-    const pc = this.pc;
-
     this.mediaDevice
       .on('stream', (stream) => {
-        pc.addStream(stream);
+        this.pc.addStream(stream);
         this.emit('localStream', URL.createObjectURL(stream));
         if (isCaller) socket.emit('request', { to: this.friendID });
         else this.createOffer();
@@ -41,9 +39,9 @@ class PeerConnection extends Emitter {
     return this;
   }
   /**
-	 * Stop the call
-	 * @param {Boolean} isStarter
-	 */
+   * Stop the call
+   * @param {Boolean} isStarter
+   */
   stop(isStarter) {
     if (isStarter) socket.emit('end', { to: this.friendID });
     this.mediaDevice.stop();
@@ -74,20 +72,20 @@ class PeerConnection extends Emitter {
   }
 
   /**
-	 * @param {Object} sdp - Session description
-	 */
+   * @param {Object} sdp - Session description
+   */
   setRemoteDescription(sdp) {
-    sdp = new RTCSessionDescription(sdp);
-    this.pc.setRemoteDescription(sdp);
+    const rtcSdp = new RTCSessionDescription(sdp);
+    this.pc.setRemoteDescription(rtcSdp);
     return this;
   }
   /**
-	 * @param {Object} candidate - ICE Candidate
-	 */
+   * @param {Object} candidate - ICE Candidate
+   */
   addIceCandidate(candidate) {
     if (candidate) {
-      candidate = new RTCIceCandidate(candidate);
-      this.pc.addIceCandidate(candidate);
+      const iceCandidate = new RTCIceCandidate(candidate);
+      this.pc.addIceCandidate(iceCandidate);
     }
     return this;
   }

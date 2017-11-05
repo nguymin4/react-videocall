@@ -1,29 +1,29 @@
+import _ from 'lodash';
+
 class Emitter {
   constructor() {
-    this._events = {};
+    this.events = {};
   }
 
-  emit(event) {
-    if (this._events[event]) {
-      const args = Array.prototype.slice.call(arguments, 1);
-      this._events[event].forEach(fn => fn(...args));
+  emit(event, ...args) {
+    if (this.events[event]) {
+      this.events[event].forEach(fn => fn(...args));
     }
     return this;
   }
 
   on(event, fn) {
-    if (this._events[event]) this._events[event].push(fn);
-    else this._events[event] = [fn];
+    if (this.events[event]) this.events[event].push(fn);
+    else this.events[event] = [fn];
     return this;
   }
 
   off(event, fn) {
-    if (!event) this._event = {};
-    else if (fn && typeof fn === 'function') {
-      const listeners = this._events[event];
+    if (event && _.isFunction(fn)) {
+      const listeners = this.events[event];
       const index = listeners.findIndex(_fn => _fn === fn);
       listeners.splice(index, 1);
-    } else this._events[event] = [];
+    } else this.events[event] = [];
     return this;
   }
 }

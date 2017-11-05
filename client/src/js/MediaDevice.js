@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import Emitter from './Emitter';
 
 /**
@@ -5,10 +6,9 @@ import Emitter from './Emitter';
  */
 class MediaDevice extends Emitter {
   /**
-	 * Start media devices and send stream
-	 * @param {Object} config - Configuration allows to turn off device after starting
-	 */
-  start(config) {
+   * Start media devices and send stream
+   */
+  start() {
     const constraints = {
       video: {
         facingMode: 'user',
@@ -24,21 +24,22 @@ class MediaDevice extends Emitter {
     return this;
   }
   /**
-	 * Turn on/off a device
-	 * @param {String} type - Type of the device
-	 * @param {Boolean} [on] - State of the device
-	 */
+   * Turn on/off a device
+   * @param {String} type - Type of the device
+   * @param {Boolean} [on] - State of the device
+   */
   toggle(type, on) {
     const len = arguments.length;
     this.stream[`get${type}Tracks`]().forEach((track) => {
       const state = len === 2 ? on : !track.enabled;
-      track.enabled = state;
+      _.set(track, 'enabled', state);
     });
     return this;
   }
+
   /**
-	 * Stop all media track of devices
-	 */
+   * Stop all media track of devices
+   */
   stop() {
     this.stream.getTracks().forEach(track => track.stop());
     return this;
