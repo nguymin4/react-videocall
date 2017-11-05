@@ -13,8 +13,11 @@
   "main": "main.js",
   "dependencies": {
     "express": "4.16.2",
-    "nodemon": "1.12.1",
     "socket.io": "2.0.4"
+  },
+  "engines": {
+    "node": "8.8.1",
+    "yarn": "1.2.1"
   },
   "author": {
     "name": "Minh Son Nguyen",
@@ -25,6 +28,7 @@
   "devDependencies": {
     "eslint": "4.10.0",
     "eslint-config-airbnb-base": "12.1.0",
-    "eslint-plugin-import": "2.8.0"
+    "eslint-plugin-import": "2.8.0",
+    "nodemon": "1.12.1"
   }
 }

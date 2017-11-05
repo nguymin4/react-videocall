@@ -40,6 +40,10 @@
     "watch": "webpack-dev-server",
     "build": "NODE_ENV=Production webpack"
   },
+  "engines": {
+    "node": "8.8.1",
+    "yarn": "1.2.1"
+  },
   "author": "Minh Son Nguyen",
   "license": "MIT"
 }

@@ -4,11 +4,17 @@
   "description": "React VideoCall App",
   "main": " ",
   "scripts": {
-    "start": "cd server && yarn start"
+    "install": "chmod +x install.sh && ./install.sh",
+    "postinstall": "cd client && yarn build",
+    "start": "cd server && node main.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nguymin4/react-videocall.git"
+  },
+  "engines": {
+    "node": "8.8.1",
+    "yarn": "1.2.1"
   },
   "author": "Minh Son Nguyen",
   "license": "MIT",
