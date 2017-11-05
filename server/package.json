@@ -7,11 +7,13 @@
     "url": ""
   },
   "scripts": {
-    "start": "node main.js"
+    "start": "node main.js",
+    "watch": "nodemon main.js"
   },
   "main": "main.js",
   "dependencies": {
     "express": "4.16.2",
+    "nodemon": "1.12.1",
     "socket.io": "2.0.4"
   },
   "author": {

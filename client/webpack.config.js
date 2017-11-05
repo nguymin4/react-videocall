@@ -53,10 +53,7 @@ module.exports = {
   },
   plugins: _.compact([
     new DefinePlugin({
-      SOCKET_HOST: JSON.stringify(isProduction ?
-        // process.env.HOST + ":" + process.env.PORT :
-        '' :
-        `localhost:${socketConfig.PORT}`)
+      SOCKET_HOST: JSON.stringify(isProduction ? '' : `localhost:${socketConfig.PORT}`)
     }),
     new HtmlWebpackPlugin({
       title: 'React VideoCall - Minh Son Nguyen',

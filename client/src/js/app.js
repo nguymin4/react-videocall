@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
-
+import socket from './socket';
+import PeerConnection from './PeerConnection';
 import MainWindow from './MainWindow';
 import CallWindow from './CallWindow';
 import CallModal from './CallModal';
-
-import PeerConnection from './PeerConnection';
-import socket from './socket';
 
 class App extends Component {
   constructor(props) {
