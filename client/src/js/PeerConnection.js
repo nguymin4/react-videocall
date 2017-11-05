@@ -2,7 +2,7 @@ import MediaDevice from './MediaDevice';
 import Emitter from './Emitter';
 import socket from './socket';
 
-const PC_CONFIG = { iceServers: [{ url: 'stun:stun.l.google.com:19302' }] };
+const PC_CONFIG = { iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] };
 
 class PeerConnection extends Emitter {
   /**
@@ -16,7 +16,7 @@ class PeerConnection extends Emitter {
       to: this.friendID,
       candidate: event.candidate
     });
-    this.pc.onaddstream = event => this.emit('peerStream', URL.createObjectURL(event.stream));
+    this.pc.onaddstream = event => this.emit('peerStream', event.stream);
 
     this.mediaDevice = new MediaDevice();
     this.friendID = friendID;
@@ -30,7 +30,7 @@ class PeerConnection extends Emitter {
     this.mediaDevice
       .on('stream', (stream) => {
         this.pc.addStream(stream);
-        this.emit('localStream', URL.createObjectURL(stream));
+        this.emit('localStream', stream);
         if (isCaller) socket.emit('request', { to: this.friendID });
         else this.createOffer();
       })

@@ -16,6 +16,11 @@ class CallWindow extends Component {
       { type: 'Audio', icon: 'fa-microphone' }
     ];
   }
+
+  componentDidMount() {
+    this.setMediaStream();
+  }
+
   componentWillReceiveProps(nextProps) {
     // Initialize when the call started
     if (!this.props.config && nextProps.config) {
@@ -28,6 +33,16 @@ class CallWindow extends Component {
         Audio: config.audio
       });
     }
+  }
+
+  componentDidUpdate() {
+    this.setMediaStream();
+  }
+
+  setMediaStream() {
+    const { peerSrc, localSrc } = this.props;
+    if (this.peerVideo && peerSrc) this.peerVideo.srcObject = peerSrc;
+    if (this.localVideo && localSrc) this.localVideo.srcObject = localSrc;
   }
 
   /**
@@ -55,11 +70,11 @@ class CallWindow extends Component {
     ));
   }
   render() {
-    const { status, peerSrc, localSrc } = this.props;
+    const { status } = this.props;
     return (
       <div className={classnames('call-window', status)}>
-        <video id="peerVideo" src={peerSrc} autoPlay />
-        <video id="localVideo" src={localSrc} autoPlay muted />
+        <video id="peerVideo" ref={el => this.peerVideo = el} autoPlay />
+        <video id="localVideo" ref={el => this.localVideo = el} autoPlay muted />
         <div className="video-control">
           {this.renderControlButtons()}
           <button
@@ -74,8 +89,8 @@ class CallWindow extends Component {
 
 CallWindow.propTypes = {
   status: PropTypes.string.isRequired,
-  localSrc: PropTypes.string.isRequired,
-  peerSrc: PropTypes.string.isRequired,
+  localSrc: PropTypes.object, // eslint-disable-line
+  peerSrc: PropTypes.object, // eslint-disable-line
   config: PropTypes.object, // eslint-disable-line
   mediaDevice: PropTypes.object, // eslint-disable-line
   endCall: PropTypes.func.isRequired

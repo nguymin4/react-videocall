@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
+import _ from 'lodash';
 import socket from './socket';
 import PeerConnection from './PeerConnection';
 import MainWindow from './MainWindow';
@@ -14,8 +15,8 @@ class App extends Component {
       callWindow: '',
       callModal: '',
       callFrom: '',
-      localSrc: '',
-      peerSrc: ''
+      localSrc: null,
+      peerSrc: null
     };
     this.pc = {};
     this.config = null;
@@ -56,13 +57,13 @@ class App extends Component {
   }
 
   endCall(isStarter) {
-    this.pc.stop(isStarter);
+    if (_.isFunction(this.pc.stop)) this.pc.stop(isStarter);
     this.pc = {};
     this.config = null;
     this.setState({
       callWindow: '',
-      localSrc: '',
-      peerSrc: ''
+      localSrc: null,
+      peerSrc: null
     });
   }
 

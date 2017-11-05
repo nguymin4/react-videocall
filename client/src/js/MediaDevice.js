@@ -17,10 +17,14 @@ class MediaDevice extends Emitter {
       audio: true
     };
 
-    navigator.getUserMedia(constraints, (stream) => {
-      this.stream = stream;
-      this.emit('stream', stream);
-    }, err => console.log(err));
+    navigator.mediaDevices
+      .getUserMedia(constraints)
+      .then((stream) => {
+        this.stream = stream;
+        this.emit('stream', stream);
+      })
+      .catch(err => console.log(err));
+
     return this;
   }
   /**
@@ -30,10 +34,12 @@ class MediaDevice extends Emitter {
    */
   toggle(type, on) {
     const len = arguments.length;
-    this.stream[`get${type}Tracks`]().forEach((track) => {
-      const state = len === 2 ? on : !track.enabled;
-      _.set(track, 'enabled', state);
-    });
+    if (this.stream) {
+      this.stream[`get${type}Tracks`]().forEach((track) => {
+        const state = len === 2 ? on : !track.enabled;
+        _.set(track, 'enabled', state);
+      });
+    }
     return this;
   }
 
@@ -41,7 +47,9 @@ class MediaDevice extends Emitter {
    * Stop all media track of devices
    */
   stop() {
-    this.stream.getTracks().forEach(track => track.stop());
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+    }
     return this;
   }
 }
