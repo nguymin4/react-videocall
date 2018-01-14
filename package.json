@@ -13,8 +13,8 @@
     "url": "git+https://github.com/nguymin4/react-videocall.git"
   },
   "engines": {
-    "node": "8.8.1",
-    "yarn": "1.2.1"
+    "node": "8.9.3",
+    "yarn": "1.3.2"
   },
   "author": "Minh Son Nguyen",
   "license": "MIT",

@@ -16,8 +16,8 @@
     "socket.io": "2.0.4"
   },
   "engines": {
-    "node": "8.8.1",
-    "yarn": "1.2.1"
+    "node": "8.9.3",
+    "yarn": "1.3.2"
   },
   "author": {
     "name": "Minh Son Nguyen",
