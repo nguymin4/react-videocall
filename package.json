@@ -4,9 +4,9 @@
   "description": "React VideoCall App",
   "main": " ",
   "scripts": {
-    "install": "chmod +x install.sh && ./install.sh",
+    "install": "sh install.sh",
     "postinstall": "cd client && yarn build",
-    "start": "cd server && node main.js"
+    "start": "cd server && yarn start"
   },
   "repository": {
     "type": "git",
