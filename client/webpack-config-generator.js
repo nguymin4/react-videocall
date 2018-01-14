@@ -2,10 +2,7 @@ const _ = require('lodash');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const customizer = (objValue, srcValue) =>
-  (_.isArray(objValue) ? objValue.concat(srcValue) : undefined);
-
-module.exports = configs => _.mergeWith({
+const sharedConfigs = {
   context: __dirname,
   entry: {
     app: './src/entrypoint.js'
@@ -35,4 +32,11 @@ module.exports = configs => _.mergeWith({
       template: 'src/html/index.html'
     })
   ]
-}, configs, customizer);
+};
+
+const mergeResolver = (objValue, srcValue) => (
+  _.isArray(objValue) ? objValue.concat(srcValue) : undefined
+);
+
+module.exports = configs => _.mergeWith(sharedConfigs, configs, mergeResolver);
+
