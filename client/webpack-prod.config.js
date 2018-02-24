@@ -1,12 +1,12 @@
 const { DefinePlugin, optimize } = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const generateWebpackConfig = require('./webpack-config-generator');
+const addBaseConfig = require('./webpack-base.config');
 
 const extractSassPlugin = new ExtractTextPlugin({
   filename: 'dist/css/[name].min.css'
 });
 
-module.exports = generateWebpackConfig({
+const configs = addBaseConfig({
   output: {
     filename: 'dist/js/[name].min.js'
   },
@@ -46,3 +46,5 @@ module.exports = generateWebpackConfig({
     })
   ]
 });
+
+module.exports = configs;

@@ -1,8 +1,8 @@
 const { DefinePlugin, HotModuleReplacementPlugin } = require('webpack');
 const socketConfig = require('../config.json');
-const generateWebpackConfig = require('./webpack-config-generator');
+const addBaseConfig = require('./webpack-base.config');
 
-const configs = generateWebpackConfig({
+const configs = addBaseConfig({
   output: {
     filename: 'dist/js/[name].js'
   },
@@ -18,9 +18,7 @@ const configs = generateWebpackConfig({
           {
             loader: 'file-loader',
             options: {
-              name: '[name].[ext]',
-              publicPath: '/',
-              outputPath: 'dist/assets/'
+              name: 'dist/assets/[name].[ext]'
             }
           }
         ]
