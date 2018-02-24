@@ -41,7 +41,7 @@
     "build": "webpack --config webpack-prod.config.js"
   },
   "engines": {
-    "node": "8.9.3",
+    "node": "8.9.4",
     "yarn": "1.3.2"
   },
   "author": "Minh Son Nguyen",
