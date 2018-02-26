@@ -17,6 +17,10 @@ cd server && yarn watch
 cd client && yarn watch
 ```
 
+**Deployment**
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/nguymin4/react-videocall/tree/production)
+
 **Front-end Technologies:**
 - React
 - Webrtc
