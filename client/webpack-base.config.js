@@ -1,6 +1,4 @@
 const _ = require('lodash');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const sharedConfigs = {
   context: __dirname,
@@ -24,14 +22,7 @@ const sharedConfigs = {
         use: 'expose-loader'
       }
     ]
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: 'React VideoCall - Minh Son Nguyen',
-      filename: path.resolve(__dirname, 'index.html'),
-      template: 'src/html/index.html'
-    })
-  ]
+  }
 };
 
 const mergeResolver = (objValue, srcValue) => (
@@ -39,4 +30,3 @@ const mergeResolver = (objValue, srcValue) => (
 );
 
 module.exports = configs => _.mergeWith(sharedConfigs, configs, mergeResolver);
-

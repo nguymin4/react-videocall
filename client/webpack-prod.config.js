@@ -1,22 +1,37 @@
-const { DefinePlugin, optimize } = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path = require('path');
+const { DefinePlugin } = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const addBaseConfig = require('./webpack-base.config');
 
-const extractSassPlugin = new ExtractTextPlugin({
-  filename: 'dist/css/[name].min.css'
+const uglifyJsPlugin = new UglifyJsPlugin({
+  uglifyOptions: {
+    sourceMap: false,
+    mangle: false,
+    output: {
+      semicolons: true
+    },
+    compress: {
+      warnings: true
+    }
+  }
 });
 
 const configs = addBaseConfig({
+  mode: 'production',
   output: {
-    filename: 'dist/js/[name].min.js'
+    filename: 'js/[name].min.js'
   },
   module: {
     rules: [
       {
         test: /\.scss$/,
-        use: extractSassPlugin.extract({
-          use: ['css-loader?minimize=true', 'sass-loader']
-        })
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader?minimize=true',
+          'sass-loader'
+        ]
       },
       {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
@@ -24,7 +39,9 @@ const configs = addBaseConfig({
           {
             loader: 'file-loader',
             options: {
-              name: '/dist/assets/[name].[ext]'
+              name: '[name].[ext]',
+              outputPath: 'assets',
+              publicPath: '/dist/assets'
             }
           }
         ]
@@ -32,19 +49,19 @@ const configs = addBaseConfig({
     ]
   },
   plugins: [
-    extractSassPlugin,
+    new MiniCssExtractPlugin({ filename: 'css/[name].min.css' }),
     new DefinePlugin({ SOCKET_HOST: '' }),
-    new optimize.UglifyJsPlugin({
-      sourceMap: false,
-      mangle: false,
-      output: {
-        semicolons: true
-      },
-      compress: {
-        warnings: true
-      }
+    new HtmlWebpackPlugin({
+      title: 'React VideoCall - Minh Son Nguyen',
+      filename: path.join(__dirname, 'index.html'),
+      template: 'src/html/index.html'
     })
-  ]
+  ],
+  optimization: {
+    minimizer: [
+      uglifyJsPlugin
+    ]
+  }
 });
 
 module.exports = configs;

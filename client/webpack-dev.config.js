@@ -1,10 +1,12 @@
 const { DefinePlugin, HotModuleReplacementPlugin } = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const socketConfig = require('../config.json');
 const addBaseConfig = require('./webpack-base.config');
 
 const configs = addBaseConfig({
+  mode: 'development',
   output: {
-    filename: 'dist/js/[name].js'
+    filename: 'js/[name].js'
   },
   module: {
     rules: [
@@ -18,7 +20,8 @@ const configs = addBaseConfig({
           {
             loader: 'file-loader',
             options: {
-              name: 'dist/assets/[name].[ext]'
+              name: '[name].[ext]',
+              outputPath: 'assets'
             }
           }
         ]
@@ -29,7 +32,12 @@ const configs = addBaseConfig({
     new DefinePlugin({
       SOCKET_HOST: JSON.stringify(`localhost:${socketConfig.PORT}`)
     }),
-    new HotModuleReplacementPlugin()
+    new HotModuleReplacementPlugin(),
+    new HtmlWebpackPlugin({
+      title: 'React VideoCall - Minh Son Nguyen',
+      filename: 'index.html',
+      template: 'src/html/index.html'
+    })
   ],
   devServer: {
     compress: true,
