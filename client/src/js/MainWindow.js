@@ -20,8 +20,8 @@ class MainWindow extends Component {
       <div className="container main-window">
         <div>
           <h3>
-            Hi, your ID is &nbsp;
-            <span className="txt-clientId">{clientId}</span>
+            Hi, your ID is
+            <input type="text" className="txt-clientId" value={clientId} />
           </h3>
           <h4>Get started by calling a friend below</h4>
         </div>
