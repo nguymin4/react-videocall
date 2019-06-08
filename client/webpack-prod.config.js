@@ -11,9 +11,6 @@ const uglifyJsPlugin = new UglifyJsPlugin({
     mangle: false,
     output: {
       semicolons: true
-    },
-    compress: {
-      warnings: true
     }
   }
 });
@@ -29,7 +26,7 @@ const configs = addBaseConfig({
         test: /\.scss$/,
         use: [
           MiniCssExtractPlugin.loader,
-          'css-loader?minimize=true',
+          'css-loader',
           'sass-loader'
         ]
       },
