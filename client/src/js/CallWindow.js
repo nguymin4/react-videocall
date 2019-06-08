@@ -22,11 +22,11 @@ class CallWindow extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const { config: currentConfig } = this.props;
     // Initialize when the call started
-    if (!this.props.config && nextProps.config) {
+    if (!currentConfig && nextProps.config) {
       const { config, mediaDevice } = nextProps;
-      _.forEach(config, (conf, type) =>
-        mediaDevice.toggle(_.capitalize(type), conf));
+      _.forEach(config, (conf, type) => mediaDevice.toggle(_.capitalize(type), conf));
 
       this.setState({
         Video: config.video,
@@ -50,27 +50,29 @@ class CallWindow extends Component {
    * @param {String} deviceType - Type of the device eg: Video, Audio
    */
   toggleMediaDevice(deviceType) {
-    this.setState({
-      [deviceType]: !this.state[deviceType]
-    });
-    this.props.mediaDevice.toggle(deviceType);
+    const { mediaDevice } = this.props;
+    const deviceState = _.get(this.state, deviceType);
+    this.setState({ [deviceType]: !deviceState });
+    mediaDevice.toggle(deviceType);
   }
 
   renderControlButtons() {
     const getClass = (icon, type) => classnames(`btn-action fa ${icon}`, {
-      disable: !this.state[type]
+      disable: !_.get(this.state, type)
     });
 
     return this.btns.map(btn => (
       <button
         key={`btn${btn.type}`}
+        type="button"
         className={getClass(btn.icon, btn.type)}
         onClick={() => this.toggleMediaDevice(btn.type)}
       />
     ));
   }
+
   render() {
-    const { status } = this.props;
+    const { status, endCall } = this.props;
     return (
       <div className={classnames('call-window', status)}>
         <video id="peerVideo" ref={el => this.peerVideo = el} autoPlay />
@@ -78,8 +80,9 @@ class CallWindow extends Component {
         <div className="video-control">
           {this.renderControlButtons()}
           <button
+            type="button"
             className="btn-action hangup fa fa-phone"
-            onClick={() => this.props.endCall(true)}
+            onClick={() => endCall(true)}
           />
         </div>
       </div>

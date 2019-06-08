@@ -27,6 +27,7 @@ class MediaDevice extends Emitter {
 
     return this;
   }
+
   /**
    * Turn on/off a device
    * @param {String} type - Type of the device

@@ -52,7 +52,8 @@ class App extends Component {
   }
 
   rejectCall() {
-    socket.emit('end', { to: this.state.callFrom });
+    const { callFrom } = this.state;
+    socket.emit('end', { to: callFrom });
     this.setState({ callModal: '' });
   }
 
@@ -68,27 +69,28 @@ class App extends Component {
   }
 
   render() {
+    const { clientId, callFrom, callModal, callWindow, localSrc, peerSrc } = this.state;
     return (
-      <div >
+      <div>
         <MainWindow
-          clientId={this.state.clientId}
+          clientId={clientId}
           startCall={this.startCallHandler}
         />
         <CallWindow
-          status={this.state.callWindow}
-          localSrc={this.state.localSrc}
-          peerSrc={this.state.peerSrc}
+          status={callWindow}
+          localSrc={localSrc}
+          peerSrc={peerSrc}
           config={this.config}
           mediaDevice={this.pc.mediaDevice}
           endCall={this.endCallHandler}
         />
         <CallModal
-          status={this.state.callModal}
+          status={callModal}
           startCall={this.startCallHandler}
           rejectCall={this.rejectCallHandler}
-          callFrom={this.state.callFrom}
+          callFrom={callFrom}
         />
-      </div >
+      </div>
     );
   }
 }

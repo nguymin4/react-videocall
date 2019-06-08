@@ -9,10 +9,11 @@ class MainWindow extends Component {
    * @param {Boolean} video
    */
   callWithVideo(video) {
-    const config = { audio: true };
-    config.video = video;
-    return () => this.props.startCall(true, friendID, config);
+    const { startCall } = this.props;
+    const config = { audio: true, video };
+    return () => startCall(true, friendID, config);
   }
+
   render() {
     const { clientId } = this.props;
     document.title = `${clientId} - VideoCall`;
@@ -21,7 +22,13 @@ class MainWindow extends Component {
         <div>
           <h3>
             Hi, your ID is
-            <input type="text" className="txt-clientId" value={clientId} />
+            <input
+              type="text"
+              className="txt-clientId"
+              defaultValue={clientId}
+              disabled
+              readOnly
+            />
           </h3>
           <h4>Get started by calling a friend below</h4>
         </div>
@@ -35,10 +42,12 @@ class MainWindow extends Component {
           />
           <div>
             <button
+              type="button"
               className="btn-action fa fa-video-camera"
               onClick={this.callWithVideo(true)}
             />
             <button
+              type="button"
               className="btn-action fa fa-phone"
               onClick={this.callWithVideo(false)}
             />

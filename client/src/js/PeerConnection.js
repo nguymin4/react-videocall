@@ -21,6 +21,7 @@ class PeerConnection extends Emitter {
     this.mediaDevice = new MediaDevice();
     this.friendID = friendID;
   }
+
   /**
    * Starting the call
    * @param {Boolean} isCaller
@@ -38,6 +39,7 @@ class PeerConnection extends Emitter {
 
     return this;
   }
+
   /**
    * Stop the call
    * @param {Boolean} isStarter
@@ -79,6 +81,7 @@ class PeerConnection extends Emitter {
     this.pc.setRemoteDescription(rtcSdp);
     return this;
   }
+
   /**
    * @param {Object} candidate - ICE Candidate
    */
