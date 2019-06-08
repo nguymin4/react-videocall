@@ -12,8 +12,8 @@
   },
   "main": "main.js",
   "dependencies": {
-    "express": "4.16.3",
-    "socket.io": "2.1.1"
+    "express": "4.17.1",
+    "socket.io": "2.2.0"
   },
   "engines": {
     "node": "10.15.3",
@@ -26,9 +26,9 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "eslint": "5.0.1",
-    "eslint-config-airbnb-base": "13.0.0",
-    "eslint-plugin-import": "2.13.0",
-    "nodemon": "1.17.5"
+    "eslint": "5.16.0",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-plugin-import": "2.17.3",
+    "nodemon": "1.19.1"
   }
 }
