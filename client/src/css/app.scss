@@ -8,31 +8,31 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 @import "shared/base";
 
 html {
-	min-width: 400px;
-	background: url("https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-307101.jpg") center no-repeat;
+  background: url("https://source.unsplash.com/2560x1440/?forest,mountain") center no-repeat fixed;
 }
 
 body {
-	background: rgba(#000000, 0.6);
-	padding: 0px 20px;
+  background: rgba(#000000, 0.6);
+  padding: 0px 20px 20px 20px;
+  min-height: 100vh;
 }
 
 .navbar-brand {
-	font-size: 1.5em;
-	img {
-		display: inline-block;
-		width: 50px;
-	}
+  font-size: 1.5em;
+  img {
+    display: inline-block;
+    width: 50px;
+  }
 }
 
 #root {
-	h2 {
-		margin-top: 0px;
-	}
+  h2 {
+    margin-top: 0px;
+  }
 
-	h4 {
-		margin-top: 20px;
-	}
+  h4 {
+    margin-top: 20px;
+  }
 }
 
 .btn-action {
