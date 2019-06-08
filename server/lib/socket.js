@@ -1,23 +1,12 @@
 const _ = require('lodash');
 const io = require('socket.io');
-const haiku = require('./haiku');
-
-const userIds = {};
-
-/**
- * Random ID until the ID is not in use
- */
-function randomID(callback) {
-  const id = haiku();
-  if (id in userIds) setTimeout(() => haiku(callback), 5);
-  else callback(id);
-}
+const users = require('./users');
 
 /**
  * Send data to friend
  */
 function sendTo(to, done, fail) {
-  const receiver = userIds[to];
+  const receiver = users.get(to);
   if (receiver) {
     const next = typeof done === 'function' ? done : _.noop;
     next(receiver);
@@ -34,12 +23,9 @@ function sendTo(to, done, fail) {
 function initSocket(socket) {
   let id;
   socket
-    .on('init', () => {
-      randomID((_id) => {
-        id = _id;
-        userIds[id] = socket;
-        socket.emit('init', { id });
-      });
+    .on('init', async () => {
+      id = await users.create(socket);
+      socket.emit('init', { id });
     })
     .on('request', (data) => {
       sendTo(data.to, to => to.emit('request', { from: id }));
@@ -55,7 +41,7 @@ function initSocket(socket) {
       sendTo(data.to, to => to.emit('end'));
     })
     .on('disconnect', () => {
-      delete userIds[id];
+      users.remove(id);
       console.log(id, 'disconnected');
     });
 
