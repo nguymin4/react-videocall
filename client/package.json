@@ -27,7 +27,7 @@
     "url-loader": "2.0.0",
     "webpack": "4.33.0",
     "webpack-cli": "3.3.3",
-    "webrtc-adapter": "7.2.4"
+    "webrtc-adapter": "6.2.1"
   },
   "devDependencies": {
     "eslint": "5.16.0",
