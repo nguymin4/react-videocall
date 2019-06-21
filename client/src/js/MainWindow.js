@@ -26,7 +26,6 @@ class MainWindow extends Component {
               type="text"
               className="txt-clientId"
               defaultValue={clientId}
-              disabled
               readOnly
             />
           </h3>
