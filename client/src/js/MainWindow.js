@@ -21,7 +21,7 @@ class MainWindow extends Component {
       <div className="container main-window">
         <div>
           <h3>
-            Hi, your ID is
+            Hola, tu alias es
             <input
               type="text"
               className="txt-clientId"
@@ -29,14 +29,14 @@ class MainWindow extends Component {
               readOnly
             />
           </h3>
-          <h4>Get started by calling a friend below</h4>
+          <h4>Puedes llamar a un amigo</h4>
         </div>
         <div>
           <input
             type="text"
             className="txt-clientId"
             spellCheck={false}
-            placeholder="Your friend ID"
+            placeholder="Alias de tu amigo"
             onChange={event => friendID = event.target.value}
           />
           <div>
