@@ -7,6 +7,8 @@ import MainWindow from './MainWindow';
 import CallWindow from './CallWindow';
 import CallModal from './CallModal';
 
+const UPDATE_INTERVAL = 1000;
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -16,13 +18,17 @@ class App extends Component {
       callModal: '',
       callFrom: '',
       localSrc: null,
-      peerSrc: null
+      peerSrc: null,
+      time: 0
     };
     this.pc = {};
     this.config = null;
     this.startCallHandler = this.startCall.bind(this);
     this.endCallHandler = this.endCall.bind(this);
     this.rejectCallHandler = this.rejectCall.bind(this);
+    this.startTimer = this.startTimer.bind(this);
+    this.stopTimer = this.stopTimer.bind(this);
+    this.updateTimer = this.updateTimer.bind(this);
   }
 
   componentDidMount() {
@@ -32,11 +38,13 @@ class App extends Component {
       .on('call', (data) => {
         if (data.sdp) {
           this.pc.setRemoteDescription(data.sdp);
+          this.startTimer();
           if (data.sdp.type === 'offer') this.pc.createAnswer();
         } else this.pc.addIceCandidate(data.candidate);
       })
       .on('end', this.endCall.bind(this, false))
       .emit('init');
+    this.timerRef = null;
   }
 
   startCall(isCaller, friendID, config) {
@@ -66,10 +74,34 @@ class App extends Component {
       localSrc: null,
       peerSrc: null
     });
+    this.stopTimer()
+  }
+
+  updateTimer(extraTime) {
+    const { time } = this.state;
+    this.setState({ time : time + extraTime });
+  }
+
+  startTimer() {
+    this.setState({
+      isRunning : true 
+    }, () => {
+      this.timerRef = setInterval(
+        () => { this.updateTimer(UPDATE_INTERVAL) }, UPDATE_INTERVAL
+      )
+    });
+  }
+
+  stopTimer() {
+    this.setState({
+      isRunning : false 
+    }, () => {
+      clearInterval(this.timerRef);
+    });
   }
 
   render() {
-    const { clientId, callFrom, callModal, callWindow, localSrc, peerSrc } = this.state;
+    const { clientId, callFrom, callModal, callWindow, localSrc, peerSrc, timer } = this.state;
     return (
       <div>
         <MainWindow
@@ -83,6 +115,7 @@ class App extends Component {
           config={this.config}
           mediaDevice={this.pc.mediaDevice}
           endCall={this.endCallHandler}
+          timer={timer}
         />
         <CallModal
           status={callModal}

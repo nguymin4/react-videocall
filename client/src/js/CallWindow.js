@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'proptypes';
 import classnames from 'classnames';
 import _ from 'lodash';
+import Timer from './Timer';
 
 class CallWindow extends Component {
   constructor(props) {
@@ -71,12 +72,20 @@ class CallWindow extends Component {
     ));
   }
 
+  renderTimeControl() {
+    const { time } = this.props;
+    return (
+      <Timer time={ time } />
+    )
+  }
+
   render() {
     const { status, endCall } = this.props;
     return (
       <div className={classnames('call-window', status)}>
         <video id="peerVideo" ref={el => this.peerVideo = el} autoPlay />
         <video id="localVideo" ref={el => this.localVideo = el} autoPlay muted />
+        {this.renderTimeControl()}
         <div className="video-control">
           {this.renderControlButtons()}
           <button

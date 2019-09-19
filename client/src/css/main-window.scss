@@ -1,4 +1,8 @@
 .main-window {
+	display: flex;
+    justify-content: center;
+    align-items: center;
+	flex-direction: column;
 	padding-top: 80px;
 	font-size: 1.75em;
 
