@@ -76,14 +76,16 @@ class App extends Component {
           clientId={clientId}
           startCall={this.startCallHandler}
         />
-        <CallWindow
-          status={callWindow}
-          localSrc={localSrc}
-          peerSrc={peerSrc}
-          config={this.config}
-          mediaDevice={this.pc.mediaDevice}
-          endCall={this.endCallHandler}
-        />
+        {!_.isEmpty(this.config) && (
+          <CallWindow
+            status={callWindow}
+            localSrc={localSrc}
+            peerSrc={peerSrc}
+            config={this.config}
+            mediaDevice={this.pc.mediaDevice}
+            endCall={this.endCallHandler}
+          />
+        ) }
         <CallModal
           status={callModal}
           startCall={this.startCallHandler}
