@@ -27,8 +27,13 @@ class App extends Component {
 
   componentDidMount() {
     socket
-      .on('init', data => this.setState({ clientId: data.id }))
-      .on('request', data => this.setState({ callModal: 'active', callFrom: data.from }))
+      .on('init', ({ id: clientId }) => {
+        document.title = `${clientId} - VideoCall`;
+        this.setState({ clientId });
+      })
+      .on('request', ({ from: callFrom }) => {
+        this.setState({ callModal: 'active', callFrom });
+      })
       .on('call', (data) => {
         if (data.sdp) {
           this.pc.setRemoteDescription(data.sdp);
@@ -58,11 +63,14 @@ class App extends Component {
   }
 
   endCall(isStarter) {
-    if (_.isFunction(this.pc.stop)) this.pc.stop(isStarter);
+    if (_.isFunction(this.pc.stop)) {
+      this.pc.stop(isStarter);
+    }
     this.pc = {};
     this.config = null;
     this.setState({
       callWindow: '',
+      callModal: '',
       localSrc: null,
       peerSrc: null
     });

@@ -1,60 +1,55 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'proptypes';
 
-let friendID;
+function MainWindow({ startCall, clientId }) {
+  const [friendID, setFriendID] = useState(null);
 
-class MainWindow extends Component {
   /**
    * Start the call with or without video
    * @param {Boolean} video
    */
-  callWithVideo(video) {
-    const { startCall } = this.props;
+  const callWithVideo = (video) => {
     const config = { audio: true, video };
-    return () => startCall(true, friendID, config);
-  }
+    return () => friendID && startCall(true, friendID, config);
+  };
 
-  render() {
-    const { clientId } = this.props;
-    document.title = `${clientId} - VideoCall`;
-    return (
-      <div className="container main-window">
-        <div>
-          <h3>
-            Hi, your ID is
-            <input
-              type="text"
-              className="txt-clientId"
-              defaultValue={clientId}
-              readOnly
-            />
-          </h3>
-          <h4>Get started by calling a friend below</h4>
-        </div>
-        <div>
+  return (
+    <div className="container main-window">
+      <div>
+        <h3>
+          Hi, your ID is
           <input
             type="text"
             className="txt-clientId"
-            spellCheck={false}
-            placeholder="Your friend ID"
-            onChange={event => friendID = event.target.value}
+            defaultValue={clientId}
+            readOnly
           />
-          <div>
-            <button
-              type="button"
-              className="btn-action fa fa-video-camera"
-              onClick={this.callWithVideo(true)}
-            />
-            <button
-              type="button"
-              className="btn-action fa fa-phone"
-              onClick={this.callWithVideo(false)}
-            />
-          </div>
+        </h3>
+        <h4>Get started by calling a friend below</h4>
+      </div>
+      <div>
+        <input
+          type="text"
+          className="txt-clientId"
+          spellCheck={false}
+          placeholder="Your friend ID"
+          onChange={event => setFriendID(event.target.value)}
+        />
+        <div>
+          <button
+            type="button"
+            className="btn-action fa fa-video-camera"
+            onClick={callWithVideo(true)}
+          />
+          <button
+            type="button"
+            className="btn-action fa fa-phone"
+            onClick={callWithVideo(false)}
+          />
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 MainWindow.propTypes = {
