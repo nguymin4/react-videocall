@@ -16,7 +16,7 @@ class PeerConnection extends Emitter {
       to: this.friendID,
       candidate: event.candidate
     });
-    this.pc.onaddstream = event => this.emit('peerStream', event.stream);
+    this.pc.ontrack = event => this.emit('peerStream', event.streams[0]);
 
     this.mediaDevice = new MediaDevice();
     this.friendID = friendID;
@@ -30,7 +30,9 @@ class PeerConnection extends Emitter {
   start(isCaller, config) {
     this.mediaDevice
       .on('stream', (stream) => {
-        this.pc.addStream(stream);
+        stream.getTracks().forEach((track) => {
+          this.pc.addTrack(track, stream);
+        });
         this.emit('localStream', stream);
         if (isCaller) socket.emit('request', { to: this.friendID });
         else this.createOffer();
