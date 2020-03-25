@@ -1,6 +1,6 @@
-const { DefinePlugin, HotModuleReplacementPlugin } = require('webpack');
+const { HotModuleReplacementPlugin } = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const socketConfig = require('../config.json');
+const socketConfig = require('../config');
 const addBaseConfig = require('./webpack-base.config');
 
 const configs = addBaseConfig({
@@ -29,9 +29,6 @@ const configs = addBaseConfig({
     ]
   },
   plugins: [
-    new DefinePlugin({
-      SOCKET_HOST: JSON.stringify(`localhost:${socketConfig.PORT}`)
-    }),
     new HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       title: 'React VideoCall - Minh Son Nguyen',
@@ -42,6 +39,9 @@ const configs = addBaseConfig({
   devServer: {
     compress: true,
     port: 9000,
+    proxy: {
+      '/bridge/': `http://localhost:${socketConfig.PORT}`
+    },
     watchOptions: {
       aggregateTimeout: 300,
       poll: 1000

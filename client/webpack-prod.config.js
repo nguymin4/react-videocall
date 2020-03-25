@@ -1,5 +1,4 @@
 const path = require('path');
-const { DefinePlugin } = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
@@ -47,7 +46,6 @@ const configs = addBaseConfig({
   },
   plugins: [
     new MiniCssExtractPlugin({ filename: 'css/[name].min.css' }),
-    new DefinePlugin({ SOCKET_HOST: '' }),
     new HtmlWebpackPlugin({
       title: 'React VideoCall - Minh Son Nguyen',
       filename: path.join(__dirname, 'index.html'),

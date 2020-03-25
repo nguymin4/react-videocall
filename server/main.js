@@ -1,6 +1,4 @@
-const config = require('../config.json');
 const server = require('./lib/server');
-
-config.PORT = process.env.PORT || config.PORT;
+const config = require('../config');
 
 server.run(config);

@@ -39,7 +39,7 @@ function initSocket(socket) {
 }
 
 module.exports = (server) => {
-  io
+  io({ path: '/bridge', serveClient: false })
     .listen(server, { log: true })
     .on('connection', initSocket);
 };
