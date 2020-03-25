@@ -62,7 +62,7 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
       </div>
     </div>
   );
-};
+}
 
 CallWindow.propTypes = {
   status: PropTypes.string.isRequired,

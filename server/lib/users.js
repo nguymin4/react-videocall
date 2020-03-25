@@ -19,6 +19,6 @@ exports.create = async (socket) => {
   return id;
 };
 
-exports.get = id => users[id];
+exports.get = (id) => users[id];
 
-exports.remove = id => delete users[id];
+exports.remove = (id) => delete users[id];

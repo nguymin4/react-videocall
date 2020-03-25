@@ -12,11 +12,11 @@ class PeerConnection extends Emitter {
   constructor(friendID) {
     super();
     this.pc = new RTCPeerConnection(PC_CONFIG);
-    this.pc.onicecandidate = event => socket.emit('call', {
+    this.pc.onicecandidate = (event) => socket.emit('call', {
       to: this.friendID,
       candidate: event.candidate
     });
-    this.pc.ontrack = event => this.emit('peerStream', event.streams[0]);
+    this.pc.ontrack = (event) => this.emit('peerStream', event.streams[0]);
 
     this.mediaDevice = new MediaDevice();
     this.friendID = friendID;
@@ -60,14 +60,14 @@ class PeerConnection extends Emitter {
   createOffer() {
     this.pc.createOffer()
       .then(this.getDescription.bind(this))
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
     return this;
   }
 
   createAnswer() {
     this.pc.createAnswer()
       .then(this.getDescription.bind(this))
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
     return this;
   }
 

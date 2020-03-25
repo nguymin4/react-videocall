@@ -33,7 +33,7 @@ function MainWindow({ startCall, clientId }) {
           className="txt-clientId"
           spellCheck={false}
           placeholder="Your friend ID"
-          onChange={event => setFriendID(event.target.value)}
+          onChange={(event) => setFriendID(event.target.value)}
         />
         <div>
           <button
