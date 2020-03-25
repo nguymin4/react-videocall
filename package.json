@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "React VideoCall App",
   "scripts": {
-    "start": "cd server && node main.js",
-    "watch:server": "nodemon server/main.js",
+    "start": "node server/index.js",
+    "watch:server": "nodemon server/index.js",
     "watch:client": "webpack-dev-server --config client/webpack-dev.config.js",
     "build": "cd client && webpack --config webpack-prod.config.js"
   },
