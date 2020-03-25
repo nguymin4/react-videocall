@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { render } from 'react-dom';
 import _ from 'lodash';
 import socket from './socket';
 import PeerConnection from './PeerConnection';
@@ -8,8 +7,8 @@ import CallWindow from './CallWindow';
 import CallModal from './CallModal';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
       clientId: '',
       callWindow: '',
@@ -52,7 +51,7 @@ class App extends Component {
         if (!isCaller) newState.callModal = '';
         this.setState(newState);
       })
-      .on('peerStream', src => this.setState({ peerSrc: src }))
+      .on('peerStream', (src) => this.setState({ peerSrc: src }))
       .start(isCaller, config);
   }
 
@@ -105,4 +104,4 @@ class App extends Component {
   }
 }
 
-render(<App />, document.getElementById('root'));
+export default App;
