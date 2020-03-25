@@ -32,7 +32,7 @@
     "socket.io": "2.3.0",
     "socket.io-client": "2.3.0",
     "style-loader": "1.1.3",
-    "uglifyjs-webpack-plugin": "2.2.0",
+    "terser-webpack-plugin": "2.3.5",
     "webpack": "4.42.1",
     "webpack-cli": "3.3.11",
     "webrtc-adapter": "7.5.1"

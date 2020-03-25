@@ -29,4 +29,4 @@ const mergeResolver = (objValue, srcValue) => (
   _.isArray(objValue) ? objValue.concat(srcValue) : undefined
 );
 
-module.exports = configs => _.mergeWith(sharedConfigs, configs, mergeResolver);
+module.exports = (configs) => _.mergeWith(sharedConfigs, configs, mergeResolver);

@@ -1,18 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const addBaseConfig = require('./webpack-base.config');
-
-const uglifyJsPlugin = new UglifyJsPlugin({
-  uglifyOptions: {
-    sourceMap: false,
-    mangle: false,
-    output: {
-      semicolons: true
-    }
-  }
-});
 
 const configs = addBaseConfig({
   mode: 'production',
@@ -54,7 +44,10 @@ const configs = addBaseConfig({
   ],
   optimization: {
     minimizer: [
-      uglifyJsPlugin
+      new TerserPlugin({
+        parallel: true,
+        terserOptions: { ecma: 6 }
+      })
     ]
   }
 });
