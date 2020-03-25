@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PropTypes from 'proptypes';
+import PropTypes from 'prop-types';
 
 function MainWindow({ startCall, clientId }) {
   const [friendID, setFriendID] = useState(null);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'proptypes';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
