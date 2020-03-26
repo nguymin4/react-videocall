@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "React VideoCall App",
   "scripts": {
+    "build": "cd client && webpack --config webpack-prod.config.js",
     "start": "node server/index.js",
-    "watch:server": "nodemon server/index.js",
     "watch:client": "webpack-dev-server --config client/webpack-dev.config.js",
-    "build": "cd client && webpack --config webpack-prod.config.js"
+    "watch:server": "nodemon server/index.js"
   },
   "dependencies": {
     "@babel/core": "7.9.0",

@@ -7,16 +7,34 @@ Video call to your friend without registering.
 Simply send your friend your auto-generated unique ID to make the call.  
 Everytime you open a new tab, the server gives you a totally different unique ID.
 
-**Development**
+### Development
 
 ```
-# Running server
+# Install dependencies
+yarn install
+
+# Run server
 yarn watch:server
 
-# Running webpack-dev-server
+# Run webpack-dev-server
 yarn watch:client
 ```
 
-**Deployment**
+
+### Deployment
+
+**Heroku**
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/nguymin4/react-videocall/tree/production)
+
+**Custom**
+```
+# Install dependencies
+yarn install
+
+# Build front-end assets
+yarn build
+
+# Run server
+yarn start
+```
