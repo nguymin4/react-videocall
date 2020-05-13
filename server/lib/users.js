@@ -4,8 +4,10 @@ const haiku = require('./haiku');
 const users = {};
 
 // Random ID until the ID is not in use
+let count = 1
 async function randomID() {
-  let id = haiku();
+  let id = //haiku();//
+  "user-" + count++
   while (id in users) {
     await Promise.delay(5);
     id = haiku();

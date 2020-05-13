@@ -28,6 +28,7 @@
     "prop-types": "15.7.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-hot-loader": "^4.12.21",
     "sass-loader": "8.0.2",
     "socket.io": "2.3.0",
     "socket.io-client": "2.3.0",
@@ -48,8 +49,8 @@
     "webpack-dev-server": "3.10.3"
   },
   "engines": {
-    "node": "12.15.0",
-    "yarn": "1.22.0"
+    "node": ">12.15.0",
+    "yarn": ">1.22.0"
   },
   "repository": {
     "type": "git",

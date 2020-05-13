@@ -5,6 +5,7 @@ import PeerConnection from './PeerConnection';
 import MainWindow from './MainWindow';
 import CallWindow from './CallWindow';
 import CallModal from './CallModal';
+console.log("version 2")
 
 class App extends Component {
   constructor() {
@@ -25,12 +26,16 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log("mounted")
     socket
       .on('init', ({ id: clientId }) => {
         document.title = `${clientId} - VideoCall`;
         this.setState({ clientId });
+        console.log("emit")
+        socket.emit('debug',`initted ${clientId}`)
       })
       .on('request', ({ from: callFrom }) => {
+        console.log("request from " + callFrom)
         this.setState({ callModal: 'active', callFrom });
       })
       .on('call', (data) => {

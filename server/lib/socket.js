@@ -12,6 +12,7 @@ function initSocket(socket) {
       id = await users.create(socket);
       socket.emit('init', { id });
     })
+    .on('debug', (message) => {console.log("debug",message)})
     .on('request', (data) => {
       const receiver = users.get(data.to);
       if (receiver) {
