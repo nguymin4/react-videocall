@@ -5,7 +5,16 @@ import PeerConnection from './PeerConnection';
 import MainWindow from './MainWindow';
 import CallWindow from './CallWindow';
 import CallModal from './CallModal';
-console.log("version 2")
+import logloader from "../util/logloader"
+import {useApp} from "../../app"
+
+console.log("version 3")
+
+const WrapApp = () =>
+{
+    const {state} = useApp()
+    return "some awesome shit like " + state.title
+}
 
 class App extends Component {
   constructor() {
@@ -84,6 +93,7 @@ class App extends Component {
     const { clientId, callFrom, callModal, callWindow, localSrc, peerSrc } = this.state;
     return (
       <div>
+          <WrapApp />
         <MainWindow
           clientId={clientId}
           startCall={this.startCallHandler}
@@ -108,5 +118,6 @@ class App extends Component {
     );
   }
 }
+
 
 export default App;
