@@ -16,8 +16,9 @@ function MainWindow({ startCall, clientId }) {
   return (
     <div className="container main-window">
       <div>
+        <h1>Welcome to h00tnet</h1>
         <h3>
-          Hi, your ID is
+          Your session ID is
           <input
             type="text"
             className="txt-clientId"
@@ -25,14 +26,15 @@ function MainWindow({ startCall, clientId }) {
             readOnly
           />
         </h3>
-        <h4>Get started by calling a friend below</h4>
+
       </div>
       <div>
+        <h4>HOOTNET: enter your role name</h4>
         <input
           type="text"
           className="txt-clientId"
           spellCheck={false}
-          placeholder="Your friend ID"
+          placeholder="Your role"
           onChange={(event) => setFriendID(event.target.value)}
         />
         <div>
