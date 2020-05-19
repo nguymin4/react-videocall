@@ -6,7 +6,7 @@
     "build": "cd client && webpack --config webpack-prod.config.js",
     "start": "node server/index.js",
     "watch:client": "webpack-dev-server --config client/webpack-dev.config.js",
-    "watch:server": "nodemon server/index.js"
+    "watch:server": "nodemon --watch server --watch config.js server/index.js"
   },
   "dependencies": {
     "@babel/core": "7.9.0",
