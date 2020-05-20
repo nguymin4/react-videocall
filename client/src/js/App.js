@@ -5,7 +5,7 @@ import PeerConnection from './PeerConnection';
 import MainWindow from './MainWindow';
 import CallWindow from './CallWindow';
 import CallModal from './CallModal';
-import logloader from "../util/logloader"
+// import logloader from "../util/logloader"
 import {useApp} from "./app"
 
 console.log("version 566")

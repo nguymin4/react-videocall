@@ -1,23 +1,20 @@
 import { createHook } from "overmind-react";
-
 import { createOvermind } from "overmind";
 import socket from '../socket';
-// import { createOvermind } from "../util/statemanager";
-// import { namespaced } from "overmind/config";
-// import dev from "./dev";
-// import errorhandler from "./errorhandler";
-// import demo from "./demo";
-// import counters from "./counters";
-console.log("loaded index")
 import { logLoader } from "../../util/logloader";
 logLoader(module);
 const state = {
     title: "This title",
-    role: 'und'
+    role: 'undefined',
+    control: null,
+    leader: null ,
+    otherRoles: {
+
+    }
 }
-// socket.off('confirm')
-const cb = () => { console.log('FFF in app mpw been received') }
-socket.on('confirm', cb)
+socket.off('confirm')
+// const cb = () => { console.log('FFF in app mpw been received') }
+// socket.on('confirm', cb)
 
 // socket.off('confirm',cb)
 const actions = {
@@ -25,23 +22,33 @@ const actions = {
         state.role = role
         socket.emit('setrole', { role })
         console.log("set the role")
+    },
+    actionCB({state},data){
+        console.log("ACTION CB has been called")
+        socket.emit('debug', "From ActionCB")
+        try{
+            socket.emit('debug', state.title + "title")
+        } catch (e){
+            socket.emit('debug', "Error: " + e)
+        }
     }
 }
-const metaconfig = {};
-metaconfig.main =
+const effects = {
+    socket: {
+        onConfirm(data){
+            socket.emit("debug", "socket onconfirm " + data)
+        }
+    }
+}
+socket.on('confirm',effects.socket.onConfirm)
+// actions.actionCB()
+const config =
     {
         state,
-        actions
+        actions,
+        effects
+    
     }
-// metaconfig.counters = counters;
-// metaconfig.errorhandler = errorhandler;
-// metaconfig._dev = dev;
-// metaconfig._demo = demo;
-
-const config = metaconfig.main //namespaced(metaconfig);
-console.log("Config", config);
-
-// console.log("state", state);
 export let app;
 export let useApp;
 
@@ -53,7 +60,7 @@ const initialize = () => {
     console.log(app.state);
     useApp = createHook();
 };
-
+// const {actions,state} = useApp()
 if (!module.hot) {
     console.log("not hot");
     //   initialize();
