@@ -6,14 +6,14 @@ import MainWindow from './MainWindow';
 import CallWindow from './CallWindow';
 import CallModal from './CallModal';
 import logloader from "../util/logloader"
-import {useApp} from "../../app"
+import {useApp} from "./app"
 
-console.log("version 3")
+console.log("version 566")
 
 const WrapApp = () =>
 {
     const {state} = useApp()
-    return "some awesome shit like " + state.title
+    return "Your role is " + state.role
 }
 
 class App extends Component {
@@ -43,6 +43,7 @@ class App extends Component {
         console.log("emit")
         socket.emit('debug',`initted ${clientId}`)
       })
+      .on('confirm',() =>{console.log('confirm in the App callback has been received')})
       .on('request', ({ from: callFrom }) => {
         console.log("request from " + callFrom)
         this.setState({ callModal: 'active', callFrom });

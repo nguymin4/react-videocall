@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import {useApp} from "./app"
 
 function MainWindow({ startCall, clientId }) {
+  const {state,actions} = useApp()
   const [friendID, setFriendID] = useState(null);
 
   /**
@@ -12,6 +14,10 @@ function MainWindow({ startCall, clientId }) {
     const config = { audio: true, video };
     return () => friendID && startCall(true, friendID, config);
   };
+
+  const setRole = () => {
+    actions.setRole(friendID)
+  }
 
   return (
     <div className="container main-window">
@@ -29,12 +35,12 @@ function MainWindow({ startCall, clientId }) {
 
       </div>
       <div>
-        <h4>HOOTNET: enter your role name</h4>
+        <h4>HOOTNET: enter session or role</h4>
         <input
           type="text"
           className="txt-clientId"
           spellCheck={false}
-          placeholder="Your role"
+          placeholder="Session or role"
           onChange={(event) => setFriendID(event.target.value)}
         />
         <div>
@@ -48,6 +54,12 @@ function MainWindow({ startCall, clientId }) {
             className="btn-action fa fa-phone"
             onClick={callWithVideo(false)}
           />
+           <button
+            type="button"
+            className="btn-action"
+            onClick={() => actions.setRole(friendID)}
+        >Role</button>
+    
         </div>
       </div>
     </div>

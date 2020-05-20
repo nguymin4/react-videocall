@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import App from './js/App';
 import './css/app.scss';
 import { Provider } from "overmind-react";
-import {app} from "../app"
+import {app} from "./js/app"
 const renderApp = () => render(
     <Provider value={app}>
         <App />
@@ -13,9 +13,13 @@ const renderApp = () => render(
     , document.getElementById('root'));
 renderApp()
 if (module.hot) {
-    console.log("module hot is true")
-    module.hot.accept('./js/App', () => {
+    module.hot.accept(['./js/app','./js/App'], () => {
         console.log("Update app")
-        renderApp();
+        // renderApp();
     });
+    console.log("module hot is true")
+    // module.hot.accept('./js/App', () => {
+    //     console.log("Update app")
+    //     renderApp();
+    // });
 }
