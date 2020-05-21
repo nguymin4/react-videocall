@@ -13,7 +13,7 @@ const state = {
     }
 }
 socket.off('confirm')
-// const cb = () => { console.log('FFF in app mpw been received') }
+const cb = () => { console.log('F in app mpw been received') }
 // socket.on('confirm', cb)
 
 // socket.off('confirm',cb)
@@ -36,18 +36,30 @@ const actions = {
 const effects = {
     socket: {
         onConfirm(data){
-            socket.emit("debug", "socket onconfirm " + data)
+            socket.emit("debug", "the onconfirm " + data)
         }
     }
 }
 socket.on('confirm',effects.socket.onConfirm)
+console.log("conform source code", effects.socket.onConfirm + "")
 // actions.actionCB()
+const onInitialize = (
+    {
+  state,
+  actions,
+  effects
+}, overmind
+) => {
+
+  console.log("INITTED")
+  socket.emit('debug','it is initialized')
+}
 const config =
     {
         state,
         actions,
-        effects
-    
+        effects,
+        onInitialize,
     }
 export let app;
 export let useApp;
@@ -55,7 +67,7 @@ export let useApp;
 const initialize = () => {
     app = createOvermind(config, {
         // devtools: 'penguin.linux.test:8080', //
-        // devtools: "localhost:3031"
+        devtools: "localhost:3031"
     });
     console.log(app.state);
     useApp = createHook();
@@ -76,7 +88,7 @@ if (!module.hot) {
         initialize();
         /** Now we should always have module.hot.data */
     } else {
-        console.log("Hot data");
+        console.log("Hot data output");
         // console.log("disposing", data.cb + "", cb + "")
 
         initialize();
