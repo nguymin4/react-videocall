@@ -2,6 +2,7 @@ import { createHook } from "overmind-react";
 import { createOvermind } from "overmind";
 import socket from '../socket';
 import { logLoader } from "../../util/logloader";
+import {toast} from 'react-toastify';
 logLoader(module);
 const state = {
     title: "This title",
@@ -23,19 +24,12 @@ const actions = {
         socket.emit('setrole', { role })
         sessionStorage.setItem('role',role)
     },
-    actionCB({state},data){
-        console.log("ACTION CB has been called")
-        socket.emit('debug', "From ActionCB")
-        try{
-            socket.emit('debug', state.title + "title")
-        } catch (e){
-            socket.emit('debug', "Error: " + e)
-        }
-    }
+
 }
 const effects = {
     socket: {
         onConfirm(data){
+            toast('confirmed ')
             socket.emit("debug", "the onconfirm " + data)
         }
     }
@@ -44,13 +38,12 @@ socket.on('confirm',effects.socket.onConfirm)
 console.log("conform source code", effects.socket.onConfirm + "")
 // actions.actionCB()
 const onInitialize = (
-    {
-  state,
-  actions,
-  effects
-}, overmind
+//     {
+//   state,
+//   actions,
+//   effects
+// }, overmind
 ) => {
-
   console.log("INITTED")
   socket.emit('debug','it is initialized')
 }

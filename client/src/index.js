@@ -4,6 +4,8 @@ import App from './js/App';
 import './css/app.scss';
 import { Provider } from "overmind-react";
 import {app} from "./js/app"
+import "react-toastify/dist/ReactToastify.css";
+
 const renderApp = () => render(
     <Provider value={app}>
         <App />
