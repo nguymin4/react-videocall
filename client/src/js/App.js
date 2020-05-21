@@ -19,8 +19,10 @@ const WrapApp = () =>
 class App extends Component {
   constructor() {
     super();
+    const clientId = sessionStorage.getItem('clientId') || '';
+    console.log("recovered ID", clientId)
     this.state = {
-      clientId: '',
+      clientId: clientId,
       callWindow: '',
       callModal: '',
       callFrom: '',
@@ -32,7 +34,8 @@ class App extends Component {
     this.startCallHandler = this.startCall.bind(this);
     this.endCallHandler = this.endCall.bind(this);
     this.rejectCallHandler = this.rejectCall.bind(this);
-  }
+
+}
 
   componentDidMount() {
     console.log("mounted")
@@ -40,6 +43,7 @@ class App extends Component {
       .on('init', ({ id: clientId }) => {
         document.title = `${clientId} - VideoCall`;
         this.setState({ clientId });
+        sessionStorage.setItem('clientId', clientId)
         console.log("emit")
         socket.emit('debug',`initted ${clientId}`)
       })
@@ -55,7 +59,7 @@ class App extends Component {
         } else this.pc.addIceCandidate(data.candidate);
       })
       .on('end', this.endCall.bind(this, false))
-      .emit('init');
+      .emit('init',{id:this.state.clientId});
   }
 
   startCall(isCaller, friendID, config) {
