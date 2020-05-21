@@ -21,7 +21,7 @@ const actions = {
     setRole({ state }, role) {
         state.role = role
         socket.emit('setrole', { role })
-        console.log("set the role")
+        sessionStorage.setItem('role',role)
     },
     actionCB({state},data){
         console.log("ACTION CB has been called")
