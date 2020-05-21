@@ -2,7 +2,6 @@
 const haiku = require('./haiku');
 
 const users = {};
-const userRoles = {}
 
 // Random ID until the ID is not in use
 let count = 1
@@ -16,30 +15,37 @@ async function randomID() {
     return id;
 }
 
-exports.create = async (socket, oldId) => {
+exports.create = async (socket, attrs) => {
     let id
-    if (oldId) {
-        id = oldId
+    console.log("creating f ", attrs)
+    if (attrs.id) {
+        id = attrs.id
     } else {
         id = await randomID();
     }
-    users[id] = socket;
-    userRoles[id] = ''
+    attrs[id] = id
+    attrs[id].receiver = socket
+    users[id] = attrs
     return id;
+
 };
 
-exports.get = (id) => users[id];
+exports.getReceiver = (id) => users[id] ? users[id].receiver : null;
 
 exports.remove = (id) => delete users[id];
 
-exports.setRole = (id, role) => userRoles[id] = role
+exports.setProp = (socket, id, prop, value) => {
+    // if (!exports.getReceiver(id)) users.create(socket, id)
+
+    users[id][prop] = value
+}
 
 exports.getRole = (role) => {
     let id
-    Object.keys(userRoles).forEach((key) => { if (userRoles[key] === role) id = key })
+    Object.keys(users).forEach((key) => { if (users[key].role === role) id = key })
     return id
 }
 
 exports.broadcast = (message, data) => {
-    users.forEach((socket) => { socket.emit(message, data) })
+    users.forEach(({ receiver }) => { receiver.emit(message, data) })
 }

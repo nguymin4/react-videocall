@@ -13,10 +13,10 @@ console.log("version 566")
 
 const WrapApp = () => {
     const { state, actions } = useApp()
-    const savedRole = sessionStorage.getItem('role')
-    if (savedRole && (state.role != savedRole)) {
-        actions.setRole(savedRole)
-    }
+    // const savedRole = sessionStorage.getItem('role')
+    // if (savedRole && (state.role != savedRole)) {
+    //     actions.setRole(savedRole)
+    // }
     return "Your role is " + state.role
 }
 
