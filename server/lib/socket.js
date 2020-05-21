@@ -25,7 +25,6 @@ function initSocket(socket) {
         .on('setrole', (data) => {
             console.log("seting role", data.role)
             socket.emit('confirm',{message: 'confirm'})
-            return
             oldUser = user.getRole(data.role)
             if (oldUser) {
                 const receiver = user.get(oldUser)
