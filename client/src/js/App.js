@@ -10,14 +10,10 @@ import { useApp } from "./app"
 import { ToastContainer } from 'react-toastify'
 import { getActionPaths } from 'overmind/lib/utils';
 
-console.log("version 566")
-
-
 
 class App extends Component {
     constructor(props) {
         super();
-        console.log("recovered ID", props.attrs.id)
         this.state = {
             clientId: props.attrs.id || '',
             callWindow: '',
@@ -35,13 +31,15 @@ class App extends Component {
     }
 
     componentDidMount() {
-        console.log("mounted", this.props.attrs)
+        
         socket
             .on('init', (attrs) => {
                 const clientId = attrs.id
                 document.title = `${clientId} - VideoCall`;
                 this.setState({ clientId });
+                this.props.setId(clientId)
                 socket.emit('debug', `App initted ${clientId}`)
+
             })
             .on('confirm', () => { console.log('confirm in the App callback has been received') })
             .on('request', ({ from: callFrom }) => {
@@ -123,7 +121,10 @@ class App extends Component {
 const WrapApp = () => {
     const { state, actions } = useApp()
     
-    return <div> <App attrs={state.attrs}/> </div>
+    return <div> 
+        <div>The id is {state.attrs.id} role: {state.attrs.role}</div>
+        <App setId={actions.setId} attrs={state.attrs}/> 
+        </div>
 }
 
 export default WrapApp;

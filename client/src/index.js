@@ -16,12 +16,7 @@ const renderApp = () => render(
 renderApp()
 if (module.hot) {
     module.hot.accept(['./js/app','./js/App'], () => {
-        console.log("Update app")
-        // renderApp();
+        renderApp();
     });
-    console.log("module hot is true")
-    // module.hot.accept('./js/App', () => {
-    //     console.log("Update app")
-    //     renderApp();
-    // });
+
 }

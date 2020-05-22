@@ -17,7 +17,6 @@ async function randomID() {
 
 exports.create = async (socket, attrs) => {
     let id
-    console.log("creating f ", attrs)
     if (attrs && attrs.id) {
         id = attrs.id
     } else {
@@ -48,12 +47,9 @@ exports.getRole = (role) => {
 }
 
 exports.broadcast = (message, data) => {
-    console.log("broadcasting",users)
     Object.keys(users).forEach((key) => { 
         const thisUser = users[key]
         // thisUser.receiver = 'receiver'
-        console.log(message, thisUser)
-        console.log('emit',users[key].receiver.emit)
         if(users[key].receiver) users[key].receiver.emit(message, data)
      })
 }

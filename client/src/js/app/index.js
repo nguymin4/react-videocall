@@ -30,9 +30,13 @@ const actions = {
     },
     setRole({ state }, role) {
         state.attrs.role = role
-        socket.emit('setrole', role)
+        socket.emit('setrole', {role})
         effects.storage.setAttrs(json(state.attrs))
     },
+    setId({ state }, id) {
+        state.attrs.id = id
+        effects.storage.setAttrs(json(state.attrs))
+    }
 
 }
 const effects = {
@@ -41,9 +45,7 @@ const effects = {
             sessionStorage.setItem('attrs', JSON.stringify(attrs))
         },
         getAttrs(){
-            console.log("IN GETATTRS")
             const item = sessionStorage.getItem('attrs')
-            console.log("Recovered item is ", item)
             if(item) return JSON.parse(item)
             return null
         }
@@ -55,6 +57,7 @@ const effects = {
             socket.emit("debug", "the onconfirm " + data)
         },
         message(data) {
+            console.log("Message received", data)
             toast(data.message)
         },
         reconnect() {
@@ -99,7 +102,7 @@ export let useApp;
 const initialize = () => {
     app = createOvermind(config, {
         // devtools: 'penguin.linux.test:8080', //
-        devtools: "localhost:3031"
+        // devtools: "localhost:3031"
     });
     console.log(app.state);
     useApp = createHook();

@@ -10,7 +10,9 @@ function initSocket(socket) {
     console.log("reconnect")
     socket
         .on('init', async (data) => {
+            console.log("init message received with", data)
             id = await users.create(socket,data);
+            console.log("Sending id", id)
             socket.emit('init', { id });
         })
         .on('reconnected',(data)=>{
@@ -25,9 +27,13 @@ function initSocket(socket) {
         })
         .on('setrole', (data) => {
             console.log("seting role", data)
+            if(!data) {
+                socket.send('message',{ message: "no was data sent"})
+                return
+            }
             users.setProp(id,'role',data.role)
             users.broadcast('message', {from: data.id, message:`role set to ${data.role}`})
-            
+        }
             // oldUser = users.getRole(data.role)
             // if (oldUser) {
             //     const receiver = user.get(oldUser)
@@ -51,7 +57,6 @@ function initSocket(socket) {
             //     if (leader) receiver.emit('connectleader', { leader: users.getRole('leader') })
             //     if (control) receiver.emit('connectcontrol', { leader: users.getRole('leader') })
             // }
-        }
         )
         .on('call', (data) => {
             const receiver = users.getReceiver(data.to);

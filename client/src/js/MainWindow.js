@@ -20,7 +20,7 @@ function MainWindow({ startCall, clientId }) {
       <div>
         <h1>Welcome to h00tnet</h1>
         <h3>
-          Your session ID is
+          Your session ID is 
           <input
             type="text"
             className="txt-clientId"
