@@ -32,8 +32,9 @@ function initSocket(socket) {
                 return
             }
             users.setProp(id,'role',data.role)
-            users.broadcast('message', {from: data.id, message:`role set to ${data.role}`})
+            users.broadcast('message', {from: data.id, message:`${data.name} is ${data.role}`})
         }
+        
             // oldUser = users.getRole(data.role)
             // if (oldUser) {
             //     const receiver = user.get(oldUser)
@@ -58,6 +59,15 @@ function initSocket(socket) {
             //     if (control) receiver.emit('connectcontrol', { leader: users.getRole('leader') })
             // }
         )
+        .on('setname', (data) => {
+            console.log("seting name", data)
+            if(!data) {
+                socket.send('message',{ message: "no was data sent"})
+                return
+            }
+            users.setProp(id,'name',data.name)
+            users.broadcast('message', {from: data.name, message:`Session ${data.id} is ${data.name}`})
+        }
         .on('call', (data) => {
             const receiver = users.getReceiver(data.to);
             if (receiver) {

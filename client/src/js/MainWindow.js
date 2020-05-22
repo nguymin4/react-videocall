@@ -31,12 +31,12 @@ function MainWindow({ startCall, clientId }) {
 
       </div>
       <div>
-        <h4>HOOTNET: enter session or role</h4>
+        <h4>h00tnet: enter session, name, or role</h4>
         <input
           type="text"
           className="txt-clientId"
           spellCheck={false}
-          placeholder="Session or role"
+          placeholder="Session, name or role"
           onChange={(event) => setFriendID(event.target.value)}
         />
         <div>
@@ -50,12 +50,18 @@ function MainWindow({ startCall, clientId }) {
             className="btn-action fa fa-phone"
             onClick={callWithVideo(false)}
           />
+          
+           <button
+            type="button"
+            className="btn-action"
+            onClick={() => actions.setName(friendID)}
+        >Name</button>
            <button
             type="button"
             className="btn-action"
             onClick={() => actions.setRole(friendID)}
         >Role</button>
-    
+        
         </div>
       </div>
     </div>

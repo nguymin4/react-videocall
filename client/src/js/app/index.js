@@ -30,13 +30,18 @@ const actions = {
     },
     setRole({ state }, role) {
         state.attrs.role = role
-        socket.emit('setrole', {role})
+        socket.emit('setrole', json(state.attrs))
         effects.storage.setAttrs(json(state.attrs))
     },
     setId({ state }, id) {
         state.attrs.id = id
         effects.storage.setAttrs(json(state.attrs))
-    }
+    },
+    setName({ state }, name) {
+        state.attrs.name = name
+        socket.emit('setname', json(state.attrs))
+        effects.storage.setAttrs(json(state.attrs))
+    },
 
 }
 const effects = {
