@@ -67,7 +67,7 @@ function initSocket(socket) {
             }
             users.setProp(id,'name',data.name)
             users.broadcast('message', {from: data.name, message:`Session ${data.id} is ${data.name}`})
-        }
+        })
         .on('call', (data) => {
             const receiver = users.getReceiver(data.to);
             if (receiver) {

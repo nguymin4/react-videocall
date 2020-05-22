@@ -1,4 +1,4 @@
-import MediaDevice from './MediaDevice';
+import MediaDevice from './MediaSingleton';
 import Emitter from './Emitter';
 import socket from './socket';
 
