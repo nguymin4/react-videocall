@@ -18,13 +18,14 @@ async function randomID() {
 exports.create = async (socket, attrs) => {
     let id
     console.log("creating f ", attrs)
-    if (attrs.id) {
+    if (attrs && attrs.id) {
         id = attrs.id
     } else {
         id = await randomID();
+        attrs = {}
     }
-    attrs[id] = id
-    attrs[id].receiver = socket
+    attrs.id = id
+    attrs.receiver = socket
     users[id] = attrs
     return id;
 
@@ -34,10 +35,10 @@ exports.getReceiver = (id) => users[id] ? users[id].receiver : null;
 
 exports.remove = (id) => delete users[id];
 
-exports.setProp = (socket, id, prop, value) => {
+exports.setProp = (id, prop, value) => {
     // if (!exports.getReceiver(id)) users.create(socket, id)
 
-    users[id][prop] = value
+    if(users[id]) users[id][prop] = value
 }
 
 exports.getRole = (role) => {
@@ -47,5 +48,12 @@ exports.getRole = (role) => {
 }
 
 exports.broadcast = (message, data) => {
-    users.forEach(({ receiver }) => { receiver.emit(message, data) })
+    console.log("broadcasting",users)
+    Object.keys(users).forEach((key) => { 
+        const thisUser = users[key]
+        // thisUser.receiver = 'receiver'
+        console.log(message, thisUser)
+        console.log('emit',users[key].receiver.emit)
+        if(users[key].receiver) users[key].receiver.emit(message, data)
+     })
 }

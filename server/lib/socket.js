@@ -7,10 +7,14 @@ const users = require('./users');
  */
 function initSocket(socket) {
     let id;
+    console.log("reconnect")
     socket
         .on('init', async (data) => {
             id = await users.create(socket,data);
             socket.emit('init', { id });
+        })
+        .on('reconnected',(data)=>{
+            users.create(socket,data)
         })
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {
@@ -20,31 +24,33 @@ function initSocket(socket) {
             }
         })
         .on('setrole', (data) => {
-            console.log("seting role", data.role)
-            socket.emit('message',{from:id, message: 'confirm'})
-            oldUser = users.getRole(data.role)
-            if (oldUser) {
-                const receiver = user.get(oldUser)
-                receiver.emit('unenrole', { role: oldRole })
-                if (data.role === 'leader') users.sendMessage('disconnectleader')
-                else if (data.role === 'control') users.sendMessage('disconnectcontrol')
-                else {
-                    receiver.emit('disconnectleader')
-                    receiver.emit('disconnectcontrol')
-                }
-            }
-            users.setProp(socket,id, 'role', data.role)
-            if (data.role === 'leader') {
-                users.broadcast('connectleader', { leader: id })
-            } else if (data.role === 'control') {
-                users.broadcast('connectcontrol', { control: id })
-            } else {
-                const receiver = users.getReceiver(id)
-                const leader = users.getRole('leader')
-                const control = users.getRole('control')
-                if (leader) receiver.emit('connectleader', { leader: users.getRole('leader') })
-                if (control) receiver.emit('connectcontrol', { leader: users.getRole('leader') })
-            }
+            console.log("seting role", data)
+            users.setProp(id,'role',data.role)
+            users.broadcast('message', {from: data.id, message:`role set to ${data.role}`})
+            
+            // oldUser = users.getRole(data.role)
+            // if (oldUser) {
+            //     const receiver = user.get(oldUser)
+            //     receiver.emit('unenrole', { role: oldRole })
+            //     if (data.role === 'leader') users.sendMessage('disconnectleader')
+            //     else if (data.role === 'control') users.sendMessage('disconnectcontrol')
+            //     else {
+            //         receiver.emit('disconnectleader')
+            //         receiver.emit('disconnectcontrol')
+            //     }
+            // }
+            // users.setProp(socket,id, 'role', data.role)
+            // if (data.role === 'leader') {
+            //     users.broadcast('connectleader', { leader: id })
+            // } else if (data.role === 'control') {
+            //     users.broadcast('connectcontrol', { control: id })
+            // } else {
+            //     const receiver = users.getReceiver(id)
+            //     const leader = users.getRole('leader')
+            //     const control = users.getRole('control')
+            //     if (leader) receiver.emit('connectleader', { leader: users.getRole('leader') })
+            //     if (control) receiver.emit('connectcontrol', { leader: users.getRole('leader') })
+            // }
         }
         )
         .on('call', (data) => {
@@ -64,7 +70,7 @@ function initSocket(socket) {
         .on('disconnect', () => {
             users.remove(id);
             console.log(id, 'disconnected');
-        });
+        }).emit('reconnect');
 }
 
 module.exports = (server) => {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {useApp} from "./app"
 
 function MainWindow({ startCall, clientId }) {
-  const {state,actions} = useApp()
+  const {actions} = useApp()
   const [friendID, setFriendID] = useState(null);
 
   /**
@@ -14,10 +14,6 @@ function MainWindow({ startCall, clientId }) {
     const config = { audio: true, video };
     return () => friendID && startCall(true, friendID, config);
   };
-
-  const setRole = () => {
-    actions.setRole(friendID)
-  }
 
   return (
     <div className="container main-window">

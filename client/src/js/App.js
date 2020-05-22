@@ -8,25 +8,18 @@ import CallModal from './CallModal';
 // import logloader from "../util/logloader"
 import { useApp } from "./app"
 import { ToastContainer } from 'react-toastify'
+import { getActionPaths } from 'overmind/lib/utils';
 
 console.log("version 566")
 
-const WrapApp = () => {
-    const { state, actions } = useApp()
-    // const savedRole = sessionStorage.getItem('role')
-    // if (savedRole && (state.role != savedRole)) {
-    //     actions.setRole(savedRole)
-    // }
-    return "Your role is " + state.role
-}
+
 
 class App extends Component {
-    constructor() {
+    constructor(props) {
         super();
-        const clientId = sessionStorage.getItem('clientId') || '';
-        console.log("recovered ID", clientId)
+        console.log("recovered ID", props.attrs.id)
         this.state = {
-            clientId: clientId,
+            clientId: props.attrs.id || '',
             callWindow: '',
             callModal: '',
             callFrom: '',
@@ -42,14 +35,13 @@ class App extends Component {
     }
 
     componentDidMount() {
-        console.log("mounted")
+        console.log("mounted", this.props.attrs)
         socket
-            .on('init', ({ id: clientId }) => {
+            .on('init', (attrs) => {
+                const clientId = attrs.id
                 document.title = `${clientId} - VideoCall`;
                 this.setState({ clientId });
-                sessionStorage.setItem('clientId', clientId)
-                console.log("emit")
-                socket.emit('debug', `initted ${clientId}`)
+                socket.emit('debug', `App initted ${clientId}`)
             })
             .on('confirm', () => { console.log('confirm in the App callback has been received') })
             .on('request', ({ from: callFrom }) => {
@@ -63,7 +55,7 @@ class App extends Component {
                 } else this.pc.addIceCandidate(data.candidate);
             })
             .on('end', this.endCall.bind(this, false))
-            .emit('init', { id: this.state.clientId });
+            .emit('init', this.props.attrs);
     }
 
     startCall(isCaller, friendID, config) {
@@ -102,7 +94,6 @@ class App extends Component {
         const { clientId, callFrom, callModal, callWindow, localSrc, peerSrc } = this.state;
         return (
             <div>
-                <WrapApp />
                 <ToastContainer />
 
                 <MainWindow
@@ -129,6 +120,10 @@ class App extends Component {
         );
     }
 }
+const WrapApp = () => {
+    const { state, actions } = useApp()
+    
+    return <div> <App attrs={state.attrs}/> </div>
+}
 
-
-export default App;
+export default WrapApp;
