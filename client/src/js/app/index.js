@@ -28,66 +28,74 @@ const actions = {
         state.attrs = attrs
         effects.storage.setAttrs(json(state.attrs))
     },
-    
+
     setId({ state }, id) {
         state.attrs.id = id
         effects.storage.setAttrs(json(state.attrs))
     },
-    register({state,effects},data){
+    register({ state, effects }, data) {
         state.attrs.role = data.roleID
         state.attrs.name = data.userID
         state.attrs.room = data.roomID
-        effects.socket.register(json(state.attrs))
+        console.log('registering ', json(state.attrs))
+        effects.socket.actions.register(json(state.attrs))
         effects.storage.setAttrs(json(state.attrs))
     }
 
 }
 const effects = {
     storage: {
-        setAttrs(attrs){
+        setAttrs(attrs) {
             sessionStorage.setItem('attrs', JSON.stringify(attrs))
         },
-        getAttrs(){
+        getAttrs() {
             const item = sessionStorage.getItem('attrs')
-            if(item) return JSON.parse(item)
+            if (item) return JSON.parse(item)
             return null
         }
 
     },
+
     socket: {
-        register(data){
-            socket.send('register', data)
+        actions: {
+            register(data) {
+                console.log('send register', data)
+                socket.send('register', data)
+            },
         },
-        confirm(data) {
-            toast('confirmed ')
-            socket.emit("debug", "the onconfirm " + data)
-        },
-        message(data) {
-            console.log("Message received", data)
-            toast(data.message)
-        },
-        reconnect() {
-            console.log("IN RECONNECT")
-            const attrs = effects.storage.getAttrs()
-            socket.emit('debug', "reconnecting" + (JSON.stringify(attrs)||'undefined'))
-            if(attrs) socket.emit('reconnected',attrs)
-        } 
+        events: {
+
+            confirm(data) {
+                toast('confirmed ')
+                socket.emit("debug", "the onconfirm " + data)
+            },
+            message(data) {
+                console.log("Message received", data)
+                toast(data.message)
+            },
+            reconnect() {
+                console.log("IN RECONNECT")
+                const attrs = effects.storage.getAttrs()
+                socket.emit('debug', "reconnecting" + (JSON.stringify(attrs) || 'undefined'))
+                if (attrs) socket.emit('reconnected', attrs)
+            }
+        }
     }
 }
-socket.emit('debug',effects.socket.reconnect + "")
-Object.keys(effects.socket).forEach(key => {
-    socket.off(key); socket.on(key, effects.socket[key])
+// socket.emit('debug', effects.socket.reconnect + "")
+Object.keys(effects.socket.events).forEach(key => {
+    socket.off(key); socket.on(key, effects.socket.events[key])
 })
 // console.log("conform source code", effects.socket.onConfirm + "")
 // actions.actionCB()
 const onInitialize = (
-        {
-    //   state,
-      actions,
-      effects
-    //
- }
-//  , overmind
+    {
+        //   state,
+        actions,
+        effects
+        //
+    }
+    //  , overmind
 ) => {
     console.log("INITTED")
     socket.emit('debug', 'it is initialized')
@@ -124,7 +132,7 @@ if (!module.hot) {
         // console.log("disposing of the CB ", cb + "")
         // socket.off('confirm', cb)
         // data.cb = cb
-        if(data.cb) console.log("THIS IS JUST TO KEEP THIS ALIVE")
+        if (data.cb) console.log("THIS IS JUST TO KEEP THIS ALIVE")
     });
     if (!module.hot.data) {
         console.log("no hot data");

@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { useApp } from "./app"
 
 function MainWindow({ startCall, clientId }) {
-    const { actions } = useApp()
-    const [roomID, setRoomID] = useState(null);
-    const [roleID, setRoleID] = useState(null);
-    const [userID, setUserID] = useState(null);
+    const { state, actions } = useApp()
+    const [roomID, setRoomID] = useState(state.room);
+    const [roleID, setRoleID] = useState(state.role)
+    const [userID, setUserID] = useState(state.name);
     /**
      * Start the call with or without video
      * @param {Boolean} video

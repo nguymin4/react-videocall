@@ -36,7 +36,7 @@ const handleRole = (data) =>{
  */
 function initSocket(socket) {
     let id;
-    console.log("reconnect")
+    // console.log("reconnect")
     socket
         .on('init', async (data) => {
             console.log("init message received with", data)
@@ -49,6 +49,7 @@ function initSocket(socket) {
             handleRole(data)
         })
         .on('register',(data)=>{
+            console.log("register",data)
             users.create(socket,data)
             handleRole(data)
         })
