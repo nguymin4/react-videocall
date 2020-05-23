@@ -12,6 +12,6 @@ ports:
 
 # List the start up tasks. You can start them in parallel in multiple terminals. See https://www.gitpod.io/docs/config-start-tasks/
 tasks:
-  - init: yaen install # runs during prebuild
+  - init: yarn install # runs during prebuild
     command: yarn watch:server
-  -command: yarn watch:client
+  -command: gp await-port 5000 && yarn watch:client
