@@ -4,9 +4,9 @@ import { useApp } from "./app"
 
 function MainWindow({ startCall, clientId }) {
     const { state, actions } = useApp()
-    const [roomID, setRoomID] = useState(state.room);
-    const [roleID, setRoleID] = useState(state.role)
-    const [userID, setUserID] = useState(state.name);
+    const [roomID, setRoomID] = useState(state.attrs.room);
+    const [roleID, setRoleID] = useState(state.attrs.role)
+    const [userID, setUserID] = useState(state.attrs.name);
     /**
      * Start the call with or without video
      * @param {Boolean} video
@@ -37,7 +37,7 @@ function MainWindow({ startCall, clientId }) {
                     type="text"
                     className="txt-clientId"
                     spellCheck={false}
-                    placeholder="Room"
+                    placeholder={`Room ${roomID}`}
                     onChange={(event) => setRoomID(event.target.value)}
                 />
                 <br />
@@ -45,7 +45,7 @@ function MainWindow({ startCall, clientId }) {
                     type="text"
                     className="txt-clientId"
                     spellCheck={false}
-                    placeholder="Name"
+                    placeholder={`Name ${userID}`}
                     onChange={(event) => setUserID(event.target.value)}
                 />
                 <br />
@@ -53,7 +53,8 @@ function MainWindow({ startCall, clientId }) {
                     type="text"
                     className="txt-clientId"
                     spellCheck={false}
-                    placeholder="Role"
+                    // value={userID}
+                    placeholder={`Role ${roleID}`}
                     onChange={(event) => setRoleID(event.target.value)}
                 />
                 <div>
