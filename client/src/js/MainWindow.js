@@ -11,10 +11,10 @@ function MainWindow({ startCall, clientId }) {
      * Start the call with or without video
      * @param {Boolean} video
      */
-    // const callWithVideo = (video) => {
-    //     const config = { audio: true, video };
-    //     return () => friendID && startCall(true, friendID, config);
-    // };
+    const callWithVideo = (video) => {
+        const config = { audio: true, video };
+        return () => roomID && startCall(true, roomID, config);
+    };
 
     return (
         <div className="container main-window">
@@ -58,13 +58,15 @@ function MainWindow({ startCall, clientId }) {
                     onChange={(event) => setRoleID(event.target.value)}
                 />
                 <div>
-                {/* 
+               
                 
           <button
             type="button"
             className="btn-action fa fa-video-camera"
             onClick={callWithVideo(true)}
           />
+             {/* 
+
           <button
             type="button"
             className="btn-action fa fa-phone"
