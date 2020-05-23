@@ -48,8 +48,6 @@ exports.getRole = (role) => {
 
 exports.broadcast = (message, data) => {
     Object.keys(users).forEach((key) => { 
-        const thisUser = users[key]
-        // thisUser.receiver = 'receiver'
         if(users[key].receiver) users[key].receiver.emit(message, data)
      })
 }

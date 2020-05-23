@@ -8,7 +8,7 @@ import CallModal from './CallModal';
 // import logloader from "../util/logloader"
 import { useApp } from "./app"
 import { ToastContainer } from 'react-toastify'
-import { getActionPaths } from 'overmind/lib/utils';
+// import { getActionPaths } from 'overmind/lib/utils';
 
 
 class App extends Component {

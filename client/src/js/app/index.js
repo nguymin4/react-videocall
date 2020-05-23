@@ -28,20 +28,18 @@ const actions = {
         state.attrs = attrs
         effects.storage.setAttrs(json(state.attrs))
     },
-    setRole({ state }, role) {
-        state.attrs.role = role
-        socket.emit('setrole', json(state.attrs))
-        effects.storage.setAttrs(json(state.attrs))
-    },
+    
     setId({ state }, id) {
         state.attrs.id = id
         effects.storage.setAttrs(json(state.attrs))
     },
-    setName({ state }, name) {
-        state.attrs.name = name
-        socket.emit('setname', json(state.attrs))
+    register({state,effects},data){
+        state.attrs.role = data.roleID
+        state.attrs.name = data.userID
+        state.attrs.room = data.roomID
+        effects.socket.register(json(state.attrs))
         effects.storage.setAttrs(json(state.attrs))
-    },
+    }
 
 }
 const effects = {
@@ -57,6 +55,9 @@ const effects = {
 
     },
     socket: {
+        register(data){
+            socket.send('register', data)
+        },
         confirm(data) {
             toast('confirmed ')
             socket.emit("debug", "the onconfirm " + data)
@@ -85,7 +86,8 @@ const onInitialize = (
       actions,
       effects
     //
- }, overmind
+ }
+//  , overmind
 ) => {
     console.log("INITTED")
     socket.emit('debug', 'it is initialized')
