@@ -1,6 +1,5 @@
-
-# image:
-#   file: .gitpod.Dockerfile
+image:
+  file: .gitpod.Dockerfile
 
 # List the ports you want to expose and what to do when they are served. See https://www.gitpod.io/docs/config-ports/
 ports:
@@ -9,9 +8,8 @@ ports:
   - port: 9000
     onOpen: open-browser
 
-
 # List the start up tasks. You can start them in parallel in multiple terminals. See https://www.gitpod.io/docs/config-start-tasks/
 tasks:
-  - init: yarn install # runs during prebuild
-    command: yarn watch:server
-  -command: gp await-port 5000 && yarn watch:client
+  - init: echo 'init script' # runs during prebuild
+    command: yarn "watch:server"
+  - command: gp await-port 5000 && yarn "watch:client"
