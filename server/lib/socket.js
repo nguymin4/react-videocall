@@ -1,9 +1,10 @@
 const io = require('socket.io');
 const users = require('./users');
 
-const handleRole = (data) =>{
+const handleRole = (socket,data) =>{
     if(data.role) users.broadcast('message', {message:`${data.name} has joined ${data.room} as ${data.role}`})
-
+    socket.emit("calljoin", data)
+    console.log('sent i09j')
     // oldUser = users.getRole(data.role)
     // if (oldUser) {
     //     const receiver = user.get(oldUser)
@@ -45,14 +46,20 @@ function initSocket(socket) {
             socket.emit('init', { id });
         })
         .on('reconnected',(data)=>{
+            console.log("reconnect!ed", data)
             users.create(socket,data)
-            handleRole(data)
+            // handleRole(socket,data)
         })
-        .on('register',(data)=>{
-            console.log("register",data)
-            users.create(socket,data)
-            handleRole(data)
-        })
+        .on('register',async(data)=>{
+            console.log("ing",data)
+            await users.create(socket,data)
+            try{
+            socket.emit("calljoin", { id })
+            console.log("sent")
+            } catch(e){
+                console.log("EFFING",e)
+            }
+            })
 
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {

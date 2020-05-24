@@ -60,7 +60,7 @@ const effects = {
         actions: {
             register(data) {
                 console.log('send register', data)
-                socket.send('register', data)
+                socket.emit('register', data)
             },
         },
         events: {
@@ -76,7 +76,7 @@ const effects = {
             reconnect() {
                 console.log("IN RECONNECT")
                 const attrs = effects.storage.getAttrs()
-                socket.emit('debug', "reconnecting" + (JSON.stringify(attrs) || 'undefined'))
+                // socket.emit('debug', "reconnecting" + (JSON.stringify(attrs) || 'undefined'))
                 if (attrs) socket.emit('reconnected', attrs)
             }
         }

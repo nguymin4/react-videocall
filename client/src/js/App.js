@@ -31,7 +31,8 @@ class App extends Component {
     }
 
     componentDidMount() {
-        
+        console.log("component mounted!!")
+        "init,calljoin,request,call,end".split(',').forEach(key=>socket.off(key))
         socket
             .on('init', (attrs) => {
                 const clientId = attrs.id
@@ -41,7 +42,10 @@ class App extends Component {
                 socket.emit('debug', `App initted ${clientId}`)
 
             })
-            .on('confirm', () => { console.log('confirm in the App callback has been received') })
+            .on('calljoin',(data)=>{
+                console.log('join received', data)
+                this.startCallHandler(true, "user-3", {video: true, audio:true})
+            })
             .on('request', ({ from: callFrom }) => {
                 console.log("request from " + callFrom)
                 this.setState({ callModal: 'active', callFrom });
