@@ -7,11 +7,11 @@ const users = {};
 let count = 1
 async function randomID() {
     let id = //haiku();//
-        "user-" + count++
-    while (id in users) {
-        await Promise.delay(5);
-        id = haiku();
-    }
+        "session-" + count++
+    // while (id in users) {
+    //     await Promise.delay(5);
+    //     id = haiku();
+    // }
     return id;
 }
 

@@ -35,9 +35,10 @@ const handleRole = (socket,data) =>{
  * Initialize when a connection is made
  * @param {SocketIO.Socket} socket
  */
+let socketNo = 0
 function initSocket(socket) {
     let id;
-    // console.log("reconnect")
+    console.log(`Socket # ${socketNo++} initialized`)
     socket
         .on('init', async (data) => {
             console.log("init message received with", data)
@@ -45,11 +46,12 @@ function initSocket(socket) {
             console.log("Sending id", id)
             socket.emit('init', { id });
         })
-        .on('reconnected',(data)=>{
-            console.log("reconnect!ed", data)
+        .on('identified',(data)=>{
+            console.log("identified client", data)
             users.create(socket,data)
+            if(data.id)  id  = data.id
             // handleRole(socket,data)
-        })
+        })  
         .on('register',async(data)=>{
             console.log("ing",data)
             await users.create(socket,data)
@@ -73,6 +75,7 @@ function initSocket(socket) {
             users.broadcast('message', {from: data.id, message:`${data.name} is ${data.role}`})
         }
         )
+
         .on('setname', (data) => {
             console.log("seting name", data)
             if(!data) {
@@ -99,8 +102,9 @@ function initSocket(socket) {
         .on('disconnect', () => {
             users.remove(id);
             console.log(id, 'disconnected');
-        }).emit('reconnect');
+        }).emit('identify');
 }
+
 
 module.exports = (server) => {
     io({ path: '/bridge', serveClient: false })

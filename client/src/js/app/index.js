@@ -73,16 +73,15 @@ const effects = {
                 console.log("Message received", data)
                 toast(data.message)
             },
-            reconnect() {
-                console.log("IN RECONNECT")
+            identify() {
+                console.log("IN THE IDENTIFY")
                 const attrs = effects.storage.getAttrs()
-                // socket.emit('debug', "reconnecting" + (JSON.stringify(attrs) || 'undefined'))
-                if (attrs) socket.emit('reconnected', attrs)
+                if (attrs) socket.emit('identified', attrs)
             }
         }
+
     }
 }
-// socket.emit('debug', effects.socket.reconnect + "")
 Object.keys(effects.socket.events).forEach(key => {
     socket.off(key); socket.on(key, effects.socket.events[key])
 })
@@ -121,6 +120,9 @@ const initialize = () => {
     });
     console.log(app.state);
     useApp = createHook();
+    console.log("Set attrs")
+    debugger
+    // app.actions.setAttrs(app.effects.getAttrs())
 };
 // const {actions,state} = useApp()
 if (!module.hot) {
