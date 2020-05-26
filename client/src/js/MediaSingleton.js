@@ -17,12 +17,14 @@ class MediaSingleton {
         this.device = MediaSingleton.device
     }
     on(event,cb) {
-        if(MediaSingleton.stream) cb(MediaSingleton.stream)
-        MediaSingleton.device.on('stream',(stream)=>cb(stream))
+        if(MediaSingleton.stream) cb(MediaSingleton.stream.clone())
+        MediaSingleton.device.on('stream',(stream)=>cb(stream.clone()))
         return this
     }
     start() {
+        if(MediaSingleton.count === 1 )
         return this.device.start()
+        return this
     }
     toggle(type,on) {
         return this.device.toggle(type,on)

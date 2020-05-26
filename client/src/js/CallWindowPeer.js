@@ -17,6 +17,7 @@ function CallWindowPeer({ left, peerSrc, status }) {
                 peerVideo.current.srcObject = peerSrc
             }
             else {
+                console.log("clone")
                 peerVideo.current.srcObject = peerSrc.clone()
             }
 
