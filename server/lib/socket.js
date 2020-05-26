@@ -62,7 +62,7 @@ function initSocket(socket) {
         })
 
         .on('register', async (data) => {
-            console.log("ing", data)
+            console.log("registering", data)
             await users.create(socket, data)
             try {
                 socket.emit("calljoin", { id })
@@ -74,6 +74,7 @@ function initSocket(socket) {
 
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {
+            console.log(`request from ${data}`)
             const receiver = users.getReceiver(data.to);
             if (receiver) {
                 receiver.emit('request', { from: id });

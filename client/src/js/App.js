@@ -43,8 +43,9 @@ class App extends Component {
 
             })
             .on('calljoin',(data)=>{
+                socket.emit('debug', 'calljoin received')
                 console.log('join received', data)
-                this.startCallHandler(true, "user-3", {video: true, audio:true})
+                this.startCallHandler(true, "session-6", {video: true, audio:true})
             })
             .on('request', ({ from: callFrom }) => {
                 console.log("request from " + callFrom)
