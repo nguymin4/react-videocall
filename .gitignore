@@ -4,3 +4,4 @@ node_modules/**
 yarn.lock
 client/src/html/js/*
 package-lock.json
+yarn-error.log
