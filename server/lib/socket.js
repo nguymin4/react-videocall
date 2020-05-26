@@ -1,8 +1,8 @@
 const io = require('socket.io');
 const users = require('./users');
 
-const handleRole = (socket,data) =>{
-    if(data.role) users.broadcast('message', {message:`${data.name} has joined ${data.room} as ${data.role}`})
+const handleRole = (socket, data) => {
+    if (data.role) users.broadcast('message', { message: `${data.name} has joined ${data.room} as ${data.role}` })
     socket.emit("calljoin", data)
     console.log('sent i09j')
     // oldUser = users.getRole(data.role)
@@ -38,30 +38,39 @@ const handleRole = (socket,data) =>{
 let socketNo = 0
 function initSocket(socket) {
     let id;
+    const doIdentify = () => {
+
+        socket.emit('identify')
+            .on('identified', (data) => {
+                console.log("identified client", data)
+                users.create(socket, data)
+                if (data.id) id = data.id
+                // handleRole(socket,data)
+            })
+            
+    }
+    timeoutIdentify = setTimeout(doIdentify, 1000)
+    socket.on('init', () => clearTimeout(timeoutIdentify))
+
     console.log(`Socket # ${socketNo++} initialized`)
     socket
         .on('init', async (data) => {
             console.log("init message received with", data)
-            id = await users.create(socket,data);
+            id = await users.create(socket, data);
             console.log("Sending id", id)
             socket.emit('init', { id });
         })
-        .on('identified',(data)=>{
-            console.log("identified client", data)
-            users.create(socket,data)
-            if(data.id)  id  = data.id
-            // handleRole(socket,data)
-        })  
-        .on('register',async(data)=>{
-            console.log("ing",data)
-            await users.create(socket,data)
-            try{
-            socket.emit("calljoin", { id })
-            console.log("sent")
-            } catch(e){
-                console.log("EFFING",e)
+
+        .on('register', async (data) => {
+            console.log("ing", data)
+            await users.create(socket, data)
+            try {
+                socket.emit("calljoin", { id })
+                console.log("sent")
+            } catch (e) {
+                console.log("EFFING", e)
             }
-            })
+        })
 
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {
@@ -71,19 +80,19 @@ function initSocket(socket) {
             }
         })
         .on('setrole', (data) => {
-            users.setProp(id,'role',data.role)
-            users.broadcast('message', {from: data.id, message:`${data.name} is ${data.role}`})
+            users.setProp(id, 'role', data.role)
+            users.broadcast('message', { from: data.id, message: `${data.name} is ${data.role}` })
         }
         )
 
         .on('setname', (data) => {
             console.log("seting name", data)
-            if(!data) {
-                socket.send('message',{ message: "no was data sent"})
+            if (!data) {
+                socket.send('message', { message: "no was data sent" })
                 return
             }
-            users.setProp(id,'name',data.name)
-            users.broadcast('message', {from: data.name, message:`Session ${data.id} is ${data.name}`})
+            users.setProp(id, 'name', data.name)
+            users.broadcast('message', { from: data.name, message: `Session ${data.id} is ${data.name}` })
         })
         .on('call', (data) => {
             const receiver = users.getReceiver(data.to);
@@ -102,7 +111,7 @@ function initSocket(socket) {
         .on('disconnect', () => {
             users.remove(id);
             console.log(id, 'disconnected');
-        }).emit('identify');
+        })
 }
 
 
