@@ -49,9 +49,12 @@ class App extends Component {
             })
             .on('request', ({ from: callFrom }) => {
                 console.log("request from " + callFrom)
-                this.setState({ callModal: 'active', callFrom });
+                this.startCallHandler(false, callFrom, {video: true, audio:true})
+                // return
+                // this.setState({ callModal: 'active', callFrom });
             })
             .on('call', (data) => {
+                console.log("Call")
                 if (data.sdp) {
                     this.pc.setRemoteDescription(data.sdp);
                     if (data.sdp.type === 'offer') this.pc.createAnswer();

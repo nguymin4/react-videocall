@@ -121,7 +121,6 @@ const initialize = () => {
     console.log(app.state);
     useApp = createHook();
     console.log("Set attrs")
-    debugger
     // app.actions.setAttrs(app.effects.getAttrs())
 };
 // const {actions,state} = useApp()

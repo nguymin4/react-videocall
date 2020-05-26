@@ -5,13 +5,13 @@ import CallWindowPeer from './CallWindowPeer'
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
 
 function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall }) {
-  const peerVideo = useRef(null);
+//   const peerVideo = useRef(null);
   const localVideo = useRef(null);
   const [video, setVideo] = useState(config.video);
   const [audio, setAudio] = useState(config.audio);
 
   useEffect(() => {
-    if (peerVideo.current && peerSrc) peerVideo.current.srcObject = peerSrc;
+    // if (peerVideo.current && peerSrc) peerVideo.current.srcObject = peerSrc;
     if (localVideo.current && localSrc) localVideo.current.srcObject = localSrc;
   });
 
@@ -40,8 +40,10 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
   return (
     <div className={classnames('call-window', status)}>
       {/* <video id="peerVideo" ref={peerVideo} autoPlay /> */}
-      <CallWindowPeer peerSrc={peerSrc} status={status}  />
-      <video id="localVideo" ref={localVideo} autoPlay muted />
+      <CallWindowPeer left="10%" peerSrc={peerSrc} status={status}  />
+        some more stuff
+      {/* <CallWindowPeer left="50%" peerSrc={peerSrc} status={status}  /> */}
+   <video id="localVideo" ref={localVideo} autoPlay muted />
       <div className="video-control">
         <button
           key="btnVideo"
