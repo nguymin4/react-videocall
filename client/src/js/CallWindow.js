@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-
+import CallWindowPeer from './CallWindowPeer'
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
 
 function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall }) {
@@ -39,7 +39,8 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
 
   return (
     <div className={classnames('call-window', status)}>
-      <video id="peerVideo" ref={peerVideo} autoPlay />
+      {/* <video id="peerVideo" ref={peerVideo} autoPlay /> */}
+      <CallWindowPeer peerSrc={peerSrc} status={status}  />
       <video id="localVideo" ref={localVideo} autoPlay muted />
       <div className="video-control">
         <button
