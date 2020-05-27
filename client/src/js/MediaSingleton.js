@@ -12,15 +12,22 @@ class MediaSingleton {
             MediaSingleton.device = new MediaDevice()
             MediaSingleton.device.on('stream',(stream) =>{
                 MediaSingleton.stream = stream
+                window.XD= MediaSingleton.device
             })
         }
         this.device = MediaSingleton.device
     }
     on(event,cb) {
-        if(MediaSingleton.stream) cb(MediaSingleton.stream.clone())
-        MediaSingleton.device.on('stream',(stream)=>cb(stream.clone()))
+        if(MediaSingleton.stream) {this.steam = MediaSingleton.stream
+            return cb(MediaSingleton.stream)
+        }
+        MediaSingleton.device.on('stream',(stream)=>{
+            this.stream = stream
+            cb(stream)
+        })
         return this
     }
+
     start() {
         if(MediaSingleton.count === 1 )
         return this.device.start()

@@ -4,12 +4,12 @@ import classnames from 'classnames';
 import CallWindowPeer from './CallWindowPeer'
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
 
-function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall }) {
+function CallWindow({ allpcs, peerSrc, localSrc, config, mediaDevice, status, endCall }) {
 //   const peerVideo = useRef(null);
   const localVideo = useRef(null);
   const [video, setVideo] = useState(config.video);
   const [audio, setAudio] = useState(config.audio);
-
+  const pcNames = Object.keys(allpcs)
   useEffect(() => {
     // if (peerVideo.current && peerSrc) peerVideo.current.srcObject = peerSrc;
     if (localVideo.current && localSrc) localVideo.current.srcObject = localSrc;
@@ -40,9 +40,10 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
   return (
     <div className={classnames('call-window', status)}>
       {/* <video id="peerVideo" ref={peerVideo} autoPlay /> */}
-      <CallWindowPeer left="10%" peerSrc={peerSrc} status={status}  />
+      <CallWindowPeer xid="v1" left="10%" peerSrc={allpcs[pcNames[0]].peerSrc} status={status}  />
         some more stuff
-      {/* <CallWindowPeer left="50%" peerSrc={peerSrc} status={status}  /> */}
+        {pcNames.length > 1 ?
+      <CallWindowPeer xid="v2" left="50%" peerSrc={allpcs[pcNames[1]].peerSrc} status={status}  /> : ""}
    <video id="localVideo" ref={localVideo} autoPlay muted />
       <div className="video-control">
         <button

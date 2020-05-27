@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 
-function CallWindowPeer({ left, peerSrc, status }) {
+function CallWindowPeer({ xid, left, peerSrc, status }) {
     const peerVideo = useRef(null);
     const videoStyle = {
         width: "50%",
@@ -13,13 +13,7 @@ function CallWindowPeer({ left, peerSrc, status }) {
     }
     useEffect(() => {
         if (peerVideo.current && peerSrc) {
-            if (left === "50%") {
                 peerVideo.current.srcObject = peerSrc
-            }
-            else {
-                console.log("clone")
-                peerVideo.current.srcObject = peerSrc.clone()
-            }
 
         }
     });
@@ -27,7 +21,7 @@ function CallWindowPeer({ left, peerSrc, status }) {
     return (
         <div className={classnames('call-window', status)}>
 
-            <video style={videoStyle} id="peerVideo" ref={peerVideo} autoPlay />
+            <video style={videoStyle} id={xid} ref={peerVideo} autoPlay />
         </div>
     )
 }

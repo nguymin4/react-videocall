@@ -94,11 +94,11 @@ const onInitialize = (
         effects
         //
     }
-    //  , overmind
+    //  , 
+    
 ) => {
     console.log("INITTED")
     socket.emit('debug', 'it is initialized')
-    // debugger
     const attrs = effects.storage.getAttrs()
     actions.setAttrs(attrs)
 

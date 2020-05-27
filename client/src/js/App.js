@@ -10,7 +10,6 @@ import { useApp } from "./app"
 import { ToastContainer } from 'react-toastify'
 // import { getActionPaths } from 'overmind/lib/utils';
 
-
 class App extends Component {
     constructor(props) {
         super();
@@ -22,7 +21,7 @@ class App extends Component {
             localSrc: null,
             peerSrc: null
         };
-        this.pc = {};
+        this.pcs = {}; //array of peer connections
         this.config = null;
         this.startCallHandler = this.startCall.bind(this);
         this.endCallHandler = this.endCall.bind(this);
@@ -32,7 +31,7 @@ class App extends Component {
 
     componentDidMount() {
         console.log("component mounted!!")
-        "init,calljoin,request,call,end".split(',').forEach(key=>socket.off(key))
+        "init,calljoin,request,call,end".split(',').forEach(key => socket.off(key))
         socket
             .on('init', (attrs) => {
                 const clientId = attrs.id
@@ -42,23 +41,24 @@ class App extends Component {
                 socket.emit('debug', `App initted ${clientId}`)
 
             })
-            .on('calljoin',(data)=>{
+            .on('calljoin', (data) => {
                 socket.emit('debug', 'calljoin received')
                 console.log('join received', data)
-                this.startCallHandler(true, "session-6", {video: true, audio:true})
+                this.startCallHandler(true, "session-14", { video: true, audio: true })
             })
             .on('request', ({ from: callFrom }) => {
                 console.log("request from " + callFrom)
-                this.startCallHandler(false, callFrom, {video: true, audio:true})
+                this.startCallHandler(false, callFrom, { video: true, audio: true })
                 // return
                 // this.setState({ callModal: 'active', callFrom });
             })
             .on('call', (data) => {
-                console.log("Call")
+                console.log("Call from ", data.from)
+                const pc = this.pcs[data.from]
                 if (data.sdp) {
-                    this.pc.setRemoteDescription(data.sdp);
-                    if (data.sdp.type === 'offer') this.pc.createAnswer();
-                } else this.pc.addIceCandidate(data.candidate);
+                    pc.setRemoteDescription(data.sdp);
+                    if (data.sdp.type === 'offer') pc.createAnswer();
+                } else pc.addIceCandidate(data.candidate);
             })
             .on('end', this.endCall.bind(this, false))
             .emit('init', this.props.attrs);
@@ -66,13 +66,19 @@ class App extends Component {
 
     startCall(isCaller, friendID, config) {
         this.config = config;
-        this.pc = new PeerConnection(friendID)
+        const pc = new PeerConnection(friendID)
+
+        this.pcs[friendID] = pc
+        pc
             .on('localStream', (src) => {
                 const newState = { callWindow: 'active', localSrc: src };
                 if (!isCaller) newState.callModal = '';
                 this.setState(newState);
             })
-            .on('peerStream', (src) => this.setState({ peerSrc: src }))
+            .on('peerStream', (src) => {
+                this.setState({ peerSrc: src })
+                pc.peerSrc = src
+            })
             .start(isCaller, config);
     }
 
@@ -83,11 +89,17 @@ class App extends Component {
     }
 
     endCall(isStarter) {
-        if (_.isFunction(this.pc.stop)) {
-            this.pc.stop(isStarter);
-        }
-        this.pc = {};
+        const keys = Object.keys(this.pcs)
+        keys.forEach(
+            (key) => {
+                const pc = this.pcs[key]
+                if (_.isFunction(pc.stop)) {
+                    pc.stop(isStarter, key);
+                }
+            }
+        )
         this.config = null;
+        this.pcs = {}
         this.setState({
             callWindow: '',
             callModal: '',
@@ -98,6 +110,8 @@ class App extends Component {
 
     render() {
         const { clientId, callFrom, callModal, callWindow, localSrc, peerSrc } = this.state;
+        console.log('calll from', callFrom)
+        const pc = this.pcs[Object.keys(this.pcs)[0]]
         return (
             <div>
                 <ToastContainer />
@@ -108,11 +122,12 @@ class App extends Component {
                 />
                 {!_.isEmpty(this.config) && (
                     <CallWindow
+                        allpcs={this.pcs}
                         status={callWindow}
                         localSrc={localSrc}
                         peerSrc={peerSrc}
                         config={this.config}
-                        mediaDevice={this.pc.mediaDevice}
+                        mediaDevice={pc.mediaDevice}
                         endCall={this.endCallHandler}
                     />
                 )}
@@ -128,11 +143,11 @@ class App extends Component {
 }
 const WrapApp = () => {
     const { state, actions } = useApp()
-    
-    return <div> 
+
+    return <div>
         <div>The id is {state.attrs.id} role: {state.attrs.role}</div>
-        <App setId={actions.setId} attrs={state.attrs}/> 
-        </div>
+        <App setId={actions.setId} attrs={state.attrs} />
+    </div>
 }
 
 export default WrapApp;
