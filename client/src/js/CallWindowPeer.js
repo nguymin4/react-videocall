@@ -8,7 +8,8 @@ function CallWindowPeer({ xid, left, peerSrc, status }) {
     const videoStyle = {
         width: "50%",
         height: "50%",
-        left: left
+        left: left,
+        zIndex: 10
 
     }
     useEffect(() => {

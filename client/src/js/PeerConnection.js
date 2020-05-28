@@ -1,4 +1,4 @@
-import MediaDevice from './MediaSingleton';
+import MediaDevice from './MediaDevice';
 import Emitter from './Emitter';
 import socket from './socket';
 
@@ -16,7 +16,10 @@ class PeerConnection extends Emitter {
       to: this.friendID,
       candidate: event.candidate
     });
-    this.pc.ontrack = (event) => this.emit('peerStream', event.streams[0]);
+    this.pc.ontrack = (event) => {
+        console.log("On track")
+        this.emit('peerStream', event.streams[0]);
+    }
 
     this.mediaDevice = new MediaDevice();
     this.friendID = friendID;
