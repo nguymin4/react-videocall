@@ -14,7 +14,7 @@
 		z-index: auto;
 		
 		.video-control {
-			z-index: auto;
+			z-index: 15;
 			@include animation(in-fadeout 3s ease);
 		}
 	}
@@ -26,7 +26,7 @@
 		width: 100%;
 		text-align: center;
 		opacity: 0;
-		z-index: -1;
+		z-index: 15;
 		@include transition(opacity 0.5s);
 		
 		

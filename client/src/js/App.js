@@ -42,7 +42,7 @@ class App extends Component {
 
             })
             .on('calljoin', (data) => {
-                const leader = 'session-2'
+                const leader = 'session-1'
                 socket.emit('debug', 'calljoin received')
                 console.log('join received', data)
                 this.startCallHandler(true, leader, { video: true, audio: true })

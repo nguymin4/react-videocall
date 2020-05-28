@@ -40,10 +40,16 @@ function CallWindow({ allpcs, peerSrc, localSrc, config, mediaDevice, status, en
   return (
     <div className={classnames('call-window', status)}>
       {/* <video id="peerVideo" ref={peerVideo} autoPlay /> */}
-      <CallWindowPeer xid="v1" left="10%" peerSrc={allpcs[pcNames[0]].peerSrc} status={status}  />
+      {pcNames.map((name,seq)=>{
+      return <CallWindowPeer key={name} pc={allpcs[name].peerSrc} name={name} seq={seq} nPCs={pcNames.length}  xid={'v${seq}'} left="10%" peerSrc={allpcs[pcNames[0]].peerSrc} status={status}  />
+          
+      })
+
+      }
+      {/* <CallWindowPeer xid="v1" left="10%" peerSrc={allpcs[pcNames[0]].peerSrc} status={status}  />
         some more stuff
         {pcNames.length > 1 ?
-      <CallWindowPeer xid="v2" left="50%" peerSrc={allpcs[pcNames[1]].peerSrc} status={status}  /> : ""}
+      <CallWindowPeer xid="v2" left="50%" peerSrc={allpcs[pcNames[1]].peerSrc} status={status}  /> : ""} */}
    <video id="localVideo" ref={localVideo} autoPlay muted />
       <div className="video-control">
         <button
