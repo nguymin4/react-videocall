@@ -64,6 +64,13 @@ exports.getRole = (role) => {
     Object.keys(users).forEach((key) => { if (users[key].role === role) id = key })
     return id
 }
+exports.dump = () => {
+    Object.keys(users).forEach((key)=>{
+        const user = {...users[key]}
+        user.receiver = "socket"
+        console.log(key,user)
+    }) 
+}
 
 exports.broadcast = (message, data) => {
     Object.keys(users).forEach((key) => { 
