@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import CallWindowPeer from './CallWindowPeer'
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
 
-function CallWindow({ allpcs, peerSrc, localSrc, config, mediaDevice, status, endCall }) {
+function CallWindow({ allpcs, nPCs, peerSrc, localSrc, config, mediaDevice, status, endCall }) {
 //   const peerVideo = useRef(null);
   const localVideo = useRef(null);
   const [video, setVideo] = useState(config.video);
@@ -41,7 +41,7 @@ function CallWindow({ allpcs, peerSrc, localSrc, config, mediaDevice, status, en
     <div className={classnames('call-window', status)}>
       {/* <video id="peerVideo" ref={peerVideo} autoPlay /> */}
       {pcNames.map((name,seq)=>{
-      return <CallWindowPeer key={name} pc={allpcs[name].peerSrc} name={name} seq={seq} nPCs={pcNames.length}  xid={'v${seq}'} left="10%" peerSrc={allpcs[pcNames[0]].peerSrc} status={status}  />
+      return <CallWindowPeer key={name} pc={allpcs[name].peerSrc} name={name} seq={seq} nPCs={nPCs}  xid={'v${seq}'} left="10%" peerSrc={allpcs[pcNames[0]].peerSrc} status={status}  />
           
       })
 

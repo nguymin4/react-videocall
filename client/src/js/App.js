@@ -19,7 +19,8 @@ class App extends Component {
             callModal: '',
             callFrom: '',
             localSrc: null,
-            peerSrc: null
+            peerSrc: null,
+            nPCs:0
         };
         this.pcs = {}; //array of peer connections
         this.config = null;
@@ -70,6 +71,7 @@ class App extends Component {
         const pc = new PeerConnection(friendID)
 
         this.pcs[friendID] = pc
+        this.setState({nPCs: Object.keys(this.pcs).length})
         pc
             .on('localStream', (src) => {
                 const newState = { callWindow: 'active', localSrc: src };
@@ -112,8 +114,13 @@ class App extends Component {
                 callWindow: '',
                 callModal: '',
                 localSrc: null,
-                peerSrc: null
+                peerSrc: null,
+                nPCs: 0
             })
+            
+        } else {
+        this.setState({nPCs: Object.keys(this.pcs).length})
+
         };
     }
 
@@ -121,6 +128,7 @@ class App extends Component {
         const { clientId, callFrom, callModal, callWindow, localSrc, peerSrc } = this.state;
         console.log('calll from', callFrom)
         const pc = this.pcs[Object.keys(this.pcs)[0]]
+
         return (
             <div>
                 <ToastContainer />
@@ -132,11 +140,12 @@ class App extends Component {
                 {!_.isEmpty(this.config) && (
                     <CallWindow
                         allpcs={this.pcs}
+                        nPCs={Object.keys(this.pcs).length}
                         status={callWindow}
                         localSrc={localSrc}
                         peerSrc={peerSrc}
                         config={this.config}
-                        mediaDevice={pc.mediaDevice}
+                        mediaDevice={pc? pc.mediaDevice:{}}
                         endCall={this.endCallHandler}
                     />
                 )}
