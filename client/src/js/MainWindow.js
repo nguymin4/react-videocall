@@ -60,11 +60,11 @@ function MainWindow({ startCall, clientId }) {
                 <div>
                
                 
-          <button
+          {/* <button
             type="button"
             className="btn-action fa fa-video-camera"
             onClick={callWithVideo(true)}
-          />
+          /> */}
              {/* 
 
           <button
