@@ -2,8 +2,8 @@ const io = require('socket.io');
 const users = require('./users');
 
 const handleRegistration = async (socket, data) => {
-    if (data.role === "leader") {
-        socket.broadcast.emit("message", { message: `${data.name} has registered as leader for ${data.room}` })
+    if (data.role === "leader" || data.role === "control") {
+        socket.broadcast.emit("message", { message: `${data.name} has registered as ${data.role} for ${data.room}` })
         await users.create(socket, data)
 
     } else {
@@ -14,6 +14,10 @@ const handleRegistration = async (socket, data) => {
             socket.emit("message", { message: "no leader registered yet" })
         } else {
             socket.emit("calljoin", { jointo: leader })
+            const control = users.getRole("control")
+            if(control) {
+                socket.emit("calljoin", { jointo: control })
+            }
         }
         // try {
         //     socket.emit("calljoin", { id })
