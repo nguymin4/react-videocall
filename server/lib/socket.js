@@ -3,31 +3,30 @@ const users = require('./users');
 
 const handleRole = (socket, data) => {
     if (data.role) users.broadcast('message', { message: `${data.name} has joined ${data.room} as ${data.role}` })
-    socket.emit("calljoin", data)
-    console.log('sent i09j')
-    // oldUser = users.getRole(data.role)
-    // if (oldUser) {
-    //     const receiver = user.get(oldUser)
-    //     receiver.emit('unenrole', { role: oldRole })
-    //     if (data.role === 'leader') users.sendMessage('disconnectleader')
-    //     else if (data.role === 'control') users.sendMessage('disconnectcontrol')
-    //     else {
-    //         receiver.emit('disconnectleader')
-    //         receiver.emit('disconnectcontrol')
-    //     }
-    // }
-    // users.setProp(socket,id, 'role', data.role)
-    // if (data.role === 'leader') {
-    //     users.broadcast('connectleader', { leader: id })
-    // } else if (data.role === 'control') {
-    //     users.broadcast('connectcontrol', { control: id })
-    // } else {
-    //     const receiver = users.getReceiver(id)
-    //     const leader = users.getRole('leader')
-    //     const control = users.getRole('control')
-    //     if (leader) receiver.emit('connectleader', { leader: users.getRole('leader') })
-    //     if (control) receiver.emit('connectcontrol', { leader: users.getRole('leader') })
-    // }
+    //find if someone else had that role
+    oldUser = users.getRole(data.role)
+    if (oldUser) {
+        const receiver = user.get(oldUser)
+        receiver.emit('unenrole', { role: oldRole })
+        if (data.role === 'leader') users.sendMessage('disconnectleader')
+        else if (data.role === 'control') users.sendMessage('disconnectcontrol')
+        else {
+            receiver.emit('disconnectleader')
+            receiver.emit('disconnectcontrol')
+        }
+    }
+    users.setProp(socket, id, 'role', data.role)
+    if (data.role === 'leader') {
+        users.broadcast('connectleader', { leader: id })
+    } else if (data.role === 'control') {
+        users.broadcast('connectcontrol', { control: id })
+    } else {
+        const receiver = users.getReceiver(id)
+        const leader = users.getRole('leader')
+        const control = users.getRole('control')
+        if (leader) receiver.emit('connectleader', { leader: users.getRole('leader') })
+        if (control) receiver.emit('connectcontrol', { leader: users.getRole('leader') })
+    }
 
 }
 
@@ -47,7 +46,7 @@ function initSocket(socket) {
                 if (data.id) id = data.id
                 // handleRole(socket,data)
             })
-            
+
     }
     timeoutIdentify = setTimeout(doIdentify, 1000)
     socket.on('init', () => clearTimeout(timeoutIdentify))
@@ -63,12 +62,25 @@ function initSocket(socket) {
 
         .on('register', async (data) => {
             console.log("registering", data)
-            await users.create(socket, data)
-            try {
-                socket.emit("calljoin", { id })
-                console.log("sent")
-            } catch (e) {
-                console.log("EFFING", e)
+            if (data.role === "leader") {
+                users.broadcast("message", { message: "leader registered" })
+                await users.create(socket, data)
+
+            } else {
+                await users.create(socket, data)
+                const leader = users.getRole("leader")
+
+                if (!leader) {
+                    users.broadcast("message", { message: "no leader registered" })
+                } else {
+                    socket.emit("calljoin", { jointo: leader })
+                }
+                try {
+                    socket.emit("calljoin", { id })
+                    console.log("sent")
+                } catch (e) {
+                    console.log("EFFING", e)
+                }
             }
         })
 
