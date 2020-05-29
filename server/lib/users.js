@@ -24,8 +24,9 @@ exports.create = async (socket, attrs) => {
         attrs = {}
     }
     attrs.id = id
-    attrs.receiver = socket
-    users[id] = attrs
+    users[id] = {...attrs}
+    users[id].receiver = socket
+    users[id].connections = {}
     return id;
 
 };
@@ -40,6 +41,24 @@ exports.setProp = (id, prop, value) => {
     if(users[id]) users[id][prop] = value
 }
 
+exports.connect = (id,target,connect) => {
+    const user1 = users[id]
+    const user2 = users[target]
+    if(!user1){
+        console.error(`${id} does not exist`)
+    } else if(!user2){
+        console.error(`${target} does not exist`)
+    
+    } else if(connect) {
+        user1.connections[target] = true
+        user2.connections[id] = true
+    } else {
+        delete user1.connections[target]
+        delete user2.connections[id]
+    }
+    
+}
+
 exports.getRole = (role) => {
     let id
     Object.keys(users).forEach((key) => { if (users[key].role === role) id = key })
@@ -48,6 +67,8 @@ exports.getRole = (role) => {
 
 exports.broadcast = (message, data) => {
     Object.keys(users).forEach((key) => { 
-        if(users[key].receiver) users[key].receiver.emit(message, data)
-     })
+        if(users[key].receiver) {
+            console.log("broadcasting to", users[key].id)
+            users[key].receiver.emit(message, data)
+     }})
 }

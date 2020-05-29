@@ -42,7 +42,7 @@ class App extends Component {
 
             })
             .on('calljoin', (data) => {
-                // const leader = data.jointo
+                const leader = data.jointo
                 socket.emit('debug', 'calljoin received')
                 console.log('join received', data)
                 this.startCallHandler(true, leader, { video: true, audio: true })
@@ -61,7 +61,7 @@ class App extends Component {
                     if (data.sdp.type === 'offer') pc.createAnswer();
                 } else pc.addIceCandidate(data.candidate);
             })
-            .on('end', this.endCall.bind(this, false))
+            .on('end', (data) => this.endCall.bind(this, false)(data.from))
             .emit('init', this.props.attrs);
     }
 
@@ -89,24 +89,32 @@ class App extends Component {
         this.setState({ callModal: '' });
     }
 
-    endCall(isStarter) {
-        const keys = Object.keys(this.pcs)
+    endCall(isStarter, from) {
+        let keys
+        if (from) {
+            keys = [from]
+        } else {
+            keys = Object.keys(this.pcs)
+        }
         keys.forEach(
             (key) => {
                 const pc = this.pcs[key]
                 if (_.isFunction(pc.stop)) {
                     pc.stop(isStarter, key);
                 }
+                delete this.pcs[key]
             }
         )
-        this.config = null;
-        this.pcs = {}
-        this.setState({
-            callWindow: '',
-            callModal: '',
-            localSrc: null,
-            peerSrc: null
-        });
+        if (_.isEmpty(this.pcs)) {
+            this.config = null;
+            this.pcs = {}
+            this.setState({
+                callWindow: '',
+                callModal: '',
+                localSrc: null,
+                peerSrc: null
+            })
+        };
     }
 
     render() {
@@ -144,10 +152,10 @@ class App extends Component {
 }
 const WrapApp = () => {
     const { state, actions, effects } = useApp()
-    useEffect(()=>{
-      console.log("Effect applied")
-      effects.socket.events.setRegisterAction(actions.register)
- 
+    useEffect(() => {
+        console.log("Effect applied")
+        effects.socket.events.setRegisterAction(actions.register)
+
     })
     return <div>
         <div>The id is {state.attrs.id} role: {state.attrs.role}</div>

@@ -3,7 +3,7 @@ const users = require('./users');
 
 const handleRegistration = async (socket, data) => {
     if (data.role === "leader") {
-        users.broadcast("message", { message: "leader registered" })
+        socket.broadcast.emit("message", { message: `${data.name} has registered as leader for ${data.room}` })
         await users.create(socket, data)
 
     } else {
@@ -11,16 +11,16 @@ const handleRegistration = async (socket, data) => {
         const leader = users.getRole("leader")
 
         if (!leader) {
-            users.broadcast("message", { message: "no leader registered" })
+            socket.emit("message", { message: "no leader registered yet" })
         } else {
             socket.emit("calljoin", { jointo: leader })
         }
-        try {
-            socket.emit("calljoin", { id })
-            console.log("sent")
-        } catch (e) {
-            console.log("EFFING", e)
-        }
+        // try {
+        //     socket.emit("calljoin", { id })
+        //     console.log("sent")
+        // } catch (e) {
+        //     console.log("EFFING", e)
+        // }
     }
     return
     //find if someone else had that role
@@ -60,14 +60,16 @@ function initSocket(socket) {
     const doIdentify = () => {
 
         socket.emit('identify')
-            .on('identified', (data) => {
+            .on('identified', async (data) => {
                 console.log("identified client", data)
-                users.create(socket, data)
-                if (data.id) id = data.id
+                id = await users.create(socket, data);
+                // socket.emit("confirm")
+                // if (data.id) id = data.id
                 // handleRole(socket,data)
-            })
 
+            })
     }
+
     timeoutIdentify = setTimeout(doIdentify, 1000)
     socket.on('init', () => clearTimeout(timeoutIdentify))
 
@@ -107,7 +109,7 @@ function initSocket(socket) {
             }
             users.setProp(id, 'name', data.name)
             users.broadcast('message', { from: data.name, message: `Session ${data.id} is ${data.name}` })
-        })
+        }) 
         .on('call', (data) => {
             const receiver = users.getReceiver(data.to);
             if (receiver) {
@@ -119,7 +121,7 @@ function initSocket(socket) {
         .on('end', (data) => {
             const receiver = users.getReceiver(data.to);
             if (receiver) {
-                receiver.emit('end');
+                receiver.emit('end',{from:id});
             }
         })
         .on('disconnect', () => {
@@ -134,3 +136,9 @@ module.exports = (server) => {
         .listen(server, { log: true })
         .on('connection', initSocket);
 };
+const test = () =>{
+    const user1 = {id:"u1", room:"room1"}
+    const user2 = {id:"u2", room:"room1"}
+    users.create(null,user)
+}
+// test()

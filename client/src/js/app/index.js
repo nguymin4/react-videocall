@@ -71,8 +71,9 @@ const effects = {
             },
 
             confirm(data) {
-                toast('confirmed ')
-                socket.emit("debug", "the onconfirm " + data)
+                toast(`confirmed ${JSON.stringify(data)}`)
+
+                socket.emit("debug", "the onconfirm " + JSON.stringify(data))
             },
             message(data) {
                 console.log("Message received", data)
