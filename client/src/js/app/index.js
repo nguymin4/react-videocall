@@ -34,9 +34,9 @@ const actions = {
         effects.storage.setAttrs(json(state.attrs))
     },
     register({ state, effects }, data) {
-        state.attrs.role = data.roleID
-        state.attrs.name = data.userID
-        state.attrs.room = data.roomID
+        if(data.roleID) state.attrs.role = data.roleID
+        if(data.userID) state.attrs.name = data.userID
+        if(data.roomID) state.attrs.room = data.roomID
         console.log('registering ', json(state.attrs))
         effects.socket.actions.register(json(state.attrs))
         effects.storage.setAttrs(json(state.attrs))
@@ -64,6 +64,11 @@ const effects = {
             },
         },
         events: {
+            registerAction: null,
+            setRegisterAction(func){
+                console.log("register action called")
+                effects.socket.events.registerAction= func
+            },
 
             confirm(data) {
                 toast('confirmed ')
@@ -77,6 +82,13 @@ const effects = {
                 console.log("IN THE IDENTIFY")
                 const attrs = effects.storage.getAttrs()
                 if (attrs) socket.emit('identified', attrs)
+            },
+            unenrole(data){
+                console.log("Unenroled")
+                if(events.socket.actions.registerAction){
+                    console.log("Invoke register action")
+                    // evemts.socket.actions.registerAction({roleID: data.role})
+                }
             }
         }
 
@@ -85,6 +97,7 @@ const effects = {
 Object.keys(effects.socket.events).forEach(key => {
     socket.off(key); socket.on(key, effects.socket.events[key])
 })
+effects
 // console.log("conform source code", effects.socket.onConfirm + "")
 // actions.actionCB()
 const onInitialize = (

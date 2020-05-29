@@ -1,8 +1,28 @@
 const io = require('socket.io');
 const users = require('./users');
 
-const handleRole = (socket, data) => {
-    if (data.role) users.broadcast('message', { message: `${data.name} has joined ${data.room} as ${data.role}` })
+const handleRegistration = async (socket, data) => {
+    if (data.role === "leader") {
+        users.broadcast("message", { message: "leader registered" })
+        await users.create(socket, data)
+
+    } else {
+        await users.create(socket, data)
+        const leader = users.getRole("leader")
+
+        if (!leader) {
+            users.broadcast("message", { message: "no leader registered" })
+        } else {
+            socket.emit("calljoin", { jointo: leader })
+        }
+        try {
+            socket.emit("calljoin", { id })
+            console.log("sent")
+        } catch (e) {
+            console.log("EFFING", e)
+        }
+    }
+    return
     //find if someone else had that role
     oldUser = users.getRole(data.role)
     if (oldUser) {
@@ -62,26 +82,7 @@ function initSocket(socket) {
 
         .on('register', async (data) => {
             console.log("registering", data)
-            if (data.role === "leader") {
-                users.broadcast("message", { message: "leader registered" })
-                await users.create(socket, data)
-
-            } else {
-                await users.create(socket, data)
-                const leader = users.getRole("leader")
-
-                if (!leader) {
-                    users.broadcast("message", { message: "no leader registered" })
-                } else {
-                    socket.emit("calljoin", { jointo: leader })
-                }
-                try {
-                    socket.emit("calljoin", { id })
-                    console.log("sent")
-                } catch (e) {
-                    console.log("EFFING", e)
-                }
-            }
+            await handleRegistration(socket, data)
         })
 
         .on('debug', (message) => { console.log("debug", message) })

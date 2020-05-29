@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, Component } from 'react';
 import _ from 'lodash';
 import socket from './socket';
 import PeerConnection from './PeerConnection';
@@ -43,7 +43,6 @@ class App extends Component {
             })
             .on('calljoin', (data) => {
                 // const leader = data.jointo
-                const leader = "session-3"
                 socket.emit('debug', 'calljoin received')
                 console.log('join received', data)
                 this.startCallHandler(true, leader, { video: true, audio: true })
@@ -144,8 +143,12 @@ class App extends Component {
     }
 }
 const WrapApp = () => {
-    const { state, actions } = useApp()
-
+    const { state, actions, effects } = useApp()
+    useEffect(()=>{
+      console.log("Effect applied")
+      effects.socket.events.setRegisterAction(actions.register)
+ 
+    })
     return <div>
         <div>The id is {state.attrs.id} role: {state.attrs.role}</div>
         <App setId={actions.setId} attrs={state.attrs} />
