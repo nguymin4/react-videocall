@@ -1,21 +1,12 @@
 image:
   file: .gitpod.Dockerfile
 
-<<<<<<< HEAD
 #List the ports you want to expose and what to do when they are served. See https://www.gitpod.io/docs/config-ports/
 ports:
   - port: 5000
     onOpen: ignore
   - port: 9001
     onOpen: open-browser
-=======
-# List the ports you want to expose and what to do when they are served. See https://www.gitpod.io/docs/config-ports/
-# ports:
-#   - port: 5000
-#     onOpen: ignore
-#   - port: 9000
-#     onOpen: open-browser
->>>>>>> 584df6d322e9303dc23e08b39a2ee21e56ace693
 
 # List the start up tasks. You can start them in parallel in multiple terminals. See https://www.gitpod.io/docs/config-start-tasks/
 tasks:
