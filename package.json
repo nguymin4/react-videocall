@@ -6,7 +6,8 @@
     "build": "cd client && webpack --config webpack-prod.config.js",
     "start": "node server/index.js",
     "watch:client": "webpack-dev-server --config client/webpack-dev.config.js",
-    "watch:server": "nodemon server/index.js"
+    "watch:server": "nodemon server/index.js",
+    "lint": "eslint --max-warnings 0 --ignore-path .gitignore ."
   },
   "dependencies": {
     "@babel/core": "7.9.0",
@@ -38,14 +39,14 @@
     "webrtc-adapter": "7.5.1"
   },
   "devDependencies": {
-    "eslint": "6.8.0",
+    "eslint": "7.2.0",
     "eslint-config-airbnb": "18.1.0",
     "eslint-config-airbnb-base": "14.1.0",
-    "eslint-plugin-import": "2.20.1",
+    "eslint-plugin-import": "2.21.1",
     "eslint-plugin-jsx-a11y": "6.2.3",
-    "eslint-plugin-react": "7.19.0",
-    "nodemon": "2.0.2",
-    "webpack-dev-server": "3.10.3"
+    "eslint-plugin-react": "7.20.0",
+    "nodemon": "2.0.4",
+    "webpack-dev-server": "3.11.0"
   },
   "engines": {
     "node": "12.15.0",
