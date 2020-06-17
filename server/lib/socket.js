@@ -1,7 +1,38 @@
 const io = require('socket.io');
 const users = require('./users');
+const rooms = require('./rooms')
+const version = 0.1
 let leaderConnectedToControl = false
 const handleRegistration = async (socket, data) => {
+    const broadcast = (message) => {
+        socket.broadcast.emit("message", { message })
+    }
+    const reply = (message) => {
+        console.log("reply with ", message)
+        socket.emit("message", { message })
+    }
+    const roomName = data.room
+    if(version){
+        console.log("testing new logic")
+        if(!rooms.exists(roomName)){
+            rooms.create(roomName)
+            broadcast(`${data.name} has created ${data.room}`)
+        }
+        const lastId = rooms.lastId(roomName)
+        broadcast(`${data.name} has joined ${data.room}`)
+        rooms.join(roomName, data.id)
+        if(!lastId){
+            reply("you are the fist")
+        } else if(data.id === lastId){
+            reply("you were the last")
+        } else {
+            const name = users.getName(lastId)
+            reply(`you will be joined to ${name} as ${lastId}`)
+            socket.emit("calljoin", { jointo: lastId })
+        }
+
+        return
+    }
     if (data.role === "leader" || data.role === "control") {
         socket.broadcast.emit("message", { message: `${data.name} has registered as ${data.role} for ${data.room}` })
         await users.create(socket, data)
@@ -79,6 +110,7 @@ function initSocket(socket) {
                 id = await users.create(socket, data);
                 users.dump()
                 // socket.emit("confirm")
+                
                 // if (data.id) id = data.id
                 // handleRole(socket,data)
 
