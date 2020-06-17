@@ -12,6 +12,7 @@ async function randomID() {
     //     await Promise.delay(5);
     //     id = haiku();
     // }
+    if(users[id]) return randomID()
     return id;
 }
 
@@ -63,6 +64,10 @@ exports.getRole = (role) => {
     let id
     Object.keys(users).forEach((key) => { if (users[key].role === role) id = key })
     return id
+}
+
+exports.getName = (id) =>{
+    return users[id].name
 }
 exports.dump = () => {
     Object.keys(users).forEach((key)=>{
