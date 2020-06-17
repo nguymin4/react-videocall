@@ -14,8 +14,8 @@ const handleRegistration = async (socket, data) => {
     const roomName = data.room
     if(version){
         console.log("testing new logic")
-        if(!rooms.exists(roomName)){
-            rooms.create(roomName)
+        if(!rooms.exists(roomName) || (data.role === 'reset')){
+            rooms.create(roomName,data.id)
             broadcast(`${data.name} has created ${data.room}`)
         }
         const lastId = rooms.lastId(roomName)
@@ -110,7 +110,7 @@ function initSocket(socket) {
                 id = await users.create(socket, data);
                 users.dump()
                 // socket.emit("confirm")
-                
+
                 // if (data.id) id = data.id
                 // handleRole(socket,data)
 
@@ -166,6 +166,10 @@ function initSocket(socket) {
             }
         })
         .on('end', (data) => {
+            if(version) {
+                checkRoom()
+                return
+            }
             const receiver = users.getReceiver(data.to);
             if (receiver) {
                 receiver.emit('end',{from:id});
