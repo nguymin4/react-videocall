@@ -3,6 +3,9 @@ const users = require('./users');
 const rooms = require('./rooms')
 const version = 0.1
 let leaderConnectedToControl = false
+const checkRoom = (socket,id) => {
+    console.log("checking room")
+}
 const handleRegistration = async (socket, data) => {
     const broadcast = (message) => {
         socket.broadcast.emit("message", { message })
@@ -136,7 +139,7 @@ function initSocket(socket) {
 
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {
-            console.log(`request from ${data}`)
+            console.log(`request from ${data.name}`)
             const receiver = users.getReceiver(data.to);
             if (receiver) {
                 receiver.emit('request', { from: id });
@@ -167,8 +170,7 @@ function initSocket(socket) {
         })
         .on('end', (data) => {
             if(version) {
-                checkRoom()
-                return
+                checkRoom(socket,id)
             }
             const receiver = users.getReceiver(data.to);
             if (receiver) {
