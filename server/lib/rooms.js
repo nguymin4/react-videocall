@@ -8,12 +8,17 @@ exports.create = (roomName)=> {
     return rooms[roomName] = {count:0,members:{}}
 }
 exports.join = (roomName,id) => {
-    rooms[roomName].members[id]={}
-    rooms[roomName].lastId = id
+    const room = rooms[roomName]
+    if(room.members[id]) return
+    room.members[id]= {order:Object.keys(room.members).length}
 }
 exports.leave = (roomName,id) => {
     delete rooms[roomName].members[id]
 }
 exports.lastId= (roomName) =>{
     return rooms[roomName].lastId
+}
+
+exports.members = (roomName) => {
+    return Object.keys(rooms[roomName].members)
 }

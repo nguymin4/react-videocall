@@ -3,7 +3,7 @@ const users = require('./users');
 const rooms = require('./rooms')
 const version = 0.1
 let leaderConnectedToControl = false
-const checkRoom = (socket,id) => {
+const checkRoom = (socket, id) => {
     console.log("checking room")
 }
 const handleRegistration = async (socket, data) => {
@@ -14,24 +14,27 @@ const handleRegistration = async (socket, data) => {
         console.log("reply with ", message)
         socket.emit("message", { message })
     }
-    const roomName = data.room
-    if(version){
+
+    const roomName = data.room || "main"
+    if (version) {
         console.log("testing new logic")
-        if(!rooms.exists(roomName) || (data.role === 'reset')){
-            rooms.create(roomName,data.id)
+        if (!rooms.exists(roomName) || (data.role === 'reset')) {
+            rooms.create(roomName, data.id)
             broadcast(`${data.name} has created ${data.room}`)
         }
-        const lastId = rooms.lastId(roomName)
         broadcast(`${data.name} has joined ${data.room}`)
         rooms.join(roomName, data.id)
-        if(!lastId){
-            reply("you are the fist")
-        } else if(data.id === lastId){
-            reply("you were the last")
-        } else {
-            const name = users.getName(lastId)
-            reply(`you will be joined to ${name} as ${lastId}`)
-            socket.emit("calljoin", { jointo: lastId })
+        if (data.role === 'connect') {
+            console.log("connecting")
+            const members = rooms.members(roomName)
+            broadcast(`members are ${members.join(',')}`)
+            for (let i = 0; i < members.length - 1; i++) {
+                const thisMember = members[i]
+                const nextMember = members[i + 1]
+                const controlSocket = users.getReceiver(thisMember)
+                console.log("connect ", thisMember, nextMember)
+                controlSocket.emit("calljoin", { jointo: nextMember })
+            }
         }
 
         return
@@ -48,19 +51,19 @@ const handleRegistration = async (socket, data) => {
         } else {
             socket.emit("calljoin", { jointo: leader })
             const control = users.getRole("control")
-            if(control) {
+            if (control) {
                 socket.emit("calljoin", { jointo: control })
             }
-            if(!leaderConnectedToControl){
+            if (!leaderConnectedToControl) {
                 console.log("connected to control")
                 leaderConnectedToControl = true
                 const controlSocket = users.getReceiver(control)
-                if(controlSocket) {
-                controlSocket.emit("calljoin", {jointo: leader})
-            } else {
-                console.log("no control socket")
+                if (controlSocket) {
+                    controlSocket.emit("calljoin", { jointo: leader })
+                } else {
+                    console.log("no control socket")
+                }
             }
-        }
         }
 
         // try {
@@ -159,7 +162,7 @@ function initSocket(socket) {
             }
             users.setProp(id, 'name', data.name)
             users.broadcast('message', { from: data.name, message: `Session ${data.id} is ${data.name}` })
-        }) 
+        })
         .on('call', (data) => {
             const receiver = users.getReceiver(data.to);
             if (receiver) {
@@ -169,12 +172,12 @@ function initSocket(socket) {
             }
         })
         .on('end', (data) => {
-            if(version) {
-                checkRoom(socket,id)
+            if (version) {
+                checkRoom(socket, id)
             }
             const receiver = users.getReceiver(data.to);
             if (receiver) {
-                receiver.emit('end',{from:id});
+                receiver.emit('end', { from: id });
             }
         })
         .on('disconnect', () => {
@@ -189,9 +192,9 @@ module.exports = (server) => {
         .listen(server, { log: true })
         .on('connection', initSocket);
 };
-const test = () =>{
-    const user1 = {id:"u1", room:"room1"}
-    const user2 = {id:"u2", room:"room1"}
-    users.create(null,user)
+const test = () => {
+    const user1 = { id: "u1", room: "room1" }
+    const user2 = { id: "u2", room: "room1" }
+    users.create(null, user)
 }
 // test()
