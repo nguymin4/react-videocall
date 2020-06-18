@@ -33,6 +33,11 @@ class App extends Component {
     componentDidMount() {
         console.log("component mounted!!")
         "init,calljoin,request,call,end".split(',').forEach(key => socket.off(key))
+        const cl = (...args) => {
+            console.log(...args)
+            socket.emit('debug', )
+
+        }
         socket
             .on('init', (attrs) => {
                 const clientId = attrs.id
@@ -81,6 +86,8 @@ class App extends Component {
             .on('peerStream', (src) => {
                 this.setState({ peerSrc: src })
                 pc.peerSrc = src
+                this.pcs["X" + friendID + "-1"] = {peerSrc:src}
+
             })
             .start(isCaller, config);
     }
@@ -94,7 +101,8 @@ class App extends Component {
     endCall(isStarter, from) {
         let keys
         if (from) {
-            keys = [from]
+            keys = Object.keys(this.pcs).filter(key=>(key===from) || key.startsWith("X"+ from))
+            // keys = [from]
         } else {
             keys = Object.keys(this.pcs)
         }
