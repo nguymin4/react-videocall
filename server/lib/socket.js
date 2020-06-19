@@ -6,7 +6,9 @@ let leaderConnectedToControl = false
 const checkRoom = (socket, id) => {
     console.log("checking room")
 }
-
+rooms.create("main","session-1")
+rooms.join("main","session-2")
+rooms.join("main","session-4")
 
 const handleRegistration = async (socket, data) => {
     const broadcast = (message) => {
@@ -17,6 +19,7 @@ const handleRegistration = async (socket, data) => {
         socket.emit("message", { message })
     }
 
+    
     const roomName = data.room || "main"
     if (version) {
         console.log("testing new logic")
@@ -28,11 +31,16 @@ const handleRegistration = async (socket, data) => {
         broadcast(`${data.name} has joined ${roomName}`)
         rooms.join(roomName, data.id)
         if (data.role === 'connect' || (version === 2 && data.role === 'c')) {
-            console.log("connecting")
             const members = rooms.members(roomName)
-            broadcast(`members are ${members.join(',')}`)
+            console.log(`connecting ${members.join(',')}`)
             rooms.connect(roomName)
             rooms.next(roomName)
+            const retry = () => setTimeout(()=> {
+                console.log("retry")
+                const done = rooms.next(roomName)
+                if(!done) retry()
+            },7000)
+            retry()
             // for (let i = 0; i < members.length - 1; i++) {
             //     const thisMember = members[i]
             //     const nextMember = members[i + 1]
@@ -140,8 +148,8 @@ function initSocket(socket) {
             socket.emit('init', { id });
         })
         .on('peerconnect', (data) => { 
-            console.log('peerconnect', data.trackNo, data.from, data.friend, JSON.stringify(data.details)) 
-            rooms.next()
+            console.log('peerconnect', data.trackNo, data.room, data.from, data.friend, JSON.stringify(data.details)) 
+            // rooms.next()
         })
         .on('register', async (data) => {
             console.log("registering", data)

@@ -14,13 +14,14 @@ exports.next = (roomName) => {
     const room = exports.exists(roomName)
     const sequence = ++room.sequence
     const members = Object.keys(room.members)
-    console.log("next", members, sequence)
-    if (sequence >= members.length) return
+    // console.log("next", members, sequence)
+    if (sequence >= members.length) return false
     const thisMember = members[sequence - 1]
     const nextMember = members[sequence]
     const controlSocket = users.getReceiver(thisMember)
     console.log("connect ", thisMember, nextMember)
     controlSocket.emit("calljoin", { jointo: nextMember, version: 1 })
+    return true
 }
 exports.create = (roomName) => {
     if(!rooms[roomName]) rooms[roomName] = { count: 0, members: {} }

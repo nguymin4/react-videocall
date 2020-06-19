@@ -90,7 +90,15 @@ class App extends Component {
                 console.log("Track", track)
                 this.setState({ peerSrc: src })
                 pc.peerSrc = src
-                // this.pcs["X" + friendID + "-1"] = {peerSrc:src}
+                if( track > 1) {
+                    debugger
+                    const newId = [`X ${friendID}-${Math.floor(track/2)}`] 
+                    if(!this.pcs[newId]){
+                        this.pcs[newId] = {peerSrc: new MediaStream(track)}
+                    } else {
+                        this.pcs[newId].peerSrc.addTrack(track)
+                    }
+                }
                 socket.emit("peerconnect", { trackNo: e.trackNo, room: this.state.room, from: this.state.clientId, friend: friendID, details: { remote: track.remote, label: track.label } })
             })
             .start(isCaller, config, this.pcs);

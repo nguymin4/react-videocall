@@ -45,9 +45,11 @@ class PeerConnection extends Emitter {
                     socket.emit('debug', "combining streams")
                     const peerSrc = pcs[keys[0]].peerSrc
                     if (peerSrc) {
+                        socket.emit('debug', `peerSrc has ${peerSrc.getTracks().length} tracks`)
+                        debugger
                         peerSrc.getTracks().forEach((track) => {
-                            this.emit('debug', `Add track ${track.id}`)
-                            this.pc.addTrack(track, stream);
+                            socket.emit('debug', `Add track ${track.id}`)
+                            this.pc.addTrack(track, peerSrc);
                         })
                     }
                     else {
