@@ -12,6 +12,7 @@ class PeerConnection extends Emitter {
     constructor(friendID, version) {
         super();
         this.pc = new RTCPeerConnection(PC_CONFIG);
+        this.tracks = 0
         this.version = version
         this.pc.onicecandidate = (event) => socket.emit('call', {
             to: this.friendID,
@@ -19,6 +20,7 @@ class PeerConnection extends Emitter {
         });
         this.pc.ontrack = (event) => {
             console.log("On track")
+            event.trackNo = this.tracks++
             this.emit('peerTrackEvent', event);
         }
 
@@ -38,13 +40,20 @@ class PeerConnection extends Emitter {
                     this.pc.addTrack(track, stream);
                 });
                 const keys = Object.keys(pcs)
-                // if (keys.length === 2) {
-                //     console.log("combining streams")
-                //     const peerSrc = pcs[keys[0]]
-                //     peerSrc.getTracks().forEach((track) => {
-                //         this.pc.addTrack(track, peerSrc);
-                //     });
-                // }
+                if (keys.length > 1) {
+                    console.log("combining streams")
+                    socket.emit('debug', "combining streams")
+                    const peerSrc = pcs[keys[0]].peerSrc
+                    if (peerSrc) {
+                        peerSrc.getTracks().forEach((track) => {
+                            this.emit('debug', `Add track ${track.id}`)
+                            this.pc.addTrack(track, stream);
+                        })
+                    }
+                    else {
+                        this.emit('debug', "no peer src")
+                    }
+                }
                 this.emit('localStream', stream);
                 if (isCaller) socket.emit('request', { to: this.friendID });
                 else this.createOffer();

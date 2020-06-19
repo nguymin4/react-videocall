@@ -14,6 +14,7 @@ class App extends Component {
     constructor(props) {
         super();
         this.state = {
+            room:props.attrs.room,
             clientId: props.attrs.id || '',
             callWindow: '',
             callModal: '',
@@ -35,7 +36,7 @@ class App extends Component {
         "init,calljoin,request,call,end".split(',').forEach(key => socket.off(key))
         const cl = (...args) => {
             console.log(...args)
-            socket.emit('debug', )
+            socket.emit('debug')
 
         }
         socket
@@ -51,7 +52,7 @@ class App extends Component {
                 const leader = data.jointo
                 socket.emit('debug', 'calljoin received')
                 console.log('join received', data)
-                this.startCallHandler(true, leader, { video: true, audio: true },data.version)
+                this.startCallHandler(true, leader, { video: true, audio: true }, data.version)
             })
             .on('request', ({ from: callFrom }) => {
                 console.log("request from " + callFrom)
@@ -71,9 +72,9 @@ class App extends Component {
             .emit('init', this.props.attrs);
     }
 
-    startCall(isCaller, friendID, config,version=0) {
+    startCall(isCaller, friendID, config, version = 0) {
         this.config = config;
-        const pc = new PeerConnection(friendID,version)
+        const pc = new PeerConnection(friendID, version)
 
         this.pcs[friendID] = pc
         // this.setState({nPCs: Object.keys(this.pcs).length})
@@ -90,7 +91,7 @@ class App extends Component {
                 this.setState({ peerSrc: src })
                 pc.peerSrc = src
                 // this.pcs["X" + friendID + "-1"] = {peerSrc:src}
-                socket.emit("peerconnect",{from:this.state.clientId, friend:friendID, details:{remote:track.remote, label:track.label}})
+                socket.emit("peerconnect", { trackNo: e.trackNo, room: this.state.room, from: this.state.clientId, friend: friendID, details: { remote: track.remote, label: track.label } })
             })
             .start(isCaller, config, this.pcs);
     }
@@ -104,7 +105,7 @@ class App extends Component {
     endCall(isStarter, from) {
         let keys
         if (from) {
-            keys = Object.keys(this.pcs).filter(key=>(key===from) || key.startsWith("X"+ from))
+            keys = Object.keys(this.pcs).filter(key => (key === from) || key.startsWith("X" + from))
             // keys = [from]
         } else {
             keys = Object.keys(this.pcs)
@@ -128,9 +129,9 @@ class App extends Component {
                 peerSrc: null,
                 // nPCs: 0
             })
-            
+
         } else {
-        // this.setState({nPCs: Object.keys(this.pcs).length})
+            // this.setState({nPCs: Object.keys(this.pcs).length})
 
         };
     }
@@ -155,7 +156,7 @@ class App extends Component {
                         localSrc={localSrc}
                         peerSrc={peerSrc}
                         config={this.config}
-                        mediaDevice={pc? pc.mediaDevice:{}}
+                        mediaDevice={pc ? pc.mediaDevice : {}}
                         endCall={this.endCallHandler}
                     />
                 )}

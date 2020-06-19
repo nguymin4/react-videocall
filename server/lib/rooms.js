@@ -1,24 +1,42 @@
+const users = require('./users');
 const rooms = {}
 /* A room is a named object with a list of members and the identity of the last to join
 */
 exports.exists = (roomName) => {
+    if (!roomName || roomName === 'undefined') roomName = 'main'
     return rooms[roomName]
 }
-exports.create = (roomName)=> {
-    return rooms[roomName] = {count:0,members:{}}
+exports.connect = (roomName) => {
+    exports.exists(roomName).sequence = 0
 }
-exports.join = (roomName,id) => {
-    const room = rooms[roomName]
-    if(room.members[id]) return
-    room.members[id]= {order:Object.keys(room.members).length}
+
+exports.next = (roomName) => {
+    const room = exports.exists(roomName)
+    const sequence = ++room.sequence
+    const members = Object.keys(room.members)
+    console.log("next", members, sequence)
+    if (sequence >= members.length) return
+    const thisMember = members[sequence - 1]
+    const nextMember = members[sequence]
+    const controlSocket = users.getReceiver(thisMember)
+    console.log("connect ", thisMember, nextMember)
+    controlSocket.emit("calljoin", { jointo: nextMember, version: 1 })
 }
-exports.leave = (roomName,id) => {
-    delete rooms[roomName].members[id]
+exports.create = (roomName) => {
+    if(!rooms[roomName]) rooms[roomName] = { count: 0, members: {} }
 }
-exports.lastId= (roomName) =>{
-    return rooms[roomName].lastId
+exports.join = (roomName, id) => {
+    const room = exports.exists(roomName)
+    if (room.members[id]) return
+    room.members[id] = { order: Object.keys(room.members).length }
+}
+exports.leave = (roomName, id) => {
+    delete exports.exists(roomName).members[id]
+}
+exports.lastId = (roomName) => {
+    return exports.exists(roomName).lastId
 }
 
 exports.members = (roomName) => {
-    return Object.keys(rooms[roomName].members)
+    return Object.keys(exports.exists(roomName).members)
 }
