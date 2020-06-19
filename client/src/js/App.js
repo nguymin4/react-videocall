@@ -20,7 +20,7 @@ class App extends Component {
             callFrom: '',
             localSrc: null,
             peerSrc: null,
-            nPCs:0
+            // nPCs:0
         };
         this.pcs = {}; //array of peer connections
         this.config = null;
@@ -51,7 +51,7 @@ class App extends Component {
                 const leader = data.jointo
                 socket.emit('debug', 'calljoin received')
                 console.log('join received', data)
-                this.startCallHandler(true, leader, { video: true, audio: true })
+                this.startCallHandler(true, leader, { video: true, audio: true },data.version)
             })
             .on('request', ({ from: callFrom }) => {
                 console.log("request from " + callFrom)
@@ -71,25 +71,28 @@ class App extends Component {
             .emit('init', this.props.attrs);
     }
 
-    startCall(isCaller, friendID, config) {
+    startCall(isCaller, friendID, config,version=0) {
         this.config = config;
-        const pc = new PeerConnection(friendID)
+        const pc = new PeerConnection(friendID,version)
 
         this.pcs[friendID] = pc
-        this.setState({nPCs: Object.keys(this.pcs).length})
+        // this.setState({nPCs: Object.keys(this.pcs).length})
         pc
             .on('localStream', (src) => {
                 const newState = { callWindow: 'active', localSrc: src };
                 if (!isCaller) newState.callModal = '';
                 this.setState(newState);
             })
-            .on('peerStream', (src) => {
+            .on('peerTrackEvent', (e) => {
+                const src = e.streams[0]
+                const track = e.track
+                console.log("Track", track)
                 this.setState({ peerSrc: src })
                 pc.peerSrc = src
-                this.pcs["X" + friendID + "-1"] = {peerSrc:src}
-
+                // this.pcs["X" + friendID + "-1"] = {peerSrc:src}
+                socket.emit("peerconnect",{from:this.state.clientId, friend:friendID, details:{remote:track.remote, label:track.label}})
             })
-            .start(isCaller, config);
+            .start(isCaller, config, this.pcs);
     }
 
     rejectCall() {
@@ -123,18 +126,17 @@ class App extends Component {
                 callModal: '',
                 localSrc: null,
                 peerSrc: null,
-                nPCs: 0
+                // nPCs: 0
             })
             
         } else {
-        this.setState({nPCs: Object.keys(this.pcs).length})
+        // this.setState({nPCs: Object.keys(this.pcs).length})
 
         };
     }
 
     render() {
         const { clientId, callFrom, callModal, callWindow, localSrc, peerSrc } = this.state;
-        console.log('calll from', callFrom)
         const pc = this.pcs[Object.keys(this.pcs)[0]]
 
         return (

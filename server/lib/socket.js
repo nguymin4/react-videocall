@@ -1,7 +1,7 @@
 const io = require('socket.io');
 const users = require('./users');
 const rooms = require('./rooms')
-const version = 0.1
+const version = 2
 let leaderConnectedToControl = false
 const checkRoom = (socket, id) => {
     console.log("checking room")
@@ -18,13 +18,14 @@ const handleRegistration = async (socket, data) => {
     const roomName = data.room || "main"
     if (version) {
         console.log("testing new logic")
-        if (!rooms.exists(roomName) || (data.role === 'reset')) {
+        if (!rooms.exists(roomName) || ((data.role === 'reset') || ( version === 2 && data.role === 'r'))) {
+            console.log("reset")
             rooms.create(roomName, data.id)
-            broadcast(`${data.name} has created ${data.room}`)
+            broadcast(`${data.name} has created ${roomName}`)
         }
-        broadcast(`${data.name} has joined ${data.room}`)
+        broadcast(`${data.name} has joined ${roomName}`)
         rooms.join(roomName, data.id)
-        if (data.role === 'connect') {
+        if (data.role === 'connect' ||( version === 2 && data.role === 'c')) {
             console.log("connecting")
             const members = rooms.members(roomName)
             broadcast(`members are ${members.join(',')}`)
@@ -33,7 +34,7 @@ const handleRegistration = async (socket, data) => {
                 const nextMember = members[i + 1]
                 const controlSocket = users.getReceiver(thisMember)
                 console.log("connect ", thisMember, nextMember)
-                controlSocket.emit("calljoin", { jointo: nextMember })
+                controlSocket.emit("calljoin", { jointo: nextMember, version: 1})
             }
         }
 
@@ -134,7 +135,7 @@ function initSocket(socket) {
             console.log("Sending id", id)
             socket.emit('init', { id });
         })
-
+        .on('peerconnect',(data)=>console.log('peerconnect',data.from, data.friend, JSON.stringify(data.details)))
         .on('register', async (data) => {
             console.log("registering", data)
             await handleRegistration(socket, data)
