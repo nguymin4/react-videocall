@@ -9,11 +9,11 @@ class PeerConnection extends Emitter {
        * Create a PeerConnection.
        * @param {String} friendID - ID of the friend you want to call.
        */
-    constructor(friendID, version) {
+    constructor(friendID, opts) {
         super();
         this.pc = new RTCPeerConnection(PC_CONFIG);
         this.tracks = 0
-        this.version = version
+        this.opts = opts
         this.pc.onicecandidate = (event) => socket.emit('call', {
             to: this.friendID,
             candidate: event.candidate
@@ -36,9 +36,6 @@ class PeerConnection extends Emitter {
     start(isCaller, config, pcs) {
         this.mediaDevice
             .on('stream', (stream) => {
-                stream.getTracks().forEach((track) => {
-                    this.pc.addTrack(track, stream);
-                });
                 const keys = Object.keys(pcs)
                 if (keys.length > 1) {
                     console.log("combining streams")
@@ -55,6 +52,9 @@ class PeerConnection extends Emitter {
                     else {
                         this.emit('debug', "no peer src")
                     }
+                    stream.getTracks().forEach((track) => {
+                        // this.pc.addTrack(track, stream);
+                    });
                 }
                 this.emit('localStream', stream);
                 if (isCaller) socket.emit('request', { to: this.friendID });

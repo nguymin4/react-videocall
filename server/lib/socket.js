@@ -6,9 +6,10 @@ let leaderConnectedToControl = false
 const checkRoom = (socket, id) => {
     console.log("checking room")
 }
-rooms.create("main","session-1")
-rooms.join("main","session-2")
-rooms.join("main","session-4")
+rooms.create("main")
+rooms.join("main","session-5")
+rooms.join("main","session-6")
+rooms.join("main","session-1")
 
 const handleRegistration = async (socket, data) => {
     const broadcast = (message) => {
