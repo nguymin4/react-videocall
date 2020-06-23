@@ -7,9 +7,9 @@ const checkRoom = (socket, id) => {
     console.log("checking room")
 }
 rooms.create("main")
-rooms.join("main","session-5")
-rooms.join("main","session-6")
 rooms.join("main","session-1")
+rooms.join("main","session-3")
+rooms.join("main","session-4")
 
 const handleRegistration = async (socket, data) => {
     const broadcast = (message) => {

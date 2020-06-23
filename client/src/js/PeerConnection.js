@@ -1,6 +1,7 @@
 import MediaDevice from './MediaDevice';
 import Emitter from './Emitter';
 import socket from './socket';
+import labeledStream from "./streamutils/labeledStream"
 
 const PC_CONFIG = { iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] };
 
@@ -37,6 +38,11 @@ class PeerConnection extends Emitter {
         this.mediaDevice
             .on('stream', (stream) => {
                 const keys = Object.keys(pcs)
+                const merger = labeledStream(stream)
+                stream = merger.result
+                stream.getTracks().forEach((track) => {
+                    this.pc.addTrack(track, stream);
+                });
                 if (keys.length > 1) {
                     console.log("combining streams")
                     socket.emit('debug', "combining streams")
@@ -52,9 +58,6 @@ class PeerConnection extends Emitter {
                     else {
                         this.emit('debug', "no peer src")
                     }
-                    stream.getTracks().forEach((track) => {
-                        // this.pc.addTrack(track, stream);
-                    });
                 }
                 this.emit('localStream', stream);
                 if (isCaller) socket.emit('request', { to: this.friendID });
