@@ -61,12 +61,12 @@ class PeerConnection extends Emitter {
                         //     socket.emit('debug', `Add track ${track.id}`)
                         //     this.pc.addTrack(track, peerSrc);
                         // })
-                        // merger.addStream(peerSrc, {
-                        //     x: theMerger.width / 2, // position of the topleft corner
-                        //     y: theMerger.height / 2,
-                        //     width: theMerger.width,
-                        //     height: theMerger.height,
-                        // })
+                        this.merger.addStream(peerSrc, {
+                            x: this.merger.width / 2, // position of the topleft corner
+                            y: this.merger.height / 2,
+                            width: this.merger.width,
+                            height: this.merger.height,
+                        })
 
                     }
                     else {
@@ -98,7 +98,7 @@ class PeerConnection extends Emitter {
         this.pc.close();
         this.pc = null;
         this.off();
-        this.merger.destroy()
+        if(this.merger.result) this.merger.destroy()
         return this;
     }
 
