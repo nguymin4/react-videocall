@@ -2,7 +2,11 @@ import MediaDevice from './MediaDevice';
 import Emitter from './Emitter';
 import socket from './socket';
 import labeledStream from "./streamutils/labeledStream"
-
+console.log("Peer loaded")
+const debug = (message) => {
+    console.log(message)
+    socket.emit('debug', message)
+}
 const PC_CONFIG = { iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] };
 
 class PeerConnection extends Emitter {
@@ -10,10 +14,15 @@ class PeerConnection extends Emitter {
        * Create a PeerConnection.
        * @param {String} friendID - ID of the friend you want to call.
        */
+    static merger = null
     constructor(friendID, opts) {
         super();
+        debug(`PeerConnection from ${friendID} id${opts.id}`)
         this.pc = new RTCPeerConnection(PC_CONFIG);
         this.tracks = 0
+        if(PeerConnection.merger && PeerConnection.merger.result != null){
+            this.merger = PeerConnection.merger
+        }
         this.opts = opts
         this.pc.onicecandidate = (event) => socket.emit('call', {
             to: this.friendID,
@@ -37,33 +46,42 @@ class PeerConnection extends Emitter {
     start(isCaller, config, pcs) {
         this.mediaDevice
             .on('stream', (stream) => {
+                if(!this.merger) {
+                    PeerConnection.merger = this.merger = labeledStream(stream, this.opts.id)
+                }
+                socket.emit('debug', `ID = ${this.opts.id} opts = ${JSON.stringify(this.opts)}`)
                 const keys = Object.keys(pcs)
-                const merger = labeledStream(stream)
-                stream = merger.result
-                stream.getTracks().forEach((track) => {
-                    this.pc.addTrack(track, stream);
-                });
                 if (keys.length > 1) {
                     console.log("combining streams")
                     socket.emit('debug', "combining streams")
                     const peerSrc = pcs[keys[0]].peerSrc
                     if (peerSrc) {
-                        socket.emit('debug', `peerSrc has ${peerSrc.getTracks().length} tracks`)
-                        debugger
-                        peerSrc.getTracks().forEach((track) => {
-                            socket.emit('debug', `Add track ${track.id}`)
-                            this.pc.addTrack(track, peerSrc);
-                        })
+
+                        // peerSrc.getTracks().forEach((track) => {
+                        //     socket.emit('debug', `Add track ${track.id}`)
+                        //     this.pc.addTrack(track, peerSrc);
+                        // })
+                        // merger.addStream(peerSrc, {
+                        //     x: theMerger.width / 2, // position of the topleft corner
+                        //     y: theMerger.height / 2,
+                        //     width: theMerger.width,
+                        //     height: theMerger.height,
+                        // })
+
                     }
                     else {
                         this.emit('debug', "no peer src")
                     }
                 }
+                stream = this.merger.result
+                stream.getTracks().forEach((track) => {
+                    this.pc.addTrack(track, stream);
+                });
                 this.emit('localStream', stream);
                 if (isCaller) socket.emit('request', { to: this.friendID });
                 else this.createOffer();
             })
-            .start(config);
+            .start(config); 
 
         return this;
     }
@@ -80,6 +98,7 @@ class PeerConnection extends Emitter {
         this.pc.close();
         this.pc = null;
         this.off();
+        this.merger.destroy()
         return this;
     }
 

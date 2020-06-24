@@ -9,7 +9,7 @@ const checkRoom = (socket, id) => {
 rooms.create("main")
 rooms.join("main","session-1")
 rooms.join("main","session-3")
-rooms.join("main","session-4")
+// rooms.join("main","session-4")
 
 const handleRegistration = async (socket, data) => {
     const broadcast = (message) => {
@@ -159,7 +159,7 @@ function initSocket(socket) {
 
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {
-            console.log(`request from ${data.name}`)
+            console.log(`request to ${data.to}`)
             const receiver = users.getReceiver(data.to);
             if (receiver) {
                 receiver.emit('request', { from: id });

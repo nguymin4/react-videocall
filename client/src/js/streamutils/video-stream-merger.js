@@ -1,10 +1,10 @@
 /* globals window */
-
+const mergers = []
 module.exports = VideoStreamMerger
-
+console.log("merger is now loaded")
 function VideoStreamMerger (opts) {
   if (!(this instanceof VideoStreamMerger)) return new VideoStreamMerger(opts)
-
+  console.log("new merger")
   opts = opts || {}
 
   const AudioContext = window.AudioContext || window.webkitAudioContext
@@ -41,6 +41,7 @@ function VideoStreamMerger (opts) {
   this.result = null
 
   this._backgroundAudioHack()
+  mergers.push(this)
 }
 
 VideoStreamMerger.prototype.setOutputSize = function (width, height) {
@@ -360,4 +361,12 @@ VideoStreamMerger.prototype.destroy = function () {
     t.stop()
   })
   this.result = null
+}
+if(module.hot) {
+    module.hot.dispose(data=>{
+        mergers.forEach(merger=> {
+            console.log("got rid of merger")
+            if(merger.result) merger.destroy()
+        })
+    })
 }
