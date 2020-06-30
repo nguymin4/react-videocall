@@ -6,18 +6,18 @@ import MainWindow from './MainWindow';
 import CallWindow from './CallWindow';
 import CallModal from './CallModal';
 // import logloader from "../util/logloader"
-import { useApp } from "./app"
+import { useApp,proxyMethods } from "./app"
 import { ToastContainer } from 'react-toastify'
 // import { getActionPaths } from 'overmind/lib/utils';
 class App extends Component {
     constructor(props) {
         super();
-        this.state = props.overmind.state
+        this.oState = props.overmind.state
         this.actions = props.overmind.actions
         this.effects = props.overmind.effects
         this.state = {
-            room:this.state.attrs.room,
-            clientId: this.state.attrs.id || '',
+            room: this.oState.attrs.room,
+            clientId: this.oState.attrs.id || '',
             callWindow: '',
             callModal: '',
             callFrom: '',
@@ -42,24 +42,8 @@ class App extends Component {
             socket.emit('debug')
 
         }
-        const oldOn = socket.on.bind(socket)
-        const logEvent = this.actions.logEvent
-        socket.on = (message,cb)=>{
-            console.log("socket on ", message)
-            const cb1 = (args)=>{
-                console.log("cb1 for ", message)
-                try{
-
-                    console.log(message, "called with ", JSON.stringify(args))
-                } catch (e){
-                    console.log(message, "called withx ", e.toString())
-                }
-                logEvent({evType:'socket',message,args,cb: ()=>console.log("did it!")})
-                cb(args)
-            }
-            oldOn(message,cb1)
-            return socket
-        }
+     
+        proxyMethods('socket', socket)
         socket
             .on('init', (attrs) => {
                 this.effects.socket.actions.gotEvent('init')
@@ -78,7 +62,7 @@ class App extends Component {
                 this.startCallHandler(true, leader, { video: true, audio: true }, data.opts)
             })
             .on('request', ({ from: callFrom }) => {
-                const opts = {id:this.state.clientId + "R"}
+                const opts = { id: this.state.clientId + "R" }
                 this.startCallHandler(false, callFrom, { video: true, audio: true }, opts)
                 // return
                 // this.setState({ callModal: 'active', callFrom });
@@ -92,10 +76,10 @@ class App extends Component {
                 } else pc.addIceCandidate(data.candidate);
             })
             .on('end', (data) => this.endCall.bind(this, false)(data.from))
-            .emit('init', this.state.attrs);
+            .emit('init', this.oState.attrs);
     }
 
-    startCall(isCaller, friendID, config, opts={}) {
+    startCall(isCaller, friendID, config, opts = {}) {
         this.config = config;
         const pc = new PeerConnection(friendID, opts)
 
@@ -114,11 +98,11 @@ class App extends Component {
                 console.log("Track", track)
                 this.setState({ peerSrc: src })
                 pc.peerSrc = src
-                if( track > 1) {
+                if (track > 1) {
                     socket.emit("tracks > 1")
-                    const newId = [`X ${friendID}-${Math.floor(track/2)}`] 
-                    if(!this.pcs[newId]){
-                        this.pcs[newId] = {peerSrc: new MediaStream(track)}
+                    const newId = [`X ${friendID}-${Math.floor(track / 2)}`]
+                    if (!this.pcs[newId]) {
+                        this.pcs[newId] = { peerSrc: new MediaStream(track) }
                     } else {
                         this.pcs[newId].peerSrc.addTrack(track)
                     }
@@ -211,7 +195,7 @@ const WrapApp = () => {
     })
     return <div>
         <div>The id is {state.attrs.id} role: {state.attrs.role}</div>
-        <App overmind={{state,actions,effects}} />
+        <App overmind={{ state, actions, effects }} />
     </div>
 }
 
