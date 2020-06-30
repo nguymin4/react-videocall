@@ -6,10 +6,10 @@ let leaderConnectedToControl = false
 const checkRoom = (socket, id) => {
     console.log("checking room")
 }
-rooms.create("main")
-rooms.join("main","session-1")
-rooms.join("main","session-3")
-rooms.join("main","session-4")
+// rooms.create("main")
+// rooms.join("main","session-1")
+// rooms.join("main","session-3")
+// rooms.join("main","session-4")
 
 const handleRegistration = async (socket, data) => {
     const broadcast = (message) => {
@@ -24,14 +24,14 @@ const handleRegistration = async (socket, data) => {
     const roomName = data.room || "main"
     if (version) {
         console.log("testing new logic")
-        if (!rooms.exists(roomName) || ((data.role === 'reset') || (version === 2 && data.role === 'r'))) {
+        if (!rooms.exists(roomName) || ((data.control === 'reset') || (version === 2 && data.control === 'r'))) {
             console.log("reset")
             rooms.create(roomName, data.id)
             broadcast(`${data.name} has created ${roomName}`)
         }
         broadcast(`${data.name} has joined ${roomName}`)
         rooms.join(roomName, data.id)
-        if (data.role === 'connect' || (version === 2 && data.role === 'c')) {
+        if (data.control === 'connect' || (version === 2 && data.control === 'c')) {
             const members = rooms.members(roomName)
             console.log(`connecting ${members.join(',')}`)
             rooms.connect(roomName)
@@ -148,6 +148,7 @@ function initSocket(socket) {
             console.log("Sending id", id)
             socket.emit('init', { id });
         })
+        
         .on('peerconnect', (data) => { 
             console.log('peerconnect', data.trackNo, data.room, data.from, data.friend, JSON.stringify(data.details)) 
             // rooms.next()
@@ -155,8 +156,9 @@ function initSocket(socket) {
         .on('register', async (data) => {
             console.log("registering", data)
             await handleRegistration(socket, data)
+            console.log("members",rooms.members(data.rom))
+            socket.emit('members', {members:rooms.members()})
         })
-
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {
             console.log(`request to ${data.to}`)
