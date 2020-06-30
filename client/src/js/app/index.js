@@ -7,6 +7,8 @@ logLoader(module);
 const state = {
     title: "This title",
     attrs: {},
+    events:[],
+    lastEvent: {},
     control: null,
     leader: null,
     otherRoles: {
@@ -19,10 +21,19 @@ socket.off('confirm')
 
 // socket.off('confirm',cb)
 const actions = {
+    logEvent({state},{evType, message,args,cb}){
+        const lastEvent = {evType,message,args}
+        state.lastEvent = lastEvent
+        state.events.push(lastEvent)
+    },
+    clearEvents({state}){state.events=[]},
+
     setAttrs({ state }, attrs) {
         if (!attrs) attrs = {
             name: 'undefined',
+            room: 'main',
             role: 'undefined',
+            control: 'undefined',
             id: null
         }
         state.attrs = attrs
@@ -33,11 +44,15 @@ const actions = {
         state.attrs.id = id
         effects.storage.setAttrs(json(state.attrs))
     },
+     setControl({ state }, control) {
+        state.attrs.control = control
+        effects.storage.setAttrs(json(state.attrs))
+    },
     register({ state, effects }, data) {
-        if(data.roleID) state.attrs.role = data.roleID
+        if(data.controlValue) state.attrs.control = data.controlValue
         if(data.userID) state.attrs.name = data.userID
         if(data.roomID) state.attrs.room = data.roomID
-        console.log('registering ', json(state.attrs))
+        // console.log('registering ', json(state.attrs))
         effects.socket.actions.register(json(state.attrs))
         effects.storage.setAttrs(json(state.attrs))
     }
@@ -62,9 +77,19 @@ const effects = {
                 console.log('send register', data)
                 socket.emit('register', data)
             },
+            debug(data){
+                socket.emit('debug', data)
+            },
+            gotEvent(data){
+                console.log("got event", JSON.stringify(data))
+            }
         },
         events: {
             registerAction: null,
+            members({members}){
+                console.log("Members message", members)
+                theActions.setControl(members.join(','))
+            },
             setRegisterAction(func){
                 console.log("register action called")
                 effects.socket.events.registerAction= func
@@ -98,7 +123,7 @@ const effects = {
 Object.keys(effects.socket.events).forEach(key => {
     socket.off(key); socket.on(key, effects.socket.events[key])
 })
-effects
+let theActions
 // console.log("conform source code", effects.socket.onConfirm + "")
 // actions.actionCB()
 const onInitialize = (
@@ -114,6 +139,7 @@ const onInitialize = (
     console.log("INITTED")
     socket.emit('debug', 'it is initialized')
     const attrs = effects.storage.getAttrs()
+    theActions = actions
     actions.setAttrs(attrs)
 
 }
@@ -129,7 +155,7 @@ export let useApp;
 
 const initialize = () => {
     app = createOvermind(config, {
-        // devtools: 'penguin.linux.test:8080', //
+        devtools: 'penguin.linux.test:3031', 
         // devtools: "localhost:3031"
     });
     console.log(app.state);

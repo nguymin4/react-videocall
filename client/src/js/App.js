@@ -9,13 +9,15 @@ import CallModal from './CallModal';
 import { useApp } from "./app"
 import { ToastContainer } from 'react-toastify'
 // import { getActionPaths } from 'overmind/lib/utils';
-
 class App extends Component {
     constructor(props) {
         super();
+        this.state = props.overmind.state
+        this.actions = props.overmind.actions
+        this.effects = props.overmind.effects
         this.state = {
-            room:props.attrs.room,
-            clientId: props.attrs.id || '',
+            room:this.state.attrs.room,
+            clientId: this.state.attrs.id || '',
             callWindow: '',
             callModal: '',
             callFrom: '',
@@ -23,6 +25,7 @@ class App extends Component {
             peerSrc: null,
             // nPCs:0
         };
+
         this.pcs = {}; //array of peer connections
         this.config = null;
         this.startCallHandler = this.startCall.bind(this);
@@ -39,12 +42,31 @@ class App extends Component {
             socket.emit('debug')
 
         }
+        const oldOn = socket.on.bind(socket)
+        const logEvent = this.actions.logEvent
+        socket.on = (message,cb)=>{
+            console.log("socket on ", message)
+            const cb1 = (args)=>{
+                console.log("cb1 for ", message)
+                try{
+
+                    console.log(message, "called with ", JSON.stringify(args))
+                } catch (e){
+                    console.log(message, "called withx ", e.toString())
+                }
+                logEvent({evType:'socket',message,args,cb: ()=>console.log("did it!")})
+                cb(args)
+            }
+            oldOn(message,cb1)
+            return socket
+        }
         socket
             .on('init', (attrs) => {
+                this.effects.socket.actions.gotEvent('init')
                 const clientId = attrs.id
+                this.actions.setId(attrs.id)
                 document.title = `${clientId} - VideoCall`;
                 this.setState({ clientId });
-                this.props.setId(clientId)
                 socket.emit('debug', `App initted ${clientId}`)
 
             })
@@ -70,7 +92,7 @@ class App extends Component {
                 } else pc.addIceCandidate(data.candidate);
             })
             .on('end', (data) => this.endCall.bind(this, false)(data.from))
-            .emit('init', this.props.attrs);
+            .emit('init', this.state.attrs);
     }
 
     startCall(isCaller, friendID, config, opts={}) {
@@ -189,7 +211,7 @@ const WrapApp = () => {
     })
     return <div>
         <div>The id is {state.attrs.id} role: {state.attrs.role}</div>
-        <App setId={actions.setId} attrs={state.attrs} />
+        <App overmind={{state,actions,effects}} />
     </div>
 }
 
