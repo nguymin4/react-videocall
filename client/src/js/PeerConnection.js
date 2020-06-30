@@ -2,6 +2,7 @@ import MediaDevice from './MediaDevice';
 import Emitter from './Emitter';
 import socket from './socket';
 import labeledStream from "./streamutils/labeledStream"
+import {proxyMethods } from "./app"
 console.log("Peer loaded")
 const debug = (message) => {
     console.log(message)
@@ -15,8 +16,10 @@ class PeerConnection extends Emitter {
        * @param {String} friendID - ID of the friend you want to call.
        */
     static merger = null
+    static instance = 0
     constructor(friendID, opts) {
         super();
+        PeerConnection.instance++
         debug(`PeerConnection from ${friendID} id${opts.id}`)
         this.pc = new RTCPeerConnection(PC_CONFIG);
         this.tracks = 0
@@ -33,8 +36,12 @@ class PeerConnection extends Emitter {
             event.trackNo = this.tracks++
             this.emit('peerTrackEvent', event);
         }
-
+        
         this.mediaDevice = new MediaDevice();
+        proxyMethods(`pc-${PeerConnection.instance}`,this)
+        proxyMethods(`media-${PeerConnection.instance}`,this.mediaDevice)
+        
+        
         this.friendID = friendID;
     }
 
