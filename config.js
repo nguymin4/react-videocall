@@ -1,4 +1,4 @@
-const DEVPORT = 9002
+const DEVPORT = 9000
 const GITPODURL = `https://${DEVPORT}-e86f92db-f24e-4089-b8df-7bed4a3a25dd.ws-us02.gitpod.io`
 const childProcess = require("child_process");
 function execute(command) {
