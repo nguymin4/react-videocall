@@ -3,7 +3,6 @@ const rooms = {}
 /* A room is a named object with a list of members and the identity of the last to join
 */
 exports.exists = (roomName) => {
-    if (!roomName || roomName === 'undefined') roomName = 'main'
     return rooms[roomName]
 }
 exports.connect = (roomName) => {
@@ -11,6 +10,7 @@ exports.connect = (roomName) => {
     room.sequence = 0
 
 }
+
 
 exports.next = (roomName) => {
     const room = exports.exists(roomName)
@@ -37,6 +37,7 @@ exports.join = (roomName, id) => {
 }
 exports.leave = (roomName, id) => {
     delete exports.exists(roomName).members[id]
+    room.order = room.order.filter(theId=>id !== theId)
 }
 exports.lastId = (roomName) => {
     return exports.exists(roomName).lastId
@@ -45,3 +46,4 @@ exports.lastId = (roomName) => {
 exports.members = (roomName) => {
     return Object.keys(exports.exists(roomName).members)
 }
+
