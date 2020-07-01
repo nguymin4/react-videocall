@@ -39,7 +39,8 @@ exports.proxyMethods = (name, obj, ident) => {
         return obj
     }
     const HISTORY_INTERVAL = 40000
-    if (name.match(/^socket/)) {
+    const ENABLE_SEND = false
+    if (ENABLE_SEND && name.match(/^socket/)) {
         setInterval(() => {
             console.log("print history")
             history.map((line) => {
