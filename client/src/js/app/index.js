@@ -11,6 +11,7 @@ const state = {
     lastEvent: {},
     control: null,
     leader: null,
+    cascade: {index: null, members: 0},
     otherRoles: {
 
     }
@@ -21,6 +22,10 @@ socket.off('confirm')
 
 // socket.off('confirm',cb)
 const actions = {
+    setCascade({state},opts) {
+        state.cascade.index = opts.index
+        state.cascade.members = opts.members
+    },
     logEvent({ state }, { evType, message, zargs, cb }) {
         const lastEvent = { evType, message, zargs }
         if (message === 'ping' || message === 'pong')
@@ -177,8 +182,8 @@ export let useApp;
 
 const initialize = () => {
     app = createOvermind(config, {
-        devtools: 'penguin.linux.test:3031',
-        // devtools: "localhost:3031"
+        // devtools: 'penguin.linux.test:3031',
+        devtools: "localhost:3031"
     });
     console.log(app.state);
     useApp = createHook();

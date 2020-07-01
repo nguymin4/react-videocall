@@ -2,13 +2,22 @@ const users = require('./users');
 const rooms = {}
 /* A room is a named object with a list of members and the identity of the last to join
 */
+exports.all = ()=> {
+    return rooms
+}
+
 exports.exists = (roomName) => {
     return rooms[roomName]
 }
 exports.connect = (roomName) => {
     const room = exports.exists(roomName)
     room.sequence = 0
+    room.order.map((member,sequence) => {
+        console.log("cascade", member)
+    const nextSocket = users.getReceiver(member)
+    nextSocket.emit("cascade", { index: sequence, members: room.order.length})
 
+    })
 }
 
 
@@ -22,6 +31,7 @@ exports.next = (roomName) => {
     const nextMember = members[sequence]
     const controlSocket = users.getReceiver(thisMember)
     console.log("connect ", thisMember, nextMember)
+
     controlSocket.emit("calljoin", { opts: {index: sequence - 1, members: members.length}, jointo: nextMember })
     return true
     

@@ -61,6 +61,9 @@ class App extends Component {
                 data.opts.id = this.state.clientId
                 this.startCallHandler(true, leader, { video: true, audio: true }, data.opts)
             })
+            .on('cascade', (data) => {
+                this.actions.setCascade({index: data.index, members: data.members})
+            })
             .on('request', ({ from: callFrom }) => {
                 const opts = { id: this.state.clientId + "R" }
                 this.startCallHandler(false, callFrom, { video: true, audio: true }, opts)

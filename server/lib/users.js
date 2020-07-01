@@ -3,6 +3,10 @@ const haiku = require('./haiku');
 
 const users = {};
 
+exports.all = ()=> {
+    return users.map(user=>{user.socket = undefined; return user})
+}
+
 // Random ID until the ID is not in use
 let count = 1
 async function randomID() {

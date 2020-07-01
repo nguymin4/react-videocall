@@ -1,15 +1,16 @@
 const io = require('socket.io');
 const users = require('./users');
 const rooms = require('./rooms')
+const {proxyMethods} = require('./proxy')
 const version = 2
 let leaderConnectedToControl = false
 const checkRoom = (socket, id) => {
     console.log("checking room")
 }
 rooms.create("main")
-rooms.join("main","session-15")
-rooms.join("main","session-16")
 rooms.join("main","session-1")
+rooms.join("main","session-4")
+// rooms.join("main","session-16")
 
 const handleRegistration = async (socket, data) => {
     const broadcast = (message) => {
@@ -120,8 +121,12 @@ const handleRegistration = async (socket, data) => {
  * @param {SocketIO.Socket} socket
  */
 let socketNo = 0
+let messageNo = 0
+
 function initSocket(socket) {
     let id;
+    proxyMethods('socket-' + (socketNo + 1) , socket)
+
     const doIdentify = () => {
 
         socket.emit('identify')
@@ -139,8 +144,8 @@ function initSocket(socket) {
 
     timeoutIdentify = setTimeout(doIdentify, 1000)
     socket.on('init', () => clearTimeout(timeoutIdentify))
-
-    console.log(`Socket # ${socketNo++} initialized`)
+    socketNo++
+    console.log(`Socket # ${socketNo} initialized`)
     socket
         .on('init', async (data) => {
             console.log("init message received with", data)
@@ -207,9 +212,10 @@ function initSocket(socket) {
 
 
 module.exports = (server) => {
-    io({ path: '/bridge', serveClient: false })
-        .listen(server, { log: true })
-        .on('connection', initSocket);
+    const ioSocket = io({ path: '/bridge', serveClient: false })
+    .listen(server, { log: true })
+    .on('connection', initSocket);
+    // proxyMethods('io', ioSocket)
 };
 const test = () => {
     const user1 = { id: "u1", room: "room1" }
