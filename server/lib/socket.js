@@ -36,20 +36,7 @@ const handleRegistration = async (socket, data) => {
             const members = rooms.members(roomName)
             console.log(`connecting ${members.join(',')}`)
             rooms.connect(roomName)
-            rooms.next(roomName)
-            const retry = () => setTimeout(()=> {
-                console.log("retry")
-                const done = rooms.next(roomName)
-                if(!done) retry()
-            },7000)
-            retry()
-            // for (let i = 0; i < members.length - 1; i++) {
-            //     const thisMember = members[i]
-            //     const nextMember = members[i + 1]
-            //     const controlSocket = users.getReceiver(thisMember)
-            //     console.log("connect ", thisMember, nextMember)
-            //     controlSocket.emit("calljoin", { jointo: nextMember, version: 1})
-            // }
+           
         }
 
         return
@@ -161,8 +148,8 @@ function initSocket(socket) {
         .on('register', async (data) => {
             console.log("registering", data)
             await handleRegistration(socket, data)
-            console.log("members",rooms.members(data.rom))
-            socket.emit('members', {members:rooms.members()})
+            console.log("members",rooms.members(data.room))
+            socket.emit('members', {members:rooms.members(data.room)})
         })
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {

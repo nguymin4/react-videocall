@@ -51,12 +51,12 @@ class App extends Component {
                 this.actions.setId(attrs.id)
                 document.title = `${clientId} - VideoCall`;
                 this.setState({ clientId });
-                socket.emit('debug', `App initted ${clientId}`)
+                // socket.emit('debug', `App initted ${clientId}`)
 
             })
             .on('calljoin', (data) => {
                 const leader = data.jointo
-                socket.emit('debug', 'calljoin received')
+                // socket.emit('debug', 'calljoin received')
                 console.log('join received', data)
                 data.opts.id = this.state.clientId
                 this.startCallHandler(true, leader, { video: true, audio: true }, data.opts)
@@ -84,7 +84,7 @@ class App extends Component {
 
     startCall(isCaller, friendID, config, opts = {}) {
         this.config = config;
-        const pc = new PeerConnection(friendID, opts)
+        const pc = new PeerConnection(friendID, opts,this.oState)
 
         this.pcs[friendID] = pc
         // this.setState({nPCs: Object.keys(this.pcs).length})
@@ -96,13 +96,20 @@ class App extends Component {
             })
             .on('peerTrackEvent', (e) => {
                 const src = e.streams[0]
-                socket.emit('debug', `${this.state.clientId} has ${e.streams.length} streams`)
+                // socket.emit('debug', `${this.state.clientId} has ${e.streams.length} streams`)
                 const track = e.track
                 console.log("Track", track)
                 this.setState({ peerSrc: src })
                 pc.peerSrc = src
+                pc.merger.addStream(src, {
+                            index: -1    ,
+                            x: 0, // position of the topleft corner
+                            y: 0,
+                            width: pc.merger.width,
+                            height: pc.merger.height,
+                        })
                 if (track > 1) {
-                    socket.emit("tracks > 1")
+                    socket.emit("debug", "tracks > 1")
                     const newId = [`X ${friendID}-${Math.floor(track / 2)}`]
                     if (!this.pcs[newId]) {
                         this.pcs[newId] = { peerSrc: new MediaStream(track) }
@@ -110,7 +117,7 @@ class App extends Component {
                         this.pcs[newId].peerSrc.addTrack(track)
                     }
                 }
-                socket.emit("peerconnect", { trackNo: e.trackNo, room: this.state.room, from: this.state.clientId, friend: friendID, details: { remote: track.remote, label: track.label } })
+                // socket.emit("peerconnect", { trackNo: e.trackNo, room: this.state.room, from: this.state.clientId, friend: friendID, details: { remote: track.remote, label: track.label } })
             })
             .start(isCaller, config, this.pcs);
     }

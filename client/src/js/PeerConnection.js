@@ -2,7 +2,7 @@ import MediaDevice from './MediaDevice';
 import Emitter from './Emitter';
 import socket from './socket';
 import labeledStream from "./streamutils/labeledStream"
-import {proxyMethods } from "./app"
+import { proxyMethods } from "./app"
 console.log("Peer loaded")
 const debug = (message) => {
     console.log(message)
@@ -17,13 +17,14 @@ class PeerConnection extends Emitter {
        */
     static merger = null
     static instance = 0
-    constructor(friendID, opts) {
+    constructor(friendID, opts, oState) {
         super();
         PeerConnection.instance++
         debug(`PeerConnection from ${friendID} id${opts.id}`)
         this.pc = new RTCPeerConnection(PC_CONFIG);
         this.tracks = 0
-        if(PeerConnection.merger && PeerConnection.merger.result != null){
+        this.oState = oState
+        if (PeerConnection.merger && PeerConnection.merger.result != null) {
             this.merger = PeerConnection.merger
         }
         this.opts = opts
@@ -36,12 +37,12 @@ class PeerConnection extends Emitter {
             event.trackNo = this.tracks++
             this.emit('peerTrackEvent', event);
         }
-        
+
         this.mediaDevice = new MediaDevice();
-        proxyMethods(`pc-${PeerConnection.instance}`,this)
-        proxyMethods(`media-${PeerConnection.instance}`,this.mediaDevice)
-        
-        
+        // proxyMethods(`pc-${PeerConnection.instance}`, this)
+        // proxyMethods(`media-${PeerConnection.instance}`, this.mediaDevice)
+
+
         this.friendID = friendID;
     }
 
@@ -53,8 +54,10 @@ class PeerConnection extends Emitter {
     start(isCaller, config, pcs) {
         this.mediaDevice
             .on('stream', (stream) => {
-                if(!this.merger) {
-                    PeerConnection.merger = this.merger = labeledStream(stream, this.opts.id)
+                if (!this.merger) {
+                    PeerConnection.merger = this.merger = labeledStream(stream, this.opts.id,
+                        this.oState.cascade.index,
+                        this.oState.cascade.members)
                 }
                 socket.emit('debug', `ID = ${this.opts.id} opts = ${JSON.stringify(this.opts)}`)
                 const keys = Object.keys(pcs)
@@ -68,12 +71,15 @@ class PeerConnection extends Emitter {
                         //     socket.emit('debug', `Add track ${track.id}`)
                         //     this.pc.addTrack(track, peerSrc);
                         // })
-                        this.merger.addStream(peerSrc, {
-                            x: this.merger.width / 2, // position of the topleft corner
-                            y: this.merger.height / 2,
-                            width: this.merger.width,
-                            height: this.merger.height,
-                        })
+                        // const stream1 = this.merger.getStream(0)
+                        // this.merger.addStream(peerSrc, {
+                        //     index: 2    ,
+                        //     x: 0, // position of the topleft corner
+                        //     y: 0,
+                        //     width: this.merger.width,
+                        //     height: this.merger.height,
+                        // })
+                        // this.merger.updateIndex(stream1,2)
 
                     }
                     else {
@@ -88,7 +94,7 @@ class PeerConnection extends Emitter {
                 if (isCaller) socket.emit('request', { to: this.friendID });
                 else this.createOffer();
             })
-            .start(config); 
+            .start(config);
 
         return this;
     }
@@ -105,7 +111,7 @@ class PeerConnection extends Emitter {
         this.pc.close();
         this.pc = null;
         this.off();
-        if(this.merger.result) this.merger.destroy()
+        if (this.merger.result) this.merger.destroy()
         return this;
     }
 
