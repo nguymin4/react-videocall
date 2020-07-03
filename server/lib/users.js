@@ -4,7 +4,7 @@ const haiku = require('./haiku');
 const users = {};
 
 exports.all = ()=> {
-    return users.map(user=>{user.socket = undefined; return user})
+    return Object.values(users).map(user=>{user.socket = undefined; return user})
 }
 
 // Random ID until the ID is not in use
@@ -37,6 +37,7 @@ exports.create = async (socket, attrs) => {
 };
 
 exports.getReceiver = (id) => users[id] ? users[id].receiver : null;
+exports.getControlOf = (id) => users[id] ? users[id].control : null;
 
 exports.remove = (id) => delete users[id];
 
@@ -64,14 +65,15 @@ exports.connect = (id,target,connect) => {
     
 }
 
-exports.getRole = (role) => {
+exports.getByRole = (role) => {
     let id
     Object.keys(users).forEach((key) => { if (users[key].role === role) id = key })
     return id
 }
 
+
 exports.getName = (id) =>{
-    return users[id].name
+    return users[id] && users[id].name
 }
 exports.dump = () => {
     Object.keys(users).forEach((key)=>{
@@ -87,4 +89,10 @@ exports.broadcast = (message, data) => {
             console.log("broadcasting to", users[key].id)
             users[key].receiver.emit(message, data)
      }})
+}
+exports.nameToSession = (name) => {
+    return Object.keys(users).find(key=>users[key].name ===name)
+}
+exports.namesToSessions = (list) => {
+    return list.map(name=>exports.nameToSession(name)).filter(session=>session)
 }

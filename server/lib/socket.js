@@ -1,16 +1,40 @@
 const io = require('socket.io');
 const users = require('./users');
 const rooms = require('./rooms')
-const {proxyMethods} = require('./proxy')
+const { proxyMethods } = require('./proxy')
 const version = 2
 let leaderConnectedToControl = false
 const checkRoom = (socket, id) => {
     console.log("checking room")
 }
-rooms.create("main")
-rooms.join("main","session-1")
-rooms.join("main","session-4")
-// rooms.join("main","session-16")
+
+const awaitUsers = (n) => new Promise(resolve => {
+    const retry = () => {
+        if (users.all().length >= n) resolve();
+        setTimeout(retry, 200);
+    };
+    retry();
+
+});
+const delayFor = (timeout) => new Promise(resolve =>
+    setTimeout(resolve, timeout)
+)
+const N_USERS = 1
+const joinByName = (name) => {
+    rooms.join("main", users.nameToSession(name))
+}
+const runTest = async () => {
+    await awaitUsers(3)
+    console.log("Three users")
+    console.log("XL", users.namesToSessions(["Noel","Jess"]))
+    rooms.create("main")
+    joinByName('Noel')
+    joinByName("Jess")
+    rooms.connect("main")
+    // rooms.join("main","session-16")
+
+}
+runTest()
 
 const handleRegistration = async (socket, data) => {
     const broadcast = (message) => {
@@ -21,10 +45,8 @@ const handleRegistration = async (socket, data) => {
         socket.emit("message", { message })
     }
 
-    
     const roomName = data.room || "main"
     if (version) {
-        console.log("testing new logic")
         if (!rooms.exists(roomName) || ((data.control === 'reset') || (version === 2 && data.control === 'r'))) {
             console.log("reset")
             rooms.create(roomName, data.id)
@@ -36,7 +58,7 @@ const handleRegistration = async (socket, data) => {
             const members = rooms.members(roomName)
             console.log(`connecting ${members.join(',')}`)
             rooms.connect(roomName)
-           
+
         }
 
         return
@@ -46,13 +68,13 @@ const handleRegistration = async (socket, data) => {
         await users.create(socket, data)
     } else {
         await users.create(socket, data)
-        const leader = users.getRole("leader")
+        const leader = users.getByRole("leader")
 
         if (!leader) {
             socket.emit("message", { message: "no leader registered yet" })
         } else {
             socket.emit("calljoin", { jointo: leader })
-            const control = users.getRole("control")
+            const control = users.getByRole("control")
             if (control) {
                 socket.emit("calljoin", { jointo: control })
             }
@@ -77,7 +99,7 @@ const handleRegistration = async (socket, data) => {
     }
     return
     //find if someone else had that role
-    oldUser = users.getRole(data.role)
+    oldUser = users.getByRole(data.role)
     if (oldUser) {
         const receiver = user.get(oldUser)
         receiver.emit('unenrole', { role: oldRole })
@@ -95,10 +117,10 @@ const handleRegistration = async (socket, data) => {
         users.broadcast('connectcontrol', { control: id })
     } else {
         const receiver = users.getReceiver(id)
-        const leader = users.getRole('leader')
-        const control = users.getRole('control')
-        if (leader) receiver.emit('connectleader', { leader: users.getRole('leader') })
-        if (control) receiver.emit('connectcontrol', { leader: users.getRole('leader') })
+        const leader = users.getByRole('leader')
+        const control = users.getByRole('control')
+        if (leader) receiver.emit('connectleader', { leader: users.getByRole('leader') })
+        if (control) receiver.emit('connectcontrol', { leader: users.getByRole('leader') })
     }
 
 }
@@ -112,15 +134,18 @@ let messageNo = 0
 
 function initSocket(socket) {
     let id;
-    proxyMethods('socket-' + (socketNo + 1) , socket)
+    proxyMethods('socket-' + (socketNo + 1), socket)
 
     const doIdentify = () => {
 
         socket.emit('identify')
             .on('identified', async (data) => {
-                console.log("identified client", data)
+                await handleRegistration(socket, data)
+                console.log("identified client", data.id, data.name)
                 id = await users.create(socket, data);
-                users.dump()
+                console.log("members", rooms.members(data.room).map(id => users.getName(id)))
+
+                // users.dump()
                 // socket.emit("confirm")
 
                 // if (data.id) id = data.id
@@ -129,7 +154,7 @@ function initSocket(socket) {
             })
     }
 
-    timeoutIdentify = setTimeout(doIdentify, 1000)
+    timeoutIdentify = setTimeout(doIdentify, 1)
     socket.on('init', () => clearTimeout(timeoutIdentify))
     socketNo++
     console.log(`Socket # ${socketNo} initialized`)
@@ -140,16 +165,15 @@ function initSocket(socket) {
             console.log("Sending id", id)
             socket.emit('init', { id });
         })
-        
-        .on('peerconnect', (data) => { 
-            console.log('peerconnect', data.trackNo, data.room, data.from, data.friend, JSON.stringify(data.details)) 
+
+        .on('peerconnect', (data) => {
+            console.log('peerconnect', data.trackNo, data.room, data.from, data.friend, JSON.stringify(data.details))
             // rooms.next()
         })
         .on('register', async (data) => {
-            console.log("registering", data)
             await handleRegistration(socket, data)
-            console.log("members",rooms.members(data.room))
-            socket.emit('members', {members:rooms.members(data.room)})
+            console.log("members", rooms.members(data.room).map(id => users.getName(id)))
+            socket.emit('members', { members: rooms.members(data.room) })
         })
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {
@@ -159,6 +183,7 @@ function initSocket(socket) {
                 receiver.emit('request', { from: id });
             }
         })
+
         .on('setrole', (data) => {
             users.setProp(id, 'role', data.role)
             users.broadcast('message', { from: data.id, message: `${data.name} is ${data.role}` })
@@ -200,8 +225,8 @@ function initSocket(socket) {
 
 module.exports = (server) => {
     const ioSocket = io({ path: '/bridge', serveClient: false })
-    .listen(server, { log: true })
-    .on('connection', initSocket);
+        .listen(server, { log: true })
+        .on('connection', initSocket);
     // proxyMethods('io', ioSocket)
 };
 const test = () => {

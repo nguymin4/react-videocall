@@ -11,17 +11,33 @@ exports.exists = (roomName) => {
 }
 exports.connect = (roomName) => {
     const room = exports.exists(roomName)
-    room.order.map((member, sequence) => {
+    const cascade = []
+    Object.keys(room.members).map(key=>{
+        const control = users.getControlOf(key)
+        console.log("key/control",key,control)
+        const seq = parseInt(control)
+        if(seq){
+            cascade[seq-1] = key
+        }
+    })
+    console.log("cascade", cascade)
+    cascade.map((member, sequence) => {
         console.log("cascade", member)
         const socket = users.getReceiver(member)
         socket.emit("cascade", { index: sequence, members: room.order.length })
     })
-    room.order.slice(0, -1).map((member, sequence) => {
+    cascade.slice(0, -1).map((member, sequence) => {
         console.log("calljoin", member)
         const socket = users.getReceiver(member)
-        const nextMember = room.order[sequence + 1]
-        socket.emit("calljoin", { jointo: nextMember, opts: {index: sequence, members: room.order.length }})
+        const nextMember = cascade[sequence + 1]
+        socket.emit("calljoin", { jointo: nextMember, opts: {type: "cascade", index: sequence, members: room.order.length }})
     })
+    const control = users.getByRole("control")
+    if(control){
+        console.log("Cascade to control")
+        socket.emit("calljoin", { jointo: nextMember, opts: {type: "cascadeToControl", index: sequence, members: room.order.length }})
+
+    }
 }
 
 
@@ -33,11 +49,9 @@ exports.join = (roomName, id) => {
     const room = exports.exists(roomName)
     if (room.members[id]) return
     room.members[id] = {}
-    room.order.push(id)
 }
 exports.leave = (roomName, id) => {
     delete exports.exists(roomName).members[id]
-    room.order = room.order.filter(theId => id !== theId)
 }
 exports.lastId = (roomName) => {
     return exports.exists(roomName).lastId
