@@ -94,7 +94,7 @@ const effects = {
             registerAction: null,
             members({ members }) {
                 console.log("Members message", members)
-                theActions.setControl(members.join(','))
+                // theActions.setControl(members.join(','))
             },
             setRegisterAction(func) {
                 console.log("register action called")
