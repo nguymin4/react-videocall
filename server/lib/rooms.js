@@ -35,7 +35,9 @@ exports.connect = (roomName) => {
     const control = users.getByRole("control")
     if(control){
         console.log("Cascade to control")
-        socket.emit("calljoin", { jointo: nextMember, opts: {type: "cascadeToControl", index: sequence, members: room.order.length }})
+        const lastMember = cascade[cascade.length - 1]
+        const socket = users.getReceiver(lastMember)
+        socket.emit("calljoin", { jointo: control, opts: {type: "cascadeToControl" }})
 
     }
 }

@@ -66,9 +66,8 @@ exports.connect = (id,target,connect) => {
 }
 
 exports.getByRole = (role) => {
-    let id
-    Object.keys(users).forEach((key) => { if (users[key].role === role) id = key })
-    return id
+    role = role.toUpperCase()
+    return Object.keys(users).find((key) => users[key].control.toUpperCase() === role)
 }
 
 
