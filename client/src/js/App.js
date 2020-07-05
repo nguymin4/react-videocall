@@ -5,8 +5,10 @@ import PeerConnection from './PeerConnection';
 import MainWindow from './MainWindow';
 import CallWindow from './CallWindow';
 import CallModal from './CallModal';
+import MediaDevice from './MediaDevice';
+
 // import logloader from "../util/logloader"
-import { useApp,proxyMethods } from "./app"
+import { useApp, proxyMethods } from "./app"
 import { ToastContainer } from 'react-toastify'
 // import { getActionPaths } from 'overmind/lib/utils';
 class App extends Component {
@@ -42,7 +44,7 @@ class App extends Component {
             socket.emit('debug')
 
         }
-     
+
         proxyMethods('socket', socket)
         socket
             .on('init', (attrs) => {
@@ -62,7 +64,7 @@ class App extends Component {
                 this.startCallHandler(true, leader, { video: true, audio: true }, data.opts)
             })
             .on('cascade', (data) => {
-                this.actions.setCascade({index: data.index, members: data.members})
+                this.actions.setCascade({ index: data.index, members: data.members })
             })
             .on('request', ({ from: callFrom }) => {
                 const opts = { id: this.state.clientId + "R" }
@@ -84,7 +86,7 @@ class App extends Component {
 
     startCall(isCaller, friendID, config, opts = {}) {
         this.config = config;
-        const pc = new PeerConnection(friendID, opts,this.oState)
+        const pc = new PeerConnection(friendID, opts, this.oState)
 
         this.pcs[friendID] = pc
         // this.setState({nPCs: Object.keys(this.pcs).length})
@@ -102,12 +104,12 @@ class App extends Component {
                 this.setState({ peerSrc: src })
                 pc.peerSrc = src
                 pc.merger.addStream(src, {
-                            index: -1    ,
-                            x: 0, // position of the topleft corner
-                            y: 0,
-                            width: pc.merger.width,
-                            height: pc.merger.height,
-                        })
+                    index: -1,
+                    x: 0, // position of the topleft corner
+                    y: 0,
+                    width: pc.merger.width,
+                    height: pc.merger.height,
+                })
                 if (track > 1) {
                     socket.emit("debug", "tracks > 1")
                     const newId = [`X ${friendID}-${Math.floor(track / 2)}`]
@@ -196,15 +198,35 @@ class App extends Component {
         );
     }
 }
+let seq = 1
+const mediaDevice = new MediaDevice()
+mediaDevice.name = "Name " + seq++
 const WrapApp = () => {
     const { state, actions, effects } = useApp()
+    const [stream, setStream] = React.useState(null)
     useEffect(() => {
         console.log("Effect applied")
         effects.socket.events.setRegisterAction(actions.register)
+        mediaDevice.on("stream", (stream) => {
+            console.log("SetStream", mediaDevice.stream, stream)
+            setStream(true)
+        })
+        mediaDevice.start()
 
-    })
+    }, [])
+
+
+    const localVideo = React.useRef(null)
+    React.useEffect(() => {
+        if (localVideo && localVideo.current && stream) {
+            console.log("USEEFFECT", mediaDevice, mediaDevice.name, mediaDevice.stream)
+            localVideo.current.srcObject = mediaDevice.stream
+        }
+    }, [localVideo, stream])
     return <div>
         <div>The id is {state.attrs.id} role: {state.attrs.role}</div>
+        <video height={100} ref={localVideo} autoPlay muted />
+
         <App overmind={{ state, actions, effects }} />
     </div>
 }
