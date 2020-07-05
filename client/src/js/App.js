@@ -208,7 +208,7 @@ const WrapApp = () => {
         console.log("Effect applied")
         effects.socket.events.setRegisterAction(actions.register)
         mediaDevice.on("stream", (stream) => {
-            console.log("SetStream", mediaDevice.stream, stream)
+            // console.log("SetStream", mediaDevice.stream, stream)
             setStream(true)
         })
         mediaDevice.start()
@@ -221,6 +221,7 @@ const WrapApp = () => {
         if (localVideo && localVideo.current && stream) {
             console.log("USEEFFECT", mediaDevice, mediaDevice.name, mediaDevice.stream)
             localVideo.current.srcObject = mediaDevice.stream
+            actions.addStream({name: 'local',stream: mediaDevice.stream })
         }
     }, [localVideo, stream])
     return <div>

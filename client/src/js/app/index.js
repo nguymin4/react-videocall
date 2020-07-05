@@ -6,6 +6,13 @@ import { toast } from 'react-toastify';
 logLoader(module);
 const state = {
     title: "This title",
+    streams: {
+        empty: null,
+        local: null,
+        toControl: null,
+        cascade: null,
+
+    },
     attrs: {},
     events: [],
     lastEvent: {},
@@ -22,6 +29,9 @@ socket.off('confirm')
 
 // socket.off('confirm',cb)
 const actions = {
+    addStream({state},{name,stream}){
+        state.streams[name]=stream
+    },
     setCascade({state},opts) {
         state.cascade.index = opts.index
         state.cascade.members = opts.members
