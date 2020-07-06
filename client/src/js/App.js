@@ -6,7 +6,7 @@ import MainWindow from './MainWindow';
 import CallWindow from './CallWindow';
 import CallModal from './CallModal';
 import MediaDevice from './MediaDevice';
-import makeEmptyStream from './streamutils/makeEmptyStream';
+import EmptyStream from './streamutils/EmptyStream';
 import {json} from "overmind"
 
 // import logloader from "../util/logloader"
@@ -203,20 +203,21 @@ class App extends Component {
 let seq = 1
 const mediaDevice = new MediaDevice()
 mediaDevice.name = "Name " + seq++
-const emptyStream = makeEmptyStream()
+const emptyStream = new EmptyStream()
+emptyStream.setTitle("Mike")
 const WrapApp = () => {
     const { state, actions, effects } = useApp()
     const [stream, setStream] = React.useState(null)
     useEffect(() => {
-        actions.addStream({name:'empty',emptyStream}) 
-        console.log("Effect is applied")
+        actions.addStream({name:'empty',stream: emptyStream}) 
+        // console.log("Effect is applied")
         effects.socket.events.setRegisterAction(actions.register)
         if (state.streams.local) {
-            console.log("using local stream", state.streams.local)
             setStream(json(state.streams.local))
+            // console.log("using local stream", state.streams.local)
         } else {
             mediaDevice.on("stream", (stream) => {
-                // console.log("SetStream", mediaDevice.stream, stream)
+                actions.addStream({ name: 'local', stream})
                 setStream(stream)
             })
         }
@@ -228,9 +229,8 @@ const WrapApp = () => {
     const localVideo = React.useRef(null)
     React.useEffect(() => {
         if (localVideo && localVideo.current && stream) {   
-            console.log("USE The Effect",  stream)
-            localVideo.current.srcObject =  emptyStream//sstream
-            actions.addStream({ name: 'local', stream})
+            // console.log("Using The Effect",  stream)
+            localVideo.current.srcObject =  stream
         }
     }, [localVideo, stream])
     return <div>

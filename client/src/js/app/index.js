@@ -30,6 +30,7 @@ socket.off('confirm')
 // socket.off('confirm',cb)
 const actions = {
     addStream({state},{name,stream}){
+        console.log("add stream",name,stream )
         state.streams[name]=stream
     },
     setCascade({state},opts) {
