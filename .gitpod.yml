@@ -5,7 +5,7 @@ image:
 ports:
   - port: 5000
     onOpen: ignore
-  - port: 9001
+  - port: 9000
     onOpen: open-browser
 
 # List the start up tasks. You can start them in parallel in multiple terminals. See https://www.gitpod.io/docs/config-start-tasks/

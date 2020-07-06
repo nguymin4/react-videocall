@@ -6,6 +6,8 @@ import MainWindow from './MainWindow';
 import CallWindow from './CallWindow';
 import CallModal from './CallModal';
 import MediaDevice from './MediaDevice';
+import makeEmptyStream from './streamutils/makeEmptyStream';
+import {json} from "overmind"
 
 // import logloader from "../util/logloader"
 import { useApp, proxyMethods } from "./app"
@@ -201,16 +203,23 @@ class App extends Component {
 let seq = 1
 const mediaDevice = new MediaDevice()
 mediaDevice.name = "Name " + seq++
+const emptyStream = makeEmptyStream()
 const WrapApp = () => {
     const { state, actions, effects } = useApp()
     const [stream, setStream] = React.useState(null)
     useEffect(() => {
-        console.log("Effect applied")
+        actions.addStream({name:'empty',emptyStream}) 
+        console.log("Effect is applied")
         effects.socket.events.setRegisterAction(actions.register)
-        mediaDevice.on("stream", (stream) => {
-            // console.log("SetStream", mediaDevice.stream, stream)
-            setStream(true)
-        })
+        if (state.streams.local) {
+            console.log("using local stream", state.streams.local)
+            setStream(json(state.streams.local))
+        } else {
+            mediaDevice.on("stream", (stream) => {
+                // console.log("SetStream", mediaDevice.stream, stream)
+                setStream(stream)
+            })
+        }
         mediaDevice.start()
 
     }, [])
@@ -218,10 +227,10 @@ const WrapApp = () => {
 
     const localVideo = React.useRef(null)
     React.useEffect(() => {
-        if (localVideo && localVideo.current && stream) {
-            console.log("USEEFFECT", mediaDevice, mediaDevice.name, mediaDevice.stream)
-            localVideo.current.srcObject = mediaDevice.stream
-            actions.addStream({name: 'local',stream: mediaDevice.stream })
+        if (localVideo && localVideo.current && stream) {   
+            console.log("USE The Effect",  stream)
+            localVideo.current.srcObject =  emptyStream//sstream
+            actions.addStream({ name: 'local', stream})
         }
     }, [localVideo, stream])
     return <div>
@@ -231,5 +240,6 @@ const WrapApp = () => {
         <App overmind={{ state, actions, effects }} />
     </div>
 }
+
 
 export default WrapApp;
