@@ -23,19 +23,19 @@ const N_USERS = 1
 const joinByName = (name) => {
     rooms.join("main", users.nameToSession(name))
 }
+
 const runTest = async () => {
-    await awaitUsers(3)
+    await awaitUsers(1)
+        rooms.connect("main")
+    return
     console.log("Three users")
-    console.log("XL", users.namesToSessions(["Noel","Jess"]))
     rooms.create("main")
     joinByName('Noel')
     joinByName("Jess")
     rooms.connect("main")
     // rooms.join("main","session-16")
-
 }
 runTest()
-
 const handleRegistration = async (socket, data) => {
     const broadcast = (message) => {
         socket.broadcast.emit("message", { message })
@@ -44,7 +44,7 @@ const handleRegistration = async (socket, data) => {
         console.log("reply with ", message)
         socket.emit("message", { message })
     }
-
+     
     const roomName = data.room || "main"
     if (version) {
         if (!rooms.exists(roomName) || ((data.control === 'reset') || (version === 2 && data.control === 'r'))) {

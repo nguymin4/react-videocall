@@ -1,5 +1,4 @@
 import VideoStreamMerger from "./video-stream-merger";
-let theMerger = null
 export const positions = [
     { "x": 0, "y": 0, "width": .5, "height": .5 },
     { "x": .5, "y": 0, "width": .5, "height": .5 },
@@ -19,8 +18,7 @@ export default function labeledStream(
     } = {}
 ) {
     const pos = positions[iCascadeIndex]
-    if (theMerger && theMerger.result) return theMerger
-    theMerger = new VideoStreamMerger({
+    const theMerger = new VideoStreamMerger({
         width, // Width of the output video
         height, // Height of the output video
         fps, // Video capture frames per second
@@ -51,5 +49,7 @@ export default function labeledStream(
         }
     });
     theMerger.start();
+    theMerger.result.merger = theMerger
     return theMerger;
 }
+

@@ -7,7 +7,8 @@ import CallWindow from './CallWindow';
 import CallModal from './CallModal';
 import MediaDevice from './MediaDevice';
 import EmptyStream from './streamutils/EmptyStream';
-import {json} from "overmind"
+import { json } from "overmind"
+import labeledStream from "./streamutils/labeledStream"
 
 // import logloader from "../util/logloader"
 import { useApp, proxyMethods } from "./app"
@@ -67,7 +68,17 @@ class App extends Component {
             })
             .on('cascade', (data) => {
                 this.actions.setCascade({ index: data.index, members: data.members })
-            })
+                console.log("cascade data is ", data.name)
+                if(this.oState.streams.cascade){
+                    console.log("Stop cascade")
+                    json(this.oState.streams.cascade).merger.destroy()
+                }
+                const merger = labeledStream(json(this.oState.streams.local), data.name,
+                    this.oState.cascade.index,
+                    this.oState.cascade.members)
+                this.actions.addStream({name:'cascade', stream: merger.result})
+            }
+            )
             .on('request', ({ from: callFrom }) => {
                 const opts = { id: this.state.clientId + "R" }
                 this.startCallHandler(false, callFrom, { video: true, audio: true }, opts)
@@ -209,15 +220,17 @@ const WrapApp = () => {
     const { state, actions, effects } = useApp()
     const [stream, setStream] = React.useState(null)
     useEffect(() => {
-        actions.addStream({name:'empty',stream: emptyStream}) 
+        actions.addStream({ name: 'empty', stream: emptyStream })
         // console.log("Effect is applied")
         effects.socket.events.setRegisterAction(actions.register)
-        if (state.streams.local) {
+        if (state.streams.cascade) {
+            console.log("using cascade stream", state.streams.local)
+            setStream(json(state.streams.cascade))
+        } else if (state.streams.local) {
             setStream(json(state.streams.local))
-            // console.log("using local stream", state.streams.local)
-        } else {
+          } else {
             mediaDevice.on("stream", (stream) => {
-                actions.addStream({ name: 'local', stream})
+                actions.addStream({ name: 'local', stream })
                 setStream(stream)
             })
         }
@@ -228,9 +241,9 @@ const WrapApp = () => {
 
     const localVideo = React.useRef(null)
     React.useEffect(() => {
-        if (localVideo && localVideo.current && stream) {   
+        if (localVideo && localVideo.current && stream) {
             // console.log("Using The Effect",  stream)
-            localVideo.current.srcObject =  stream
+            localVideo.current.srcObject = stream
         }
     }, [localVideo, stream])
     return <div>

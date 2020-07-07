@@ -24,7 +24,7 @@ exports.connect = (roomName) => {
     cascade.map((member, sequence) => {
         console.log("cascade", member)
         const socket = users.getReceiver(member)
-        socket.emit("cascade", { index: sequence, members: room.order.length })
+        socket.emit("cascade", { name: users.getName(member), index: sequence, members: room.order.length })
     })
     cascade.slice(0, -1).map((member, sequence) => {
         console.log("calljoin", member)
@@ -41,7 +41,6 @@ exports.connect = (roomName) => {
 
     }
 }
-
 
 
 exports.create = (roomName) => {
