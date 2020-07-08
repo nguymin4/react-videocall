@@ -3,6 +3,8 @@ import { json, createOvermind } from "overmind";
 import socket from '../socket';
 import { logLoader } from "../../util/logloader";
 import { toast } from 'react-toastify';
+import labeledStream from "../streamutils/labeledStream"
+
 logLoader(module);
 const state = {
     title: "This title",
@@ -19,7 +21,7 @@ const state = {
     lastEvent: {},
     control: null,
     leader: null,
-    cascade: {index: null, members: 0},
+    cascade: { index: null, members: 0 },
     otherRoles: {
 
     }
@@ -30,20 +32,28 @@ socket.off('confirm')
 
 // socket.off('confirm',cb)
 const actions = {
-    clearCascade({state}){
+    clearCascade({ state }) {
         state.showCascade = false
     },
-    flashCascade({state,actions}){
+    flashCascade({ state, actions }) {
         state.showCascade = true
-        setTimeout(()=>actions.clearCascade(),5000)
+        setTimeout(() => actions.clearCascade(), 5000)
     },
-    addStream({state},{name,stream}){
-        console.log("add stream",name,stream )
-        state.streams[name]=stream
+    addStream({ state }, { name, stream }) {
+        console.log("add stream", name, stream)
+        state.streams[name] = stream
     },
-    setCascade({state},opts) {
+    setCascade({ state,actions }, opts) {
         state.cascade.index = opts.index
         state.cascade.members = opts.members
+        if (state.streams.cascade) {
+            json(state.streams.cascade).merger.destroy()
+        }
+        const merger = labeledStream(json(state.streams.local), state.attrs.name,
+            state.cascade.index,
+            state.cascade.members)
+        actions.addStream({ name: 'cascade', stream: merger.result })
+        actions.flashCascade()
     },
     logEvent({ state }, { evType, message, zargs, cb }) {
         const lastEvent = { evType, message, zargs }

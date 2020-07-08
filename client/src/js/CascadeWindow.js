@@ -71,7 +71,7 @@ const [video, setVideo] = useState(true);
                     onClick={() => toggleMediaDevice('audio')}
                 />
                 <button
-                    type="button"
+                    type="button"   
                     className="btn-action hangup fa fa-phone"
                     onClick={() => {actions.clearCascade();
                         endCall(true)}}

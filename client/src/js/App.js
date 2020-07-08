@@ -9,7 +9,6 @@ import CallModal from './CallModal';
 import MediaDevice from './MediaDevice';
 import EmptyStream from './streamutils/EmptyStream';
 import { json } from "overmind"
-import labeledStream from "./streamutils/labeledStream"
 
 // import logloader from "../util/logloader"
 import { useApp, proxyMethods } from "./app"
@@ -69,17 +68,7 @@ class App extends Component {
             })
             .on('cascade', (data) => {
                 this.actions.setCascade({ index: data.index, members: data.members })
-                // console.log("cascade data is ", data.name, data.index)
-                if (this.oState.streams.cascade) {
-                    // console.log("Stop cascade")
-                    json(this.oState.streams.cascade).merger.destroy()
-                    // this.actions.addStream({name:'cascade', stream: undefined})
-                }
-                const merger = labeledStream(json(this.oState.streams.local), data.name,
-                    this.oState.cascade.index,
-                    this.oState.cascade.members)
-                this.actions.addStream({ name: 'cascade', stream: merger.result })
-                this.actions.flashCascade()
+                
             }
 
             )
