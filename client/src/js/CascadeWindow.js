@@ -73,7 +73,7 @@ const [video, setVideo] = useState(true);
                 <button
                     type="button"   
                     className="btn-action hangup fa fa-phone"
-                    onClick={() => {actions.clearCascade();
+                    onClick={() => {actions.clearCascade("var1", "var2");
                         endCall(true)}}
                 />
             </div>
