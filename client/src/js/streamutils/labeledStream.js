@@ -34,17 +34,19 @@ export default function labeledStream(
         // height: theMerger.height,
         mute: false, // we don't want sound from the screen (if there is any)
         draw: function (ctx, frame, done) {
+            const x = pos.x*theMerger.width
+            const y = pos.y*theMerger.height
             ctx.drawImage(frame, 
-                pos.x*theMerger.width, 
-                pos.y*theMerger.height, 
+               x,
+               y,
                 pos.width*theMerger.width, 
                 pos.height*theMerger.height);
 
             ctx.font = "48px serif";
             ctx.fillStyle = "white";
             ctx.strokeStyle = "boack";
-            ctx.fillText(label, 10, 50);
-            ctx.strokeText(label, 10, 50);
+            ctx.fillText(label, x+10, y+50);
+            ctx.strokeText(label, x+10, y+50);
             done();
         }
     });
