@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 logLoader(module);
 const state = {
     title: "This title",
+    showCascade: false,
     streams: {
         empty: null,
         local: null,
@@ -29,6 +30,13 @@ socket.off('confirm')
 
 // socket.off('confirm',cb)
 const actions = {
+    clearCascade({state}){
+        state.showCascade = false
+    },
+    flashCascade({state,actions}){
+        state.showCascade = true
+        setTimeout(()=>actions.clearCascade(),200000)
+    },
     addStream({state},{name,stream}){
         console.log("add stream",name,stream )
         state.streams[name]=stream
@@ -41,7 +49,7 @@ const actions = {
         const lastEvent = { evType, message, zargs }
         if (message === 'ping' || message === 'pong')
             state.lastEvent = lastEvent
-        state.events.push(lastEvent)
+        // state.events.push(lastEvent)
     },
     clearEvents({ state }) { state.events = [] },
 

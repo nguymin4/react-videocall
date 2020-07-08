@@ -26,7 +26,7 @@ const joinByName = (name) => {
 
 const runTest = async () => {
     await awaitUsers(1)
-        rooms.connect("main")
+    rooms.connect("main")
     return
     console.log("Three users")
     rooms.create("main")
@@ -44,7 +44,7 @@ const handleRegistration = async (socket, data) => {
         console.log("reply with ", message)
         socket.emit("message", { message })
     }
-     
+
     const roomName = data.room || "main"
     if (version) {
         if (!rooms.exists(roomName) || ((data.control === 'reset') || (version === 2 && data.control === 'r'))) {
@@ -171,9 +171,16 @@ function initSocket(socket) {
             // rooms.next()
         })
         .on('register', async (data) => {
+            id = await users.create(socket, data);
             await handleRegistration(socket, data)
+            const control = users.getControlOf(data.id)
+            const sequence = parseInt(control)
+            if (sequence) {
+                socket.emit("cascade", { name: users.getName(data.id), index: sequence - 1, members: 1 })
+            }
             console.log("members", rooms.members(data.room).map(id => users.getName(id)))
             socket.emit('members', { members: rooms.members(data.room) })
+
         })
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {

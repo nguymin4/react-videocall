@@ -3,7 +3,8 @@ import _ from 'lodash';
 import socket from './socket';
 import PeerConnection from './PeerConnection';
 import MainWindow from './MainWindow';
-import CallWindow from './CallWindow';
+import CascadeWindow from './CascadeWindow';
+
 import CallModal from './CallModal';
 import MediaDevice from './MediaDevice';
 import EmptyStream from './streamutils/EmptyStream';
@@ -68,16 +69,19 @@ class App extends Component {
             })
             .on('cascade', (data) => {
                 this.actions.setCascade({ index: data.index, members: data.members })
-                console.log("cascade data is ", data.name)
-                if(this.oState.streams.cascade){
-                    console.log("Stop cascade")
+                // console.log("cascade data is ", data.name, data.index)
+                if (this.oState.streams.cascade) {
+                    // console.log("Stop cascade")
                     json(this.oState.streams.cascade).merger.destroy()
+                    // this.actions.addStream({name:'cascade', stream: undefined})
                 }
                 const merger = labeledStream(json(this.oState.streams.local), data.name,
                     this.oState.cascade.index,
                     this.oState.cascade.members)
-                this.actions.addStream({name:'cascade', stream: merger.result})
+                this.actions.addStream({ name: 'cascade', stream: merger.result })
+                this.actions.flashCascade()
             }
+
             )
             .on('request', ({ from: callFrom }) => {
                 const opts = { id: this.state.clientId + "R" }
@@ -185,11 +189,27 @@ class App extends Component {
             <div>
                 <ToastContainer />
 
-                <MainWindow
-                    clientId={clientId}
-                    startCall={this.startCallHandler}
-                />
+               {"CASCADE " + this.oState.showCascade}
+                {
+                    !this.oState.showCascade ?
+                        <MainWindow
+                            clientId={clientId}
+                            startCall={this.startCallHandler}
+                        />
+                        :
+                        <CascadeWindow
+                            // allpcs={this.pcs}
+                            // nPCs={Object.keys(this.pcs).length}
+                            // status={callWindow}
+                            // localSrc={localSrc}
+                            // peerSrc={peerSrc}
+                            config={this.config}
+                            // mediaDevice={pc ? pc.mediaDevice : {}}
+                            endCall={this.endCallHandler}
+                        />
+                }
                 {!_.isEmpty(this.config) && (
+
                     <CallWindow
                         allpcs={this.pcs}
                         nPCs={Object.keys(this.pcs).length}
@@ -220,23 +240,29 @@ const WrapApp = () => {
     const { state, actions, effects } = useApp()
     const [stream, setStream] = React.useState(null)
     useEffect(() => {
-        actions.addStream({ name: 'empty', stream: emptyStream })
         // console.log("Effect is applied")
+        if (!state.streams.empty) {
+            actions.addStream({ name: 'empty', stream: emptyStream })
+        }
+
         effects.socket.events.setRegisterAction(actions.register)
         if (state.streams.cascade) {
-            console.log("using cascade stream", state.streams.local)
+            // console.log("using cascade stream", json(state.streams.cascade))
             setStream(json(state.streams.cascade))
         } else if (state.streams.local) {
+            // console.log("using local stream", json(state.streams.local))
             setStream(json(state.streams.local))
-          } else {
+        } else {
+            mediaDevice.start()
             mediaDevice.on("stream", (stream) => {
                 actions.addStream({ name: 'local', stream })
                 setStream(stream)
             })
-        }
-        mediaDevice.start()
 
-    }, [])
+        }
+
+
+    }, [state.streams.local, state.streams.cascade])
 
 
     const localVideo = React.useRef(null)
@@ -248,8 +274,9 @@ const WrapApp = () => {
     }, [localVideo, stream])
     return <div>
         <div>The id is {state.attrs.id} role: {state.attrs.role}</div>
+        { state.cascadeVideo? null : 
         <video height={100} ref={localVideo} autoPlay muted />
-
+}
         <App overmind={{ state, actions, effects }} />
     </div>
 }
