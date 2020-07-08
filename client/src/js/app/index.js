@@ -35,7 +35,7 @@ const actions = {
     },
     flashCascade({state,actions}){
         state.showCascade = true
-        setTimeout(()=>actions.clearCascade(),200000)
+        setTimeout(()=>actions.clearCascade(),5000)
     },
     addStream({state},{name,stream}){
         console.log("add stream",name,stream )
