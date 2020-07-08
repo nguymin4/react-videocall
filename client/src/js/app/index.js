@@ -43,6 +43,16 @@ const actions = {
         console.log("add stream", name, stream)
         state.streams[name] = stream
     },
+    addPeerToCascade({state}, src){
+        state.streams.peer = src
+        state.cascadeMerger.addStream(src, {
+                    index: -1,
+                    x: 0, // position of the topleft corner
+                    y: 0,
+                    width: state.cascadeMerger.width,
+                    height: pc.cascadeMerger.height,
+                })
+    },
     setCascade({ state,actions }, opts) {
         state.cascade.index = opts.index
         state.cascade.members = opts.members
@@ -52,6 +62,7 @@ const actions = {
         const merger = labeledStream(json(state.streams.local), state.attrs.name,
             state.cascade.index,
             state.cascade.members)
+        state.streams.cascadeMerger = merger
         actions.addStream({ name: 'cascade', stream: merger.result })
         actions.flashCascade()
     },
