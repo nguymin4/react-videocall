@@ -44,7 +44,7 @@ const [video, setVideo] = useState(true);
     };
      React.useEffect(() => {
          
-        const stream = json(state.streams.local)
+        const stream = json(state.streams.cascade)
         if (localVideo && localVideo.current && stream) {
             // console.log("Using The Effect",  stream)
             localVideo.current.srcObject = stream
@@ -73,7 +73,8 @@ const [video, setVideo] = useState(true);
                 <button
                     type="button"
                     className="btn-action hangup fa fa-phone"
-                    onClick={() => endCall(true)}
+                    onClick={() => {actions.clearCascade();
+                        endCall(true)}}
                 />
             </div>
         </div>
