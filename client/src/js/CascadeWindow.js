@@ -42,6 +42,7 @@ const [video, setVideo] = useState(true);
         //     mediaDevice.toggle('Audio');
         // }
     };
+    
      React.useEffect(() => {
          
         const stream = json(state.streams.cascade)
@@ -73,7 +74,7 @@ const [video, setVideo] = useState(true);
                 <button
                     type="button"   
                     className="btn-action hangup fa fa-phone"
-                    onClick={() => {actions.clearCascade("var1", "var2");
+                    onClick={() => {actions.clearCascade();
                         endCall(true)}}
                 />
             </div>

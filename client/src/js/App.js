@@ -98,9 +98,10 @@ class App extends Component {
         // this.setState({nPCs: Object.keys(this.pcs).length})
         pc
             .on('localStream', (src) => {
-                const newState = { callWindow: 'active', localSrc: src };
-                if (!isCaller) newState.callModal = '';
-                this.setState(newState);
+                // if(this.oState.cascade.index === 0 )return
+                // const newState = { callWindow: 'active', localSrc: src };
+                // if (!isCaller) newState.callModal = '';
+                // this.setState(newState);
             })
             .on('peerTrackEvent', (e) => {
                 const src = e.streams[0]
@@ -108,23 +109,24 @@ class App extends Component {
                 const track = e.track
                 console.log("Track", track)
                 this.setState({ peerSrc: src })
+                this.actions.addPeerToCascade(src)
                 pc.peerSrc = src
-                pc.merger.addStream(src, {
-                    index: -1,
-                    x: 0, // position of the topleft corner
-                    y: 0,
-                    width: pc.merger.width,
-                    height: pc.merger.height,
-                })
-                if (track > 1) {
-                    socket.emit("debug", "tracks > 1")
-                    const newId = [`X ${friendID}-${Math.floor(track / 2)}`]
-                    if (!this.pcs[newId]) {
-                        this.pcs[newId] = { peerSrc: new MediaStream(track) }
-                    } else {
-                        this.pcs[newId].peerSrc.addTrack(track)
-                    }
-                }
+                // pc.merger.addStream(src, {
+                //     index: -1,
+                //     x: 0, // position of the topleft corner
+                //     y: 0,
+                //     width: pc.merger.width,
+                //     height: pc.merger.height,
+                // })
+                // if (track > 1) {
+                //     socket.emit("debug", "tracks > 1")
+                //     const newId = [`X ${friendID}-${Math.floor(track / 2)}`]
+                //     if (!this.pcs[newId]) {
+                //         this.pcs[newId] = { peerSrc: new MediaStream(track) }
+                //     } else {
+                //         this.pcs[newId].peerSrc.addTrack(track)
+                //     }
+                // }
                 // socket.emit("peerconnect", { trackNo: e.trackNo, room: this.state.room, from: this.state.clientId, friend: friendID, details: { remote: track.remote, label: track.label } })
             })
             .start(isCaller, config, this.pcs);
@@ -197,7 +199,7 @@ class App extends Component {
                             endCall={this.endCallHandler}
                         />
                 }
-                {!_.isEmpty(this.config) && (
+                {/* {!_.isEmpty(this.config) && false (
 
                     <CallWindow
                         allpcs={this.pcs}
@@ -209,7 +211,7 @@ class App extends Component {
                         mediaDevice={pc ? pc.mediaDevice : {}}
                         endCall={this.endCallHandler}
                     />
-                )}
+                )} */}
                 <CallModal
                     status={callModal}
                     startCall={this.startCallHandler}

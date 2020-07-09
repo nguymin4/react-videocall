@@ -25,13 +25,11 @@ const joinByName = (name) => {
 }
 
 const runTest = async () => {
-    await awaitUsers(1)
-    rooms.connect("main")
-    return
-    console.log("Three users")
+    await awaitUsers(2)
+    console.log("Two users")
     rooms.create("main")
-    joinByName('Noel')
-    joinByName("Jess")
+    joinByName('Mike')
+    joinByName("Think")
     rooms.connect("main")
     // rooms.join("main","session-16")
 }
@@ -78,6 +76,7 @@ const handleRegistration = async (socket, data) => {
             if (control) {
                 socket.emit("calljoin", { jointo: control })
             }
+
             if (!leaderConnectedToControl) {
                 console.log("connected to control")
                 leaderConnectedToControl = true
@@ -180,7 +179,7 @@ function initSocket(socket) {
             }
             console.log("members", rooms.members(data.room).map(id => users.getName(id)))
             socket.emit('members', { members: rooms.members(data.room) })
-
+            runTest()
         })
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {

@@ -34,37 +34,49 @@ socket.off('confirm')
 const actions = {
     clearCascade({ state }) {
         state.showCascade = false
+        delete state.streams.cascade
+        if (state.streams.cascadeMerger ) {
+            json(state.streams.cascadeMerger).destroy()
+            delete state.streams.cascadeMerger
+        }
+
     },
-    flashCascade({ state, actions }) {
-        state.showCascade = true
-        setTimeout(() => actions.clearCascade(), 5000)
-    },
+    // flashCascade({ state, actions }) {
+    //     state.showCascade = true
+    //     setTimeout(() => actions.clearCascade(), 5000)
+    // },
     addStream({ state }, { name, stream }) {
         console.log("add stream", name, stream)
         state.streams[name] = stream
     },
     addPeerToCascade({state}, src){
         state.streams.peer = src
-        state.cascadeMerger.addStream(src, {
-                    index: -1,
-                    x: 0, // position of the topleft corner
-                    y: 0,
-                    width: state.cascadeMerger.width,
-                    height: pc.cascadeMerger.height,
-                })
+        if(state.cascade.index !== 0 ){
+
+            const merger = json(state.streams.cascadeMerger)
+            merger.addStream(src, {
+                index: -1,
+                x: 0, // position of the topleft corner
+                y: 0,
+                width: merger.width,
+                height: merger.height,
+            })
+        }
     },
     setCascade({ state,actions }, opts) {
-        state.cascade.index = opts.index
-        state.cascade.members = opts.members
-        if (state.streams.cascade) {
-            json(state.streams.cascade).merger.destroy()
+        if(state.cascade.index !== opts.index || !state.streams.cascade){
+            if (state.streams.cascade) {
+                json(state.streams.cascade).merger.destroy()
+            }
+            const merger = labeledStream(json(state.streams.local), state.attrs.name,
+            opts.index,
+            opts.members)
+            state.streams.cascadeMerger = merger
+            actions.addStream({ name: 'cascade', stream: merger.result })
+            state.cascade.index = opts.index
         }
-        const merger = labeledStream(json(state.streams.local), state.attrs.name,
-            state.cascade.index,
-            state.cascade.members)
-        state.streams.cascadeMerger = merger
-        actions.addStream({ name: 'cascade', stream: merger.result })
-        actions.flashCascade()
+        state.cascade.members = opts.members
+        state.showCascade = true
     },
     logEvent({ state }, { evType, message, zargs, cb }) {
         const lastEvent = { evType, message, zargs }

@@ -2,6 +2,8 @@ import MediaDevice from './MediaDevice';
 import Emitter from './Emitter';
 import socket from './socket';
 import labeledStream from "./streamutils/labeledStream"
+import { json } from "overmind"
+
 import { proxyMethods } from "./app"
 console.log("Peer loaded")
 const debug = (message) => {
@@ -23,7 +25,7 @@ class PeerConnection extends Emitter {
         debug(`PeerConnection from ${friendID} id${opts.id}`)
         this.pc = new RTCPeerConnection(PC_CONFIG);
         this.tracks = 0
-        this.oState = oState
+        this.state = oState
         if (PeerConnection.merger && PeerConnection.merger.result != null) {
             this.merger = PeerConnection.merger
         }
@@ -52,50 +54,15 @@ class PeerConnection extends Emitter {
      * @param {Object} config - configuration for the call {audio: boolean, video: boolean}
      */
     start(isCaller, config, pcs) {
-        this.mediaDevice
-            .on('stream', (stream) => {
-                if (!this.merger) {
-                    PeerConnection.merger = this.merger = labeledStream(stream, this.opts.id,
-                        this.oState.cascade.index,
-                        this.oState.cascade.members)
-                }
-                socket.emit('debug', `ID = ${this.opts.id} opts = ${JSON.stringify(this.opts)}`)
-                const keys = Object.keys(pcs)
-                if (keys.length > 1) {
-                    console.log("combining streams")
-                    socket.emit('debug', "combining streams")
-                    const peerSrc = pcs[keys[0]].peerSrc
-                    if (peerSrc) {
-
-                        // peerSrc.getTracks().forEach((track) => {
-                        //     socket.emit('debug', `Add track ${track.id}`)
-                        //     this.pc.addTrack(track, peerSrc);
-                        // })
-                        // const stream1 = this.merger.getStream(0)
-                        // this.merger.addStream(peerSrc, {
-                        //     index: 2    ,
-                        //     x: 0, // position of the topleft corner
-                        //     y: 0,
-                        //     width: this.merger.width,
-                        //     height: this.merger.height,
-                        // })
-                        // this.merger.updateIndex(stream1,2)
-
-                    }
-                    else {
-                        this.emit('debug', "no peer src")
-                    }
-                }
-                stream = this.merger.result
-                stream.getTracks().forEach((track) => {
-                    this.pc.addTrack(track, stream);
-                });
-                this.emit('localStream', stream);
-                if (isCaller) socket.emit('request', { to: this.friendID });
-                else this.createOffer();
-            })
-            .start(config);
-
+       const stream = json(this.state.streams.cascade)
+        window.xxx = stream
+        stream.getTracks().forEach((track) => {
+            this.pc.addTrack(track, stream);
+            console.log("Add cascadeTrack")
+        });
+        this.emit('localStream', stream);
+        if (isCaller) socket.emit('request', { to: this.friendID });
+        else this.createOffer();
         return this;
     }
 
@@ -107,11 +74,11 @@ class PeerConnection extends Emitter {
         if (isStarter) {
             socket.emit('end', { to: this.friendID });
         }
-        this.mediaDevice.stop();
+        // this.mediaDevice.stop();
         this.pc.close();
         this.pc = null;
         this.off();
-        if (this.merger.result) this.merger.destroy()
+        // if (this.merger.result) this.merger.destroy()
         return this;
     }
 
