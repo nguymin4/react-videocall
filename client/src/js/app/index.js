@@ -41,6 +41,7 @@ const actions = {
         }
 
     },
+<<<<<<< HEAD
     // flashCascade({ state, actions }) {
     //     state.showCascade = true
     //     setTimeout(() => actions.clearCascade(), 5000)
@@ -48,6 +49,11 @@ const actions = {
     addStream({ state }, { name, stream }) {
         console.log("add stream", name, stream)
         state.streams[name] = stream
+=======
+    flashCascade({state,actions}){
+        state.showCascade = true
+        setTimeout(()=>actions.clearCascade(),5000)
+>>>>>>> 55193699c0dd687b936144913ed6854d3c24dcf7
     },
     addPeerToCascade({state}, src){
         state.streams.peer = src
