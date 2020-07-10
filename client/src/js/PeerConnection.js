@@ -22,7 +22,7 @@ class PeerConnection extends Emitter {
     constructor(friendID, opts, oState) {
         super();
         PeerConnection.instance++
-        debug(`PeerConnection from ${friendID} id${opts.id}`)
+        // debug(`PeerConnection from ${friendID} to ${opts.id}`)
         this.pc = new RTCPeerConnection(PC_CONFIG);
         this.tracks = 0
         this.state = oState
