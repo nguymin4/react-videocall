@@ -5,7 +5,7 @@ import classnames from 'classnames';
 
 function CallWindowPeer({ pc, name, seq, nPCs, xid, peerSrc, status }) {
     const peerVideo = useRef(null);
-    let width, height, left, top = "0%"
+    let width, height, left, top = '0%'
 
     const nPerRow = Math.floor(Math.sqrt(nPCs - 1)) + 1
     // const nRows = Math.floor((nPCs) / nPerRow)
@@ -14,9 +14,9 @@ function CallWindowPeer({ pc, name, seq, nPCs, xid, peerSrc, status }) {
     if (nPCs > 0) row = Math.floor((seq) / nPerRow)
 
     const col = seq - row * nPerRow
-    width = height = pct + "%"
-    top = (row * pct) + "%"
-    left = (col * pct) + "%"
+    width = height = pct + '%'
+    top = (row * pct) + '%'
+    left = (col * pct) + '%'
 
 
     // console.log({ width, height, top, left })

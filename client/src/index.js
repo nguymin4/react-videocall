@@ -1,11 +1,11 @@
 import React from 'react';
 import { render } from 'react-dom';
-import {app} from "./js/app"
+import {app} from './js/app'
 import App from './js/App';
 import './css/app.scss';
-import { Provider } from "overmind-react";
+import { Provider } from 'overmind-react';
 
-import "react-toastify/dist/ReactToastify.css";
+import 'react-toastify/dist/ReactToastify.css';
 
 const renderApp = () => render(
     <Provider value={app}>

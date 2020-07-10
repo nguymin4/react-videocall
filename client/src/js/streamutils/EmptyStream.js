@@ -15,14 +15,14 @@ function EmptyStream() {
     
     canvas.setAttribute('width', WIDTH)
     canvas.setAttribute('height', HEIGHT)
-    this.title = "Nothing"
+    this.title = 'Nothing'
     canvas.setAttribute('style', 'position:fixed; left: 110%; pointer-events: none') // Push off screen
     const draw = () =>  {
-        console.log("Drew canvas")
-        ctx.font = "100px serif";
+        console.log('Drew canvas')
+        ctx.font = '100px serif';
         toggle =!toggle
-        ctx.fillStyle = toggle ? "white" : "black";
-        ctx.strokeStyle = toggle ? "black" : "white";
+        ctx.fillStyle = toggle ? 'white' : 'black';
+        ctx.strokeStyle = toggle ? 'black' : 'white';
         ctx.fillRect(0, 0, WIDTH, HEIGHT)
         ctx.fillText(this.title, 20, 100);
         ctx.strokeText(this.title, 20, 100);
@@ -42,11 +42,11 @@ EmptyStream.prototype.setTitle = function (title) {
 if (module.hot) {
     module.hot.dispose(data => {
         canvases.forEach(canvas => {
-            console.log("got rid of canvas")
+            console.log('got rid of canvas')
             canvas.remove()
         })
         intervals.forEach(interval => {
-            console.log("got rid of interval")
+            console.log('got rid of interval')
             clearInterval(interval)
         })
     })

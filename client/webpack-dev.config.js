@@ -71,7 +71,7 @@ const configs = addBaseConfig({
 const doAsync = async () => {
   const GITPODURL = await socketConfig.GETURL()
   configs.devServer.public = GITPODURL
-console.log(`UPDATE "${configs.devServer.public}" to "${GITPODURL}"`)
+console.log(`UPDATE '${configs.devServer.public}' to '${GITPODURL}'`)
   return configs
 };
 module.exports = doAsync;

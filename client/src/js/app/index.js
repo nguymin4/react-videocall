@@ -1,13 +1,13 @@
-import { createHook } from "overmind-react";
-import { json, createOvermind } from "overmind";
+import { createHook } from 'overmind-react';
+import { json, createOvermind } from 'overmind';
 import socket from '../socket';
-import { logLoader } from "../../util/logloader";
+import { logLoader } from '../../util/logloader';
 import { toast } from 'react-toastify';
-import labeledStream from "../streamutils/labeledStream"
+import labeledStream from '../streamutils/labeledStream'
 
 logLoader(module);
 const state = {
-    title: "This title",
+    title: 'This title',
     diags: [],
     showCascade: false,
     streams: {
@@ -50,7 +50,7 @@ const actions = {
     //     setTimeout(() => actions.clearCascade(), 5000)
     // },
     addStream({ state }, { name, stream }) {
-        console.log("add stream", name, stream)
+        console.log('add stream', name, stream)
         state.streams[name] = stream
     },
     addPeerToCascade({state}, src){
@@ -143,38 +143,38 @@ const effects = {
                 socket.emit('debug', data)
             },
             gotEvent(data) {
-                console.log("got event", JSON.stringify(data))
+                console.log('got event', JSON.stringify(data))
             }
         },
         events: {
             registerAction: null,
             members({ members }) {
-                console.log("Members message", members)
+                console.log('Members message', members)
                 // theActions.setControl(members.join(','))
             },
             setRegisterAction(func) {
-                console.log("register action called")
+                console.log('register action called')
                 effects.socket.events.registerAction = func
             },
 
             confirm(data) {
                 toast(`confirmed ${JSON.stringify(data)}`)
 
-                socket.emit("debug", "the onconfirm " + JSON.stringify(data))
+                socket.emit('debug', 'the onconfirm ' + JSON.stringify(data))
             },
             message(data) {
-                console.log("Message received", data)
+                console.log('Message received', data)
                 toast(data.message)
             },
             identify() {
-                console.log("IN THE IDENTIFY")
+                console.log('IN THE IDENTIFY')
                 const attrs = effects.storage.getAttrs()
                 if (attrs) socket.emit('identified', attrs)
             },
             unenrole(data) {
-                console.log("Unenroled")
+                console.log('Unenroled')
                 if (events.socket.actions.registerAction) {
-                    console.log("Invoke register action")
+                    console.log('Invoke register action')
                     // evemts.socket.actions.registerAction({roleID: data.role})
                 }
             }
@@ -186,7 +186,7 @@ Object.keys(effects.socket.events).forEach(key => {
     socket.off(key); socket.on(key, effects.socket.events[key])
 })
 let theActions
-// console.log("conform source code", effects.socket.onConfirm + "")
+// console.log('conform source code', effects.socket.onConfirm + '')
 // actions.actionCB()
 export const proxyMethods = (name, obj) => {
     const oldOn = obj.on.bind(obj)
@@ -200,7 +200,7 @@ export const proxyMethods = (name, obj) => {
     }
     obj.on = (message, cb) => {
         const cb1 = (args) => {
-            theActions.logEvent({ evType: `${name}`, message, zargs: args, cb: () => console.log("did it!") })
+            theActions.logEvent({ evType: `${name}`, message, zargs: args, cb: () => console.log('did it!') })
             cb(args)
         }
         oldOn(message, cb1)
@@ -219,7 +219,7 @@ const onInitialize = (
     //  , 
 
 ) => {
-    console.log("INITTED")
+    console.log('INITTED')
     socket.emit('debug', 'it is initialized')
     const attrs = effects.storage.getAttrs()
     theActions = actions
@@ -239,32 +239,32 @@ export let useApp;
 const initialize = () => {
     app = createOvermind(config, {
         // devtools: 'penguin.linux.test:3031',
-        devtools: "localhost:3031"
+        devtools: 'localhost:3031'
     });
     console.log(app.state);
     useApp = createHook();
-    console.log("Set attrs")
+    console.log('Set attrs')
     // app.actions.setAttrs(app.effects.getAttrs())
 };
 // const {actions,state} = useApp()
 if (!module.hot) {
-    console.log("not hot");
+    console.log('not hot');
     //   initialize();
     initialize();
 } else {
     module.hot.dispose(data => {
-        // console.log("disposing of the CB ", cb + "")
+        // console.log('disposing of the CB ', cb + '')
         // socket.off('confirm', cb)
         // data.cb = cb
-        if (data.cb) console.log("THIS IS JUST TO KEEP THIS ALIVE")
+        if (data.cb) console.log('THIS IS JUST TO KEEP THIS ALIVE')
     });
     if (!module.hot.data) {
-        console.log("no hot data");
+        console.log('no hot data');
         initialize();
         /** Now we should always have module.hot.data */
     } else {
-        console.log("Hot data output");
-        // console.log("disposing", data.cb + "", cb + "")
+        console.log('Hot data output');
+        // console.log('disposing', data.cb + '', cb + '')
 
         initialize();
     }

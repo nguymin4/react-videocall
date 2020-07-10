@@ -1,6 +1,6 @@
-const DEVPORT = 9000
+const DEVPORT = 9001
 const GITPODURL = `https://${DEVPORT}-e86f92db-f24e-4089-b8df-7bed4a3a25dd.ws-us02.gitpod.io`
-const childProcess = require("child_process");
+const childProcess = require('child_process');
 function execute(command) {
 
     return new Promise(function (resolve, reject) {
@@ -31,7 +31,7 @@ const GETURL = async () => {
 }
 
 
-// setTimeout(async() => console.log("URL IS ", await GETURL()))
+// setTimeout(async() => console.log('URL IS ', await GETURL()))
 
 module.exports = {
     PORT: process.env.PORT || 5000,

@@ -10,11 +10,11 @@ export const logLoader = module => {
         (doLog && (module.id.match(/\/components\//) && logComponents)) ||
         (module.id.match(/\/app\//) && logApp) ||
         (module.id.match(/\/util\//) && logUtil) ||
-        (module.id.match("/src/index") && logRoot)
+        (module.id.match('/src/index') && logRoot)
       )
-        console.log("loaded", module.id);
+        console.log('loaded', module.id);
     } else {
-      console.log("executed", module);
+      console.log('executed', module);
     }
   }
 };

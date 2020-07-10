@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useApp } from "./app"
+import { useApp } from './app'
 
 function MainWindow({ startCall, clientId }) {
     const { state, actions } = useApp()
@@ -17,14 +17,14 @@ function MainWindow({ startCall, clientId }) {
     };
 
     return (
-        <div className="container main-window">
+        <div className='container main-window'>
             <div>
                 <h1>Welcome to h00tnet</h1>
                 <h3>
                     Your session ID is
           <input
-                        type="text"
-                        className="txt-clientId"
+                        type='text'
+                        className='txt-clientId'
                         defaultValue={clientId}
                         readOnly
                     />
@@ -34,24 +34,24 @@ function MainWindow({ startCall, clientId }) {
             <div>
                 <h4>h00tnet: enter session, name, or role</h4>
                 <input
-                    type="text"
-                    className="txt-clientId"
+                    type='text'
+                    className='txt-clientId'
                     spellCheck={false}
                     placeholder={`Room ${roomID}`}
                     onChange={(event) => setRoomID(event.target.value)}
                 />
                 <br />
                 <input
-                    type="text"
-                    className="txt-clientId"
+                    type='text'
+                    className='txt-clientId'
                     spellCheck={false}
                     placeholder={`Name ${userID}`}
                     onChange={(event) => setUserID(event.target.value)}
                 />
                 <br />
                 <input
-                    type="text"
-                    className="txt-clientId"
+                    type='text'
+                    className='txt-clientId'
                     spellCheck={false}
                     // value={userID}
                     placeholder={`Control ${controlValue}`}
@@ -61,21 +61,21 @@ function MainWindow({ startCall, clientId }) {
                
                 
           {/* <button
-            type="button"
-            className="btn-action fa fa-video-camera"
+            type='button'
+            className='btn-action fa fa-video-camera'
             onClick={callWithVideo(true)}
           /> */}
              {/* 
 
           <button
-            type="button"
-            className="btn-action fa fa-phone"
+            type='button'
+            className='btn-action fa fa-phone'
             onClick={callWithVideo(false)}
           />
            */}
                 <button
-                    type="button"
-                    className="btn-action"
+                    type='button'
+                    className='btn-action'
                     onClick={() => actions.register({ roomID, controlValue, userID })}
                 >Go</button>
 

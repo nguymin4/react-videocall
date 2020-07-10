@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import CallWindowPeer from './CallWindowPeer'
-import { useApp } from "./app"
-import { json } from "overmind";
+import { useApp } from './app'
+import { json } from 'overmind';
 
 
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
@@ -47,33 +47,33 @@ const [video, setVideo] = useState(true);
          
         const stream = json(state.streams.cascade)
         if (localVideo && localVideo.current && stream) {
-            // console.log("Using The Effect",  stream)
+            // console.log('Using The Effect',  stream)
             localVideo.current.srcObject = stream
-            console.log("SET STREAM")
+            console.log('SET STREAM')
         }
     }, [ localVideo])
 
     return (
         <div className={classnames('cascade-window')}>
-            {"CASCADE"}
+            {'CASCADE'}
             <video height={300} ref={localVideo} autoPlay  />
 
-            <div className="video-control">
+            <div className='video-control'>
                 <button
-                    key="btnVideo"
-                    type="button"
+                    key='btnVideo'
+                    type='button'
                     className={getButtonClass('fa-video-camera', video)}
                     onClick={() => toggleMediaDevice('video')}
                 />
                 <button
-                    key="btnAudio"
-                    type="button"
+                    key='btnAudio'
+                    type='button'
                     className={getButtonClass('fa-microphone', audio)}
                     onClick={() => toggleMediaDevice('audio')}
                 />
                 <button
-                    type="button"   
-                    className="btn-action hangup fa fa-phone"
+                    type='button'   
+                    className='btn-action hangup fa fa-phone'
                     onClick={() => {actions.clearCascade();
                         endCall(true)}}
                 />

@@ -1,9 +1,9 @@
-import VideoStreamMerger from "./video-stream-merger";
+import VideoStreamMerger from './video-stream-merger';
 export const positions = [
-    { "x": 0, "y": 0, "width": .5, "height": .5 },
-    { "x": .5, "y": 0, "width": .5, "height": .5 },
-    { "x": 0, "y": .5, "width": .5, "height": .5 },
-    { "x": .5, "y": .5, "width": .5, "height": .5 }]
+    { 'x': 0, 'y': 0, 'width': .5, 'height': .5 },
+    { 'x': .5, 'y': 0, 'width': .5, 'height': .5 },
+    { 'x': 0, 'y': .5, 'width': .5, 'height': .5 },
+    { 'x': .5, 'y': .5, 'width': .5, 'height': .5 }]
 export default function labeledStream(
     stream,
     label,
@@ -42,9 +42,9 @@ export default function labeledStream(
                 pos.width*theMerger.width, 
                 pos.height*theMerger.height);
 
-            ctx.font = "48px serif";
-            ctx.fillStyle = "white";
-            ctx.strokeStyle = "boack";
+            ctx.font = '48px serif';
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'boack';
             ctx.fillText(label, x+10, y+50);
             ctx.strokeText(label, x+10, y+50);
             done();

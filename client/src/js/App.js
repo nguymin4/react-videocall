@@ -8,10 +8,10 @@ import CascadeWindow from './CascadeWindow';
 import CallModal from './CallModal';
 import MediaDevice from './MediaDevice';
 import EmptyStream from './streamutils/EmptyStream';
-import { json } from "overmind"
+import { json } from 'overmind'
 
-// import logloader from "../util/logloader"
-import { useApp, proxyMethods } from "./app"
+// import logloader from '../util/logloader'
+import { useApp, proxyMethods } from './app'
 import { ToastContainer } from 'react-toastify'
 // import { getActionPaths } from 'overmind/lib/utils';
 class App extends Component {
@@ -40,8 +40,8 @@ class App extends Component {
     }
 
     componentDidMount() {
-        console.log("component mounted!!")
-        "init,calljoin,request,call,end".split(',').forEach(key => socket.off(key))
+        console.log('component mounted!!')
+        'init,calljoin,request,call,end'.split(',').forEach(key => socket.off(key))
         const cl = (...args) => {
             console.log(...args)
             socket.emit('debug')
@@ -73,13 +73,13 @@ class App extends Component {
 
             )
             .on('request', ({ from: callFrom }) => {
-                const opts = { id: this.state.clientId + "R" }
+                const opts = { id: this.state.clientId + 'R' }
                 this.startCallHandler(false, callFrom, { video: true, audio: true }, opts)
                 // return
                 // this.setState({ callModal: 'active', callFrom });
             })
             .on('call', (data) => {
-                console.log("Call from ", data.from)
+                console.log('Call from ', data.from)
                 const pc = this.pcs[data.from]
                 if (data.sdp) {
                     pc.setRemoteDescription(data.sdp);
@@ -107,7 +107,7 @@ class App extends Component {
                 const src = e.streams[0]
                 // socket.emit('debug', `${this.state.clientId} has ${e.streams.length} streams`)
                 const track = e.track
-                console.log("Track", track)
+                console.log('Track', track)
                 this.setState({ peerSrc: src })
                 this.actions.addPeerToCascade(src)
                 pc.peerSrc = src
@@ -119,7 +119,7 @@ class App extends Component {
                 //     height: pc.merger.height,
                 // })
                 // if (track > 1) {
-                //     socket.emit("debug", "tracks > 1")
+                //     socket.emit('debug', 'tracks > 1')
                 //     const newId = [`X ${friendID}-${Math.floor(track / 2)}`]
                 //     if (!this.pcs[newId]) {
                 //         this.pcs[newId] = { peerSrc: new MediaStream(track) }
@@ -127,7 +127,7 @@ class App extends Component {
                 //         this.pcs[newId].peerSrc.addTrack(track)
                 //     }
                 // }
-                // socket.emit("peerconnect", { trackNo: e.trackNo, room: this.state.room, from: this.state.clientId, friend: friendID, details: { remote: track.remote, label: track.label } })
+                // socket.emit('peerconnect', { trackNo: e.trackNo, room: this.state.room, from: this.state.clientId, friend: friendID, details: { remote: track.remote, label: track.label } })
             })
             .start(isCaller, config, this.pcs);
     }
@@ -142,7 +142,7 @@ class App extends Component {
         this.actions.clearCascade()
         let keys
         if (from) {
-            keys = Object.keys(this.pcs).filter(key => (key === from) || key.startsWith("X" + from))
+            keys = Object.keys(this.pcs).filter(key => (key === from) || key.startsWith('X' + from))
             // keys = [from]
         } else {
             keys = Object.keys(this.pcs)
@@ -181,7 +181,7 @@ class App extends Component {
             <div>
                 <ToastContainer />
 
-               {"CASCADE " + this.oState.showCascade}
+               {'CASCADE ' + this.oState.showCascade}
                 {
                     !this.oState.showCascade ?
                         <MainWindow
@@ -225,28 +225,28 @@ class App extends Component {
 }
 let seq = 1
 const mediaDevice = new MediaDevice()
-mediaDevice.name = "Name " + seq++
+mediaDevice.name = 'Name ' + seq++
 const emptyStream = new EmptyStream()
-emptyStream.setTitle("Mike")
+emptyStream.setTitle('Mike')
 const WrapApp = () => {
     const { state, actions, effects } = useApp()
     const [stream, setStream] = React.useState(null)
     useEffect(() => {
-        // console.log("Effect is applied")
+        // console.log('Effect is applied')
         if (!state.streams.empty) {
             actions.addStream({ name: 'empty', stream: emptyStream })
         }
 
         effects.socket.events.setRegisterAction(actions.register)
         if (state.streams.cascade) {
-            // console.log("using cascade stream", json(state.streams.cascade))
+            // console.log('using cascade stream', json(state.streams.cascade))
             setStream(json(state.streams.cascade))
         } else if (state.streams.local) {
-            // console.log("using local stream", json(state.streams.local))
+            // console.log('using local stream', json(state.streams.local))
             setStream(json(state.streams.local))
         } else {
             mediaDevice.start()
-            mediaDevice.on("stream", (stream) => {
+            mediaDevice.on('stream', (stream) => {
                 actions.addStream({ name: 'local', stream })
                 setStream(stream)
             })
@@ -260,7 +260,7 @@ const WrapApp = () => {
     const localVideo = React.useRef(null)
     React.useEffect(() => {
         if (localVideo && localVideo.current && stream) {
-            // console.log("Using The Effect",  stream)
+            // console.log('Using The Effect',  stream)
             localVideo.current.srcObject = stream
         }
     }, [localVideo, stream])

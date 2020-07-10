@@ -1,11 +1,11 @@
 import MediaDevice from './MediaDevice';
 import Emitter from './Emitter';
 import socket from './socket';
-import labeledStream from "./streamutils/labeledStream"
-import { json } from "overmind"
+import labeledStream from './streamutils/labeledStream'
+import { json } from 'overmind'
 
-import { proxyMethods } from "./app"
-console.log("Peer loaded")
+import { proxyMethods } from './app'
+console.log('Peer loaded')
 const debug = (message) => {
     console.log(message)
     socket.emit('debug', message)
@@ -18,8 +18,8 @@ class PeerConnection extends Emitter {
        * @param {String} friendID - ID of the friend you want to call.
        */
     static instance = 0
-    constructor(friendID, opts, oState,actions) {
-        console.log("STATE IN", oState)
+    constructor(friendID, opts, oState, actions) {
+        console.log('STATE IN', oState)
         super();
         PeerConnection.instance++
         // debug(`PeerConnection from ${friendID} to ${opts.id}`)
@@ -33,7 +33,7 @@ class PeerConnection extends Emitter {
             candidate: event.candidate
         });
         this.pc.ontrack = (event) => {
-            console.log("On track")
+            console.log('On track')
             event.trackNo = this.tracks++
             if (!this.isCaller && (this.tracks === 1)) this.emit('peerTrackEvent', event);
         }
@@ -55,13 +55,19 @@ class PeerConnection extends Emitter {
         this.isCaller = isCaller
         let stream
         stream = json(this.state.streams.cascade)
-        // if (isCaller) { this.actions.diag("isCaller");
-        // stream = json(this.state.streams.cascade) }
-        // else { this.actions.diag("notCaller")
-        // stream = json(this.state.streams.empty) }
+        if (isCaller) {
+            this.actions.diag('NotCaller');
+            stream = json(this.state.streams.empty)
+            stream = json(this.state.streams.cascade)
+
+        }
+        else {
+            this.actions.diag('Caller')
+            stream = json(this.state.streams.cascade)
+        }
         stream.getTracks().forEach((track) => {
             this.pc.addTrack(track, stream);
-            console.log("Add cascadeTrack")
+            console.log('Add cascadeTrack')
         });
         this.emit('localStream', stream);
         if (isCaller) socket.emit('request', { to: this.friendID });

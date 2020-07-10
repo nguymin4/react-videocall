@@ -12,21 +12,21 @@ function CallModal({ status, callFrom, startCall, rejectCall }) {
   return (
     <div className={classnames('call-modal', status)}>
       <p>
-        <span className="caller">{`${callFrom} is calling`}</span>
+        <span className='caller'>{`${callFrom} is calling`}</span>
       </p>
       <button
-        type="button"
-        className="btn-action fa fa-video-camera"
+        type='button'
+        className='btn-action fa fa-video-camera'
         onClick={acceptWithVideo(true)}
       />
       <button
-        type="button"
-        className="btn-action fa fa-phone"
+        type='button'
+        className='btn-action fa fa-phone'
         onClick={acceptWithVideo(false)}
       />
       <button
-        type="button"
-        className="btn-action hangup fa fa-phone"
+        type='button'
+        className='btn-action hangup fa fa-phone'
         onClick={rejectCall}
       />
     </div>
