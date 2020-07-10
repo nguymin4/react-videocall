@@ -8,6 +8,7 @@ import labeledStream from "../streamutils/labeledStream"
 logLoader(module);
 const state = {
     title: "This title",
+    diags: [],
     showCascade: false,
     streams: {
         empty: null,
@@ -32,6 +33,9 @@ socket.off('confirm')
 
 // socket.off('confirm',cb)
 const actions = {
+    diag({state},diag){
+        state.diags.push(diag)
+    },
     clearCascade({ state }) {
         state.showCascade = false
         delete state.streams.cascade

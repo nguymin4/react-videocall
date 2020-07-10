@@ -11,27 +11,31 @@ exports.exists = (roomName) => {
 }
 exports.clearRoom = (roomName) => {
     const room = exports.exists(roomName)
-    if(!room.cascade) return
+    if (!room || !room.cascade) return
     room.cascade.map((member, sequence) => {
         console.log("clear", member)
         const socket = users.getReceiver(member)
-        socket.emit("end",{})
+        if (socket) { 
+            socket.emit("end", {}) }
+        else {
+            console.log("Socket dropped")
+        }
     })
 }
 exports.connect = (roomName) => {
     const room = exports.exists(roomName)
     let cascade = []
-    Object.keys(room.members).map(key=>{
+    Object.keys(room.members).map(key => {
         const control = users.getControlOf(key)
-        console.log("key/control",key,control)
+        console.log("key/control", key, control)
         const seq = parseInt(control)
-        if(seq){
-            if(!cascade[seq]) cascade[seq] = []
+        if (seq) {
+            if (!cascade[seq]) cascade[seq] = []
             cascade[seq].push(key)
         }
     })
 
-    cascade = room.cascade = cascade.flat().filter(a=>a)
+    cascade = room.cascade = cascade.flat().filter(a => a)
     console.log("new cascade", cascade)
     cascade.map((member, sequence) => {
         // console.log("cascade member", member)
@@ -42,14 +46,14 @@ exports.connect = (roomName) => {
         console.log("calljoin", member)
         const socket = users.getReceiver(member)
         const nextMember = cascade[sequence + 1]
-        socket.emit("calljoin", { jointo: nextMember, opts: {type: "cascade", index: sequence, members: room.order.length }})
+        socket.emit("calljoin", { jointo: nextMember, opts: { type: "cascade", index: sequence, members: room.order.length } })
     })
     const control = users.getByRole("control")
-    if(control){
+    if (control) {
         console.log("Cascade to control")
         const lastMember = cascade[cascade.length - 1]
         const socket = users.getReceiver(lastMember)
-        socket.emit("calljoin", { jointo: control, opts: {type: "cascadeToControl" }})
+        socket.emit("calljoin", { jointo: control, opts: { type: "cascadeToControl" } })
 
     }
 }

@@ -48,7 +48,7 @@ class App extends Component {
 
         }
 
-        proxyMethods('socket', socket)
+        // proxyMethods('socket', socket)
         socket
             .on('init', (attrs) => {
                 this.effects.socket.actions.gotEvent('init')
@@ -92,7 +92,7 @@ class App extends Component {
 
     startCall(isCaller, friendID, config, opts = {}) {
         this.config = config;
-        const pc = new PeerConnection(friendID, opts, this.oState)
+            const pc = new PeerConnection(friendID, opts, this.oState, this.actions)
 
         this.pcs[friendID] = pc
         // this.setState({nPCs: Object.keys(this.pcs).length})
@@ -139,6 +139,7 @@ class App extends Component {
     }
 
     endCall(isStarter, from) {
+        this.actions.clearCascade()
         let keys
         if (from) {
             keys = Object.keys(this.pcs).filter(key => (key === from) || key.startsWith("X" + from))

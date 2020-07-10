@@ -131,7 +131,7 @@ let messageNo = 0
 
 function initSocket(socket) {
     let id;
-    proxyMethods('socket-' + (socketNo + 1), socket)
+    // proxyMethods('socket-' + (socketNo + 1), socket)
 
     const doIdentify = () => {
 

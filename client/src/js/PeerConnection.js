@@ -17,18 +17,16 @@ class PeerConnection extends Emitter {
        * Create a PeerConnection.
        * @param {String} friendID - ID of the friend you want to call.
        */
-    static merger = null
     static instance = 0
-    constructor(friendID, opts, oState) {
+    constructor(friendID, opts, oState,actions) {
+        console.log("STATE IN", oState)
         super();
         PeerConnection.instance++
         // debug(`PeerConnection from ${friendID} to ${opts.id}`)
         this.pc = new RTCPeerConnection(PC_CONFIG);
         this.tracks = 0
         this.state = oState
-        if (PeerConnection.merger && PeerConnection.merger.result != null) {
-            this.merger = PeerConnection.merger
-        }
+        this.actions = actions
         this.opts = opts
         this.pc.onicecandidate = (event) => socket.emit('call', {
             to: this.friendID,
@@ -37,7 +35,7 @@ class PeerConnection extends Emitter {
         this.pc.ontrack = (event) => {
             console.log("On track")
             event.trackNo = this.tracks++
-            this.emit('peerTrackEvent', event);
+            if (!this.isCaller && (this.tracks === 1)) this.emit('peerTrackEvent', event);
         }
 
         this.mediaDevice = new MediaDevice();
@@ -54,8 +52,13 @@ class PeerConnection extends Emitter {
      * @param {Object} config - configuration for the call {audio: boolean, video: boolean}
      */
     start(isCaller, config, pcs) {
-       const stream = json(this.state.streams.cascade)
-        window.xxx = stream
+        this.isCaller = isCaller
+        let stream
+        stream = json(this.state.streams.cascade)
+        // if (isCaller) { this.actions.diag("isCaller");
+        // stream = json(this.state.streams.cascade) }
+        // else { this.actions.diag("notCaller")
+        // stream = json(this.state.streams.empty) }
         stream.getTracks().forEach((track) => {
             this.pc.addTrack(track, stream);
             console.log("Add cascadeTrack")
@@ -78,7 +81,6 @@ class PeerConnection extends Emitter {
         this.pc.close();
         this.pc = null;
         this.off();
-        // if (this.merger.result) this.merger.destroy()
         return this;
     }
 
