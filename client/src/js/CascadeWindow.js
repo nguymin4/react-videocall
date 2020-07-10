@@ -56,7 +56,7 @@ const [video, setVideo] = useState(true);
     return (
         <div className={classnames('cascade-window')}>
             {"CASCADE"}
-            <video height={300} ref={localVideo} autoPlay muted />
+            <video height={300} ref={localVideo} autoPlay  />
 
             <div className="video-control">
                 <button
