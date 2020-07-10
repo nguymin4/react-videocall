@@ -9,24 +9,36 @@ exports.all = () => {
 exports.exists = (roomName) => {
     return rooms[roomName]
 }
+exports.clearRoom = (roomName) => {
+    const room = exports.exists(roomName)
+    if(!room.cascade) return
+    room.cascade.map((member, sequence) => {
+        console.log("clear", member)
+        const socket = users.getReceiver(member)
+        socket.emit("end",{})
+    })
+}
 exports.connect = (roomName) => {
     const room = exports.exists(roomName)
-    const cascade = []
+    let cascade = []
     Object.keys(room.members).map(key=>{
         const control = users.getControlOf(key)
         console.log("key/control",key,control)
         const seq = parseInt(control)
         if(seq){
-            cascade[seq-1] = key
+            if(!cascade[seq]) cascade[seq] = []
+            cascade[seq].push(key)
         }
     })
-    console.log("cascade", cascade)
+
+    cascade = room.cascade = cascade.flat().filter(a=>a)
+    console.log("new cascade", cascade)
     cascade.map((member, sequence) => {
-        console.log("cascade", member)
+        // console.log("cascade member", member)
         const socket = users.getReceiver(member)
         socket.emit("cascade", { name: users.getName(member), index: sequence, members: room.order.length })
     })
-    cascade.slice(0, -1).map((member, sequence) => {
+    room.cascade.slice(0, -1).map((member, sequence) => {
         console.log("calljoin", member)
         const socket = users.getReceiver(member)
         const nextMember = cascade[sequence + 1]

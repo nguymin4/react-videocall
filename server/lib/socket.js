@@ -4,9 +4,7 @@ const rooms = require('./rooms')
 const { proxyMethods } = require('./proxy')
 const version = 2
 let leaderConnectedToControl = false
-const checkRoom = (socket, id) => {
-    console.log("checking room")
-}
+
 
 const awaitUsers = (n) => new Promise(resolve => {
     const retry = () => {
@@ -215,7 +213,7 @@ function initSocket(socket) {
         })
         .on('end', (data) => {
             if (version) {
-                checkRoom(socket, id)
+                rooms.clearRoom(users.getRoom(id))
             }
             const receiver = users.getReceiver(data.to);
             if (receiver) {

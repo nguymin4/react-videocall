@@ -74,6 +74,10 @@ exports.getByRole = (role) => {
 exports.getName = (id) =>{
     return users[id] && users[id].name
 }
+exports.getRoom = (id) =>{
+    return users[id] && users[id].room
+}
+
 exports.dump = () => {
     Object.keys(users).forEach((key)=>{
         const user = {...users[key]}
