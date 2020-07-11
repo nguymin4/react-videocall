@@ -6,10 +6,12 @@ const version = 2
 let leaderConnectedToControl = false
 
 
-const awaitUsers = (n) => new Promise(resolve => {
+const awaitUsers = (room, n) => new Promise((resolve, reject) => {
+    const N_TRIES = 100
+    const retries = 0;
     const retry = () => {
-        if (users.all().length >= n) resolve();
-        setTimeout(retry, 200);
+        if (rooms.members(room).length >= n) resolve();
+        if(retries++ < N_TRIES) setTimeout(retry, 200); else reject()
     };
     retry();
 
@@ -22,16 +24,16 @@ const joinByName = (name) => {
     rooms.join("main", users.nameToSession(name))
 }
 
-const runTest = async () => {
-    await awaitUsers(2)
+const runTest = async (room) => {
+    await awaitUsers(room,2)
     console.log("Two users")
-    rooms.create("main")
-    joinByName('Mike')
-    joinByName("Think")
-    rooms.connect("main")
+    rooms.create(room)
+    // joinByName('Mike')
+    // joinByName("Think")
+    rooms.connect(room)
     // rooms.join("main","session-16")
 }
-runTest()
+// runTest()
 const handleRegistration = async (socket, data) => {
     const broadcast = (message) => {
         socket.broadcast.emit("message", { message })
@@ -177,7 +179,7 @@ function initSocket(socket) {
             }
             console.log("members", rooms.members(data.room).map(id => users.getName(id)))
             socket.emit('members', { members: rooms.members(data.room) })
-            runTest()
+            runTest(data.room)
         })
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {
