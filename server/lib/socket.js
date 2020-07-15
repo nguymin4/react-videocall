@@ -24,7 +24,7 @@ const joinByName = (name) => {
     rooms.join("main", users.nameToSession(name))
 }
 
-const runTest = async (room) => {
+const doConnect = async (room) => {
     await awaitUsers(room,2)
     console.log("Two users")
     rooms.create(room)
@@ -33,7 +33,7 @@ const runTest = async (room) => {
     rooms.connect(room)
     // rooms.join("main","session-16")
 }
-// runTest()
+// doConnect()
 const handleRegistration = async (socket, data) => {
     const broadcast = (message) => {
         socket.broadcast.emit("message", { message })
@@ -48,79 +48,79 @@ const handleRegistration = async (socket, data) => {
         if (!rooms.exists(roomName) || ((data.control === 'reset') || (version === 2 && data.control === 'r'))) {
             console.log("reset")
             rooms.create(roomName, data.id)
-            broadcast(`${data.name} has created ${roomName}`)
+            // broadcast(`${data.name} has created ${roomName}`)
         }
-        broadcast(`${data.name} has joined ${roomName}`)
+        // broadcast(`${data.name} has joined ${roomName}`)
         rooms.join(roomName, data.id)
-        if (data.control === 'connect' || (version === 2 && data.control === 'c')) {
-            const members = rooms.members(roomName)
-            console.log(`connecting ${members.join(',')}`)
-            rooms.connect(roomName)
+        // if (data.control === 'connect' || (version === 2 && data.control === 'c')) {
+        //     const members = rooms.members(roomName)
+        //     console.log(`connecting ${members.join(',')}`)
+        //     rooms.connect(roomName)
 
-        }
+        // }
 
         return
     }
-    if (data.role === "leader" || data.role === "control") {
-        socket.broadcast.emit("message", { message: `${data.name} has registered as ${data.role} for ${data.room}` })
-        await users.create(socket, data)
-    } else {
-        await users.create(socket, data)
-        const leader = users.getByRole("leader")
+    // if (data.role === "leader" || data.role === "control") {
+    //     socket.broadcast.emit("message", { message: `${data.name} has registered as ${data.role} for ${data.room}` })
+    //     await users.create(socket, data)
+    // } else {
+    //     await users.create(socket, data)
+    //     const leader = users.getByRole("leader")
 
-        if (!leader) {
-            socket.emit("message", { message: "no leader registered yet" })
-        } else {
-            socket.emit("calljoin", { jointo: leader })
-            const control = users.getByRole("control")
-            if (control) {
-                socket.emit("calljoin", { jointo: control })
-            }
+    //     if (!leader) {
+    //         socket.emit("message", { message: "no leader registered yet" })
+    //     } else {
+    //         socket.emit("calljoin", { jointo: leader })
+    //         const control = users.getByRole("control")
+    //         if (control) {
+    //             socket.emit("calljoin", { jointo: control })
+    //         }
 
-            if (!leaderConnectedToControl) {
-                console.log("connected to control")
-                leaderConnectedToControl = true
-                const controlSocket = users.getReceiver(control)
-                if (controlSocket) {
-                    controlSocket.emit("calljoin", { jointo: leader })
-                } else {
-                    console.log("no control socket")
-                }
-            }
-        }
+    //         if (!leaderConnectedToControl) {
+    //             console.log("connected to control")
+    //             leaderConnectedToControl = true
+    //             const controlSocket = users.getReceiver(control)
+    //             if (controlSocket) {
+    //                 controlSocket.emit("calljoin", { jointo: leader })
+    //             } else {
+    //                 console.log("no control socket")
+    //             }
+    //         }
+    //     }
 
-        // try {
-        //     socket.emit("calljoin", { id })
-        //     console.log("sent")
-        // } catch (e) {
-        //     console.log("EFFING", e)
-        // }
-    }
-    return
-    //find if someone else had that role
-    oldUser = users.getByRole(data.role)
-    if (oldUser) {
-        const receiver = user.get(oldUser)
-        receiver.emit('unenrole', { role: oldRole })
-        if (data.role === 'leader') users.sendMessage('disconnectleader')
-        else if (data.role === 'control') users.sendMessage('disconnectcontrol')
-        else {
-            receiver.emit('disconnectleader')
-            receiver.emit('disconnectcontrol')
-        }
-    }
-    users.setProp(socket, id, 'role', data.role)
-    if (data.role === 'leader') {
-        users.broadcast('connectleader', { leader: id })
-    } else if (data.role === 'control') {
-        users.broadcast('connectcontrol', { control: id })
-    } else {
-        const receiver = users.getReceiver(id)
-        const leader = users.getByRole('leader')
-        const control = users.getByRole('control')
-        if (leader) receiver.emit('connectleader', { leader: users.getByRole('leader') })
-        if (control) receiver.emit('connectcontrol', { leader: users.getByRole('leader') })
-    }
+    //     // try {
+    //     //     socket.emit("calljoin", { id })
+    //     //     console.log("sent")
+    //     // } catch (e) {
+    //     //     console.log("EFFING", e)
+    //     // }
+    // }
+    // return
+    // //find if someone else had that role
+    // oldUser = users.getByRole(data.role)
+    // if (oldUser) {
+    //     const receiver = user.get(oldUser)
+    //     receiver.emit('unenrole', { role: oldRole })
+    //     if (data.role === 'leader') users.sendMessage('disconnectleader')
+    //     else if (data.role === 'control') users.sendMessage('disconnectcontrol')
+    //     else {
+    //         receiver.emit('disconnectleader')
+    //         receiver.emit('disconnectcontrol')
+    //     }
+    // }
+    // users.setProp(socket, id, 'role', data.role)
+    // if (data.role === 'leader') {
+    //     users.broadcast('connectleader', { leader: id })
+    // } else if (data.role === 'control') {
+    //     users.broadcast('connectcontrol', { control: id })
+    // } else {
+    //     const receiver = users.getReceiver(id)
+    //     const leader = users.getByRole('leader')
+    //     const control = users.getByRole('control')
+    //     if (leader) receiver.emit('connectleader', { leader: users.getByRole('leader') })
+    //     if (control) receiver.emit('connectcontrol', { leader: users.getByRole('leader') })
+    // }
 
 }
 
@@ -169,17 +169,26 @@ function initSocket(socket) {
             console.log('peerconnect', data.trackNo, data.room, data.from, data.friend, JSON.stringify(data.details))
             // rooms.next()
         })
-        .on('register', async (data) => {
-            id = await users.create(socket, data);
-            await handleRegistration(socket, data)
-            const control = users.getControlOf(data.id)
-            const sequence = parseInt(control)
-            if (sequence) {
-                socket.emit("cascade", { name: users.getName(data.id), index: sequence - 1, members: 1 })
+        .on('cascade', async (data) => {
+            doConnect(data.room)
+        })
+        .on('relay', (data) => {
+            const receiver = users.getReceiver(data.to);
+            if (receiver) {
+                receiver.emit(data.op, data);
+            } else {
+                socket.emit('relayError', data)
             }
-            console.log("members", rooms.members(data.room).map(id => users.getName(id)))
+        })
+        .on('register', async (data) => {
+            const roomName = data.room
+            id = await users.create(socket, data);
+            if (!rooms.exists(roomName) || ((data.control === 'reset') || (version === 2 && data.control === 'r'))) {
+            rooms.create(roomName, data.id)
+            }
+            rooms.join(roomName, data.id)
+            rooms.computeCascade(roomName)
             socket.emit('members', { members: rooms.members(data.room) })
-            runTest(data.room)
         })
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {
@@ -190,21 +199,21 @@ function initSocket(socket) {
             }
         })
 
-        .on('setrole', (data) => {
-            users.setProp(id, 'role', data.role)
-            users.broadcast('message', { from: data.id, message: `${data.name} is ${data.role}` })
-        }
-        )
+        // .on('setrole', (data) => {
+        //     users.setProp(id, 'role', data.role)
+        //     users.broadcast('message', { from: data.id, message: `${data.name} is ${data.role}` })
+        // }
+        // )
 
-        .on('setname', (data) => {
-            console.log("seting name", data)
-            if (!data) {
-                socket.send('message', { message: "no was data sent" })
-                return
-            }
-            users.setProp(id, 'name', data.name)
-            users.broadcast('message', { from: data.name, message: `Session ${data.id} is ${data.name}` })
-        })
+        // .on('setname', (data) => {
+        //     console.log("seting name", data)
+        //     if (!data) {
+        //         socket.send('message', { message: "no was data sent" })
+        //         return
+        //     }
+        //     users.setProp(id, 'name', data.name)
+        //     users.broadcast('message', { from: data.name, message: `Session ${data.id} is ${data.name}` })
+        // })
         .on('call', (data) => {
             const receiver = users.getReceiver(data.to);
             if (receiver) {

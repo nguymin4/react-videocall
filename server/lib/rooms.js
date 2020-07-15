@@ -15,14 +15,15 @@ exports.clearRoom = (roomName) => {
     room.cascade.map((member, sequence) => {
         console.log("clear", member)
         const socket = users.getReceiver(member)
-        if (socket) { 
-            socket.emit("end", {}) }
+        if (socket) {
+            socket.emit("end", {})
+        }
         else {
             console.log("Socket dropped")
         }
     })
 }
-exports.connect = (roomName) => {
+exports.computeCascade = (roomName) => {
     const room = exports.exists(roomName)
     let cascade = []
     Object.keys(room.members).map(key => {
@@ -34,8 +35,11 @@ exports.connect = (roomName) => {
             cascade[seq].push(key)
         }
     })
+    room.cascade = cascade.flat().filter(a => a)
+}
 
-    cascade = room.cascade = cascade.flat().filter(a => a)
+exports.connect = (roomName) => {
+    const cascade = room.cascade
     console.log("new cascade", cascade)
     cascade.map((member, sequence) => {
         // console.log("cascade member", member)

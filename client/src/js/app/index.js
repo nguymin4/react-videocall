@@ -10,6 +10,7 @@ const state = {
     title: 'This title',
     diags: [],
     showCascade: false,
+    members: [],
     roomStreams: {
     },
     _message: {
@@ -39,6 +40,9 @@ socket.off('confirm')
 
 // socket.off('confirm',cb)
 const actions = {
+    setMembers({state},members){
+        state.members = members
+    },
     setMessage({ state, actions }, value = "default message") {
         state._message.text = value;
         toast(value, {
@@ -167,6 +171,8 @@ const actions = {
 
 }
 const effects = {
+    actions: null,
+    setActions: (actions) => effects.actions = actions,
     storage: {
         setAttrs(attrs) {
             sessionStorage.setItem('attrs', JSON.stringify(attrs))
@@ -194,9 +200,9 @@ const effects = {
         },
         events: {
             registerAction: null,
-            members({ members }) {
-                console.log('Members message', members)
-                // theActions.setControl(members.join(','))
+            members(data) {
+                console.log('Members message', data.members)
+                effects.actions.setMembers(data.members)
             },
             setRegisterAction(func) {
                 console.log('register action called')

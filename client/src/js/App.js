@@ -235,7 +235,7 @@ const WrapApp = () => {
         if (!state.streams.empty) {
             actions.addStream({ name: 'empty', stream: emptyStream })
         }
-
+        effects.setActions(actions)
         effects.socket.events.setRegisterAction(actions.register)
         if (state.streams.cascade) {
             // console.log('using cascade stream', json(state.streams.cascade))
