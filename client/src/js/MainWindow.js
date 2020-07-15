@@ -15,7 +15,14 @@ function MainWindow({ startCall, clientId }) {
         const config = { audio: true, video };
         return () => roomID && startCall(true, roomID, config);
     };
-
+    const onClick = (e) => {
+        if (e.shiftKey || e.ctrlKey) {
+            actions.startCascade()
+        } else {
+            actions.register({ roomID, controlValue, userID })
+        }
+        // actions.fakeStreams()
+    }
     return (
         <div className='container main-window'>
             <div>
@@ -25,26 +32,26 @@ function MainWindow({ startCall, clientId }) {
                 <input
                     type='text'
                     className='txt-clientId'
-                    spellCheck={false}
-                    placeholder={`Room ${roomID}`}
-                    onChange={(event) => setRoomID(event.target.value)}
+                    spellCheck={ false }
+                    placeholder={ `Room ${roomID}` }
+                    onChange={ (event) => setRoomID(event.target.value) }
                 />
                 <br />
                 <input
                     type='text'
                     className='txt-clientId'
-                    spellCheck={false}
-                    placeholder={`Name ${userID}`}
-                    onChange={(event) => setUserID(event.target.value)}
+                    spellCheck={ false }
+                    placeholder={ `Name ${userID}` }
+                    onChange={ (event) => setUserID(event.target.value) }
                 />
                 <br />
                 <input
                     type='text'
                     className='txt-clientId'
-                    spellCheck={false}
+                    spellCheck={ false }
                     // value={userID}
-                    placeholder={`Control ${controlValue}`}
-                    onChange={(event) => setControlValue(event.target.value)}
+                    placeholder={ `Control ${controlValue}` }
+                    onChange={ (event) => setControlValue(event.target.value) }
                 />
                 <div>
 
@@ -65,10 +72,8 @@ function MainWindow({ startCall, clientId }) {
                     <button
                         type='button'
                         className='btn-action'
-                        onClick={() => {
-                            actions.register({ roomID, controlValue, userID })
-                            actions.fakeStreams()
-                        }}
+                        onClick={ onClick }
+
                     >Go</button>
 
 

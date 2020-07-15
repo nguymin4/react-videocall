@@ -1,11 +1,13 @@
 import { createHook } from 'overmind-react';
-import { json, createOvermind } from 'overmind';
-import socket from '../socket';
+import { createOvermind } from 'overmind';
 import { logLoader } from '../../util/logloader';
 import { toast } from 'react-toastify';
 import labeledStream from '../streamutils/labeledStream'
 import actions from './actions'
 import effects from './effects'
+import {proxyMethods,setProxyActions} from './proxyMethods'
+export {proxyMethods}
+
 logLoader(module);
 const state = {
     title: 'This title',
@@ -40,26 +42,6 @@ const state = {
 let theActions
 // console.log('conform source code', effects.socket.onConfirm + '')
 // actions.actionCB()
-export const proxyMethods = (name, obj) => {
-    const oldOn = obj.on.bind(obj)
-    const oldEmit = obj.emit.bind(obj)
-    obj.emit = (message, args) => {
-        if (message !== 'ping' && message !== 'pong') {
-            theActions.logEvent({ evType: `${name}Emit`, message, zargs: args })
-        }
-        oldEmit(message, args)
-        return obj
-    }
-    obj.on = (message, cb) => {
-        const cb1 = (args) => {
-            theActions.logEvent({ evType: `${name}`, message, zargs: args, cb: () => console.log('did it!') })
-            cb(args)
-        }
-        oldOn(message, cb1)
-        return obj
-    }
-
-}
 
 const onInitialize = (
     {
@@ -71,8 +53,6 @@ const onInitialize = (
     //  , 
 
 ) => {
-    console.log('INITTED')
-    socket.emit('debug', 'it is initialized')
     const attrs = effects.storage.getAttrs()
     theActions = actions
     actions.setAttrs(attrs)
@@ -94,6 +74,7 @@ const initialize = () => {
         devtools: 'localhost:3031'
     });
     console.log(app.state);
+    setProxyActions(app.actions)
     useApp = createHook();
     console.log('Set attrs')
     // app.actions.setAttrs(app.effects.getAttrs())

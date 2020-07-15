@@ -11,7 +11,7 @@ const awaitUsers = (room, n) => new Promise((resolve, reject) => {
     const retries = 0;
     const retry = () => {
         if (rooms.members(room).length >= n) resolve();
-        if(retries++ < N_TRIES) setTimeout(retry, 200); else reject()
+        if (retries++ < N_TRIES) setTimeout(retry, 200); else reject()
     };
     retry();
 
@@ -25,7 +25,7 @@ const joinByName = (name) => {
 }
 
 const doConnect = async (room) => {
-    await awaitUsers(room,2)
+    await awaitUsers(room, 2)
     console.log("Two users")
     rooms.create(room)
     // joinByName('Mike')
@@ -173,6 +173,7 @@ function initSocket(socket) {
             doConnect(data.room)
         })
         .on('relay', (data) => {
+            // console.log("Relay ", JSON.stringify(data))
             const receiver = users.getReceiver(data.to);
             if (receiver) {
                 receiver.emit(data.op, data);
@@ -184,7 +185,7 @@ function initSocket(socket) {
             const roomName = data.room
             id = await users.create(socket, data);
             if (!rooms.exists(roomName) || ((data.control === 'reset') || (version === 2 && data.control === 'r'))) {
-            rooms.create(roomName, data.id)
+                rooms.create(roomName, data.id)
             }
             rooms.join(roomName, data.id)
             rooms.computeCascade(roomName)

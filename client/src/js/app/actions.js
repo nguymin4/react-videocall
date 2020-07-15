@@ -1,24 +1,41 @@
 import { json } from "overmind";
 const actions = {
-    setUsers({state},id){
-        if( !state.users[id]) state.users[id] = {}
-        if( !state.roomStreams[id]) state.roomStreams[id] = {}
+    startCascade({state,actions, effects}){
+        if(state.members.length < 2 ){
+         actions.setMessage("Can't start a cascade with only 1")
+            return
+        }
+        effects.socket.actions.emit('cascade', {room:state.attrs.room})
+    
+
     },
-    setMembers({ state,effects }, members) {
+    setUserEntries({ state }, id) {
+        if (!state.users[id]) state.users[id] = {}
+        if (!state.roomStreams[id]) state.roomStreams[id] = {}
+    },
+    setMembers({ state, effects }, members) {
         state.members = members
-    members.forEach(id=>{
-        effects.socket.actions.relay(id,'getInfo')
+        members.forEach(id => {
+            effects.socket.actions.relay(id, 'getInfo')
 
         })
 
     },
-    setUserInfo({state},data){
+    sendUserInfo({ state, effects }, request) {
+        console.log("REQUEST", request)
+        const data = Object.assign(json(state.attrs),request)
+
+        effects.socket.actions.relay(request.from, 'info', data)
+    },
+    setUserInfo({ state,actions }, data) {
         const id = data.id
         delete data.id
-        
-        
+        actions.setUserEntries(id)
         state.roomStreams[id].name = data.name
-        data.forEach(key => state.users[id][key] = data[key])
+        for(const key in data){
+        state.users[id][key] = data[key]
+
+        }
     },
     setMessage({ state, actions }, value = "default message") {
         state._message.text = value;
@@ -104,7 +121,7 @@ const actions = {
     },
     clearEvents({ state }) { state.events = [] },
 
-    setAttrs({ state,effects }, attrs) {
+    setAttrs({ state, effects }, attrs) {
         if (!attrs) attrs = {
             name: 'undefined',
             room: 'main',
@@ -116,11 +133,11 @@ const actions = {
         effects.storage.setAttrs(json(state.attrs))
     },
 
-    setId({ state,effects }, id) {
+    setId({ state, effects }, id) {
         state.attrs.id = id
         effects.storage.setAttrs(json(state.attrs))
     },
-    setControl({ state,effects }, control) {
+    setControl({ state, effects }, control) {
         state.attrs.control = control
         effects.storage.setAttrs(json(state.attrs))
     },
