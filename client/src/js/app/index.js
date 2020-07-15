@@ -12,6 +12,10 @@ const state = {
     showCascade: false,
     roomStreams: {
     },
+    _message: {
+        text: '',
+        delay: 1000
+    },
     streams: {
         empty: null,
         local: null,
@@ -35,6 +39,22 @@ socket.off('confirm')
 
 // socket.off('confirm',cb)
 const actions = {
+    setMessage({ state, actions }, value = "default message") {
+        state._message.text = value;
+        toast(value, {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        })
+        setTimeout(actions.clearMessage, state._message.delay);
+    },
+    clearMessage({ state, actions }) {
+        state._message.text = "";
+    },
     fakeStreams({ state }) {
         state.roomStreams = {
             'Session-1': {
@@ -123,13 +143,26 @@ const actions = {
         state.attrs.control = control
         effects.storage.setAttrs(json(state.attrs))
     },
-    register({ state, effects }, data) {
-        if (data.controlValue) state.attrs.control = data.controlValue
-        if (data.userID) state.attrs.name = data.userID
-        if (data.roomID) state.attrs.room = data.roomID
+    register({ state, actions, effects }, data) {
+        let error = false
+        if (data.controlValue !== 'undefined') { state.attrs.control = data.controlValue } else {
+            actions.setMessage('Missing control value')
+            error = true
+        }
+        if (data.userID !== 'undefined') { state.attrs.name = data.userID } else {
+            actions.setMessage('Missing user name')
+            error = true
+
+        }
+        if (data.roomID !== 'undefined') { state.attrs.room = data.roomID } else {
+            actions.setMessage('Missing room name')
+            error = true
+        }
         // console.log('registering ', json(state.attrs))
-        effects.socket.actions.register(json(state.attrs))
         effects.storage.setAttrs(json(state.attrs))
+        if (!error) {
+            effects.socket.actions.register(json(state.attrs))
+        }
     }
 
 }
