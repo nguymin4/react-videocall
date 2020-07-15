@@ -4,14 +4,16 @@ import socket from '../socket';
 import { logLoader } from '../../util/logloader';
 import { toast } from 'react-toastify';
 import labeledStream from '../streamutils/labeledStream'
-
+import actions from './actions'
+import effects from './effects'
 logLoader(module);
 const state = {
     title: 'This title',
     diags: [],
     showCascade: false,
-    members: [],
-    roomStreams: {
+    members: [], //array of member session numbers
+    users: {}, // keyed list of users with their data
+    roomStreams: { //keyed list of stream information with names
     },
     _message: {
         text: '',
@@ -34,209 +36,7 @@ const state = {
 
     }
 }
-socket.off('confirm')
-// const cb = () => { console.log('F in app mpw been received') }
-// socket.on('confirm', cb)
 
-// socket.off('confirm',cb)
-const actions = {
-    setMembers({state},members){
-        state.members = members
-    },
-    setMessage({ state, actions }, value = "default message") {
-        state._message.text = value;
-        toast(value, {
-            position: "top-center",
-            autoClose: 2000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        })
-        setTimeout(actions.clearMessage, state._message.delay);
-    },
-    clearMessage({ state, actions }) {
-        state._message.text = "";
-    },
-    fakeStreams({ state }) {
-        state.roomStreams = {
-            'Session-1': {
-                name: 'Noel',
-                stream: null
-            }, 'Session-2': {
-                name: 'Jess',
-                stream: null
-            }
-        }
-    },
-    diag({ state }, diag) {
-        state.diags.push(diag)
-    },
-    clearCascade({ state }) {
-        state.showCascade = false
-        delete state.streams.cascade
-        if (state.streams.cascadeMerger) {
-            json(state.streams.cascadeMerger).destroy()
-            delete state.streams.cascadeMerger
-        } ``
-
-    },
-    // flashCascade({ state, actions }) {
-    //     state.showCascade = true
-    //     setTimeout(() => actions.clearCascade(), 5000)
-    // },
-    addStream({ state }, { name, stream }) {
-        console.log('add stream', name, stream)
-        state.streams[name] = stream
-    },
-    addPeerToCascade({ state }, src) {
-        state.streams.peer = src
-        if (state.cascade.index !== 0) {
-
-            const merger = json(state.streams.cascadeMerger)
-            merger.addStream(src, {
-                index: -1,
-                x: 0, // position of the topleft corner
-                y: 0,
-                width: merger.width,
-                height: merger.height,
-            })
-        }
-    },
-    setCascade({ state, actions }, opts) {
-        if (state.cascade.index !== opts.index || !state.streams.cascade) {
-            if (state.streams.cascade) {
-                json(state.streams.cascade).merger.destroy()
-            }
-            const merger = labeledStream(json(state.streams.local), state.attrs.name,
-                opts.index,
-                opts.members)
-            state.streams.cascadeMerger = merger
-            actions.addStream({ name: 'cascade', stream: merger.result })
-            state.cascade.index = opts.index
-        }
-        state.cascade.members = opts.members
-        state.showCascade = true
-    },
-    logEvent({ state }, { evType, message, zargs, cb }) {
-        const lastEvent = { evType, message, zargs }
-        if (message === 'ping' || message === 'pong')
-            state.lastEvent = lastEvent
-        // state.events.push(lastEvent)
-    },
-    clearEvents({ state }) { state.events = [] },
-
-    setAttrs({ state }, attrs) {
-        if (!attrs) attrs = {
-            name: 'undefined',
-            room: 'main',
-            role: 'undefined',
-            control: 'undefined',
-            id: null
-        }
-        state.attrs = attrs
-        effects.storage.setAttrs(json(state.attrs))
-    },
-
-    setId({ state }, id) {
-        state.attrs.id = id
-        effects.storage.setAttrs(json(state.attrs))
-    },
-    setControl({ state }, control) {
-        state.attrs.control = control
-        effects.storage.setAttrs(json(state.attrs))
-    },
-    register({ state, actions, effects }, data) {
-        let error = false
-        if (data.controlValue !== 'undefined') { state.attrs.control = data.controlValue } else {
-            actions.setMessage('Missing control value')
-            error = true
-        }
-        if (data.userID !== 'undefined') { state.attrs.name = data.userID } else {
-            actions.setMessage('Missing user name')
-            error = true
-
-        }
-        if (data.roomID !== 'undefined') { state.attrs.room = data.roomID } else {
-            actions.setMessage('Missing room name')
-            error = true
-        }
-        // console.log('registering ', json(state.attrs))
-        effects.storage.setAttrs(json(state.attrs))
-        if (!error) {
-            effects.socket.actions.register(json(state.attrs))
-        }
-    }
-
-}
-const effects = {
-    actions: null,
-    setActions: (actions) => effects.actions = actions,
-    storage: {
-        setAttrs(attrs) {
-            sessionStorage.setItem('attrs', JSON.stringify(attrs))
-        },
-        getAttrs() {
-            const item = sessionStorage.getItem('attrs')
-            if (item) return JSON.parse(item)
-            return null
-        }
-
-    },
-
-    socket: {
-        actions: {
-            register(data) {
-                console.log('send register', data)
-                socket.emit('register', data)
-            },
-            debug(data) {
-                socket.emit('debug', data)
-            },
-            gotEvent(data) {
-                console.log('got event', JSON.stringify(data))
-            }
-        },
-        events: {
-            registerAction: null,
-            members(data) {
-                console.log('Members message', data.members)
-                effects.actions.setMembers(data.members)
-            },
-            setRegisterAction(func) {
-                console.log('register action called')
-                effects.socket.events.registerAction = func
-            },
-
-            confirm(data) {
-                toast(`confirmed ${JSON.stringify(data)}`)
-
-                socket.emit('debug', 'the onconfirm ' + JSON.stringify(data))
-            },
-            message(data) {
-                console.log('Message received', data)
-                toast(data.message)
-            },
-            identify() {
-                console.log('IN THE IDENTIFY')
-                const attrs = effects.storage.getAttrs()
-                if (attrs) socket.emit('identified', attrs)
-            },
-            unenrole(data) {
-                console.log('Unenroled')
-                if (events.socket.actions.registerAction) {
-                    console.log('Invoke register action')
-                    // evemts.socket.actions.registerAction({roleID: data.role})
-                }
-            }
-        }
-
-    }
-}
-Object.keys(effects.socket.events).forEach(key => {
-    socket.off(key); socket.on(key, effects.socket.events[key])
-})
 let theActions
 // console.log('conform source code', effects.socket.onConfirm + '')
 // actions.actionCB()

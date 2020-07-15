@@ -274,7 +274,7 @@ const WrapApp = () => {
         {state.cascadeVideo ? null : (<React.Fragment>
             <div className="flex" >
                 <div className="mt-2 h-25 w-40">
-                    <div className=" h-25 w-40"s>
+                    <div className=" h-25 w-40">
                     <video   ref={localVideo} autoPlay muted />
 
                     </div>
