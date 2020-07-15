@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import {app} from './js/app'
 import App from './js/App';
 import './css/app.scss';
+import './css/tailwind.css';
 import { Provider } from 'overmind-react';
 
 import 'react-toastify/dist/ReactToastify.css';
