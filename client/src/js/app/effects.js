@@ -3,8 +3,10 @@ import socket from '../socket';
 const effects = {
     actions: null,
     state: {},
-    setActionsAndState: (actions,state) => {effects.actions = actions
-    effects.state = state},
+    setActionsAndState: (actions, state) => {
+    effects.actions = actions
+        effects.state = state
+    },
     storage: {
         setAttrs(attrs) {
             sessionStorage.setItem('attrs', JSON.stringify(attrs))
@@ -20,7 +22,7 @@ const effects = {
     socket: {
         actions: {
             relay(to, op, params = {}) {
-                socket.emit('relay', { ...params, to, op, from:effects.state.attrs.id})
+                socket.emit('relay', { ...params, to, op, from: effects.state.attrs.id })
             },
             register(data) {
                 console.log('send register', data)
@@ -43,7 +45,7 @@ const effects = {
 
             },
             members(data) {
-                effects.actions.setMembers(data.members)
+                effects.actions.setMembers(data)
             },
             setRegisterAction(func) {
                 console.log('register action called')

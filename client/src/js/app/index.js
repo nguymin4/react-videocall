@@ -5,8 +5,8 @@ import { toast } from 'react-toastify';
 import labeledStream from '../streamutils/labeledStream'
 import actions from './actions'
 import effects from './effects'
-import {proxyMethods,setProxyActions} from './proxyMethods'
-export {proxyMethods}
+import { proxyMethods, setProxyActions } from './proxyMethods'
+export { proxyMethods }
 
 logLoader(module);
 const state = {
@@ -14,6 +14,7 @@ const state = {
     diags: [],
     showCascade: false,
     members: [], //array of member session numbers
+    cascade: [], //array of session numbers in order
     users: {}, // keyed list of users with their data
     roomStreams: { //keyed list of stream information with names
     },

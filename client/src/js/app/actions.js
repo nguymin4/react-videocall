@@ -1,40 +1,48 @@
 import { json } from "overmind";
+import { toast } from 'react-toastify';
+
 const actions = {
-    startCascade({state,actions, effects}){
-        if(state.members.length < 2 ){
-         actions.setMessage("Can't start a cascade with only 1")
+    startCascade({ state, actions, effects }) {
+        if (state.members.length < 2) {
+            actions.setMessage("Can't start a cascade with only 1")
             return
         }
-        effects.socket.actions.emit('cascade', {room:state.attrs.room})
-    
+        effects.socket.actions.emit('cascade', { room: state.attrs.room })
+
 
     },
     setUserEntries({ state }, id) {
         if (!state.users[id]) state.users[id] = {}
         if (!state.roomStreams[id]) state.roomStreams[id] = {}
     },
-    setMembers({ state, effects }, members) {
-        state.members = members
-        members.forEach(id => {
+    setMembers({ state, effects }, data) {
+        state.members = data.members
+        state.cascade = data.cascade
+        state.members.forEach(id => {
             effects.socket.actions.relay(id, 'getInfo')
 
         })
+        for (const key in json(state.roomStreams)) {
+            console.log(" Roomstream Key")
+            if (!(key in state.members)) {
+                delete state.roomStreams[key]
+            }
+        }
 
     },
     sendUserInfo({ state, effects }, request) {
         console.log("REQUEST", request)
-        const data = Object.assign(json(state.attrs),request)
+        const data = Object.assign(json(state.attrs), request)
 
         effects.socket.actions.relay(request.from, 'info', data)
     },
-    setUserInfo({ state,actions }, data) {
+    setUserInfo({ state, actions }, data) {
         const id = data.id
         delete data.id
         actions.setUserEntries(id)
         state.roomStreams[id].name = data.name
-        for(const key in data){
-        state.users[id][key] = data[key]
-
+        for (const key in data) {
+            state.users[id][key] = data[key]
         }
     },
     setMessage({ state, actions }, value = "default message") {

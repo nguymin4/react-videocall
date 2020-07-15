@@ -82,3 +82,20 @@ exports.members = (roomName) => {
     return Object.keys(exports.exists(roomName).members)
 }
 
+exports.cascade = (roomName) => {
+    return Object.keys(exports.exists(roomName).cascade)
+}
+
+exports.sendToMembers = (roomName, event, data) => {
+    const room = exports.exists(roomName)
+    console.log("MEMBERS ", roomName, exports.members(roomName))
+    exports.members(roomName).forEach(id => {
+        const socket = users.getReceiver(id)
+        if (socket) {
+            socket.emit(event, data)
+        }
+
+    })
+
+}
+

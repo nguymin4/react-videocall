@@ -189,7 +189,7 @@ function initSocket(socket) {
             }
             rooms.join(roomName, data.id)
             rooms.computeCascade(roomName)
-            socket.emit('members', { members: rooms.members(data.room) })
+            rooms.sendToMembers(roomName, 'members', { members: rooms.members(data.room), cascade: rooms.cascade(data.room) })
         })
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {
@@ -232,9 +232,15 @@ function initSocket(socket) {
                 receiver.emit('end', { from: id });
             }
         })
+
         .on('disconnect', () => {
+            roomName = users.getRoom(id)
+            rooms.leave(roomName, id)
             users.remove(id);
             console.log(id, 'disconnected');
+            rooms.sendToMembers(roomName, 'members', { members: rooms.members(roomName), cascade: rooms.cascade(roomName) })
+
+
         })
 }
 
