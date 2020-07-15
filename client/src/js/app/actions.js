@@ -41,6 +41,7 @@ const actions = {
         delete data.id
         actions.setUserEntries(id)
         state.roomStreams[id].name = data.name
+        state.roomStreams[id].control = data.control
         for (const key in data) {
             state.users[id][key] = data[key]
         }

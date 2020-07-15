@@ -26,6 +26,7 @@ exports.clearRoom = (roomName) => {
 exports.computeCascade = (roomName) => {
     const room = exports.exists(roomName)
     let cascade = []
+    delete room.members[null]
     Object.keys(room.members).map(key => {
         const control = users.getControlOf(key)
         console.log("key/control", key, control)

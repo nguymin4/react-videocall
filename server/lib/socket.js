@@ -134,6 +134,13 @@ let messageNo = 0
 function initSocket(socket) {
     let id;
     // proxyMethods('socket-' + (socketNo + 1), socket)
+    const registerOrIdentify = (data) => {
+        if (data.room === 'undefined') return
+        const roomName = data.room
+        rooms.join(roomName, data.id)
+        rooms.computeCascade(roomName)
+        rooms.sendToMembers(roomName, 'members', { members: rooms.members(roomName), cascade: rooms.cascade(roomName) })
+    }
 
     const doIdentify = () => {
 
@@ -142,14 +149,7 @@ function initSocket(socket) {
                 await handleRegistration(socket, data)
                 console.log("identified client", data.id, data.name)
                 id = await users.create(socket, data);
-                console.log("members", rooms.members(data.room).map(id => users.getName(id)))
-
-                // users.dump()
-                // socket.emit("confirm")
-
-                // if (data.id) id = data.id
-                // handleRole(socket,data)
-
+                registerOrIdentify(data)
             })
     }
 
@@ -187,9 +187,8 @@ function initSocket(socket) {
             if (!rooms.exists(roomName) || ((data.control === 'reset') || (version === 2 && data.control === 'r'))) {
                 rooms.create(roomName, data.id)
             }
-            rooms.join(roomName, data.id)
-            rooms.computeCascade(roomName)
-            rooms.sendToMembers(roomName, 'members', { members: rooms.members(data.room), cascade: rooms.cascade(data.room) })
+            registerOrIdentify(data)
+
         })
         .on('debug', (message) => { console.log("debug", message) })
         .on('request', (data) => {

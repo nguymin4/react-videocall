@@ -184,8 +184,8 @@ class App extends Component {
                 {
                     !this.oState.showCascade ?
                         <MainWindow
-                            clientId={clientId}
-                            startCall={this.startCallHandler}
+                            clientId={ clientId }
+                            startCall={ this.startCallHandler }
                         />
                         :
                         <CascadeWindow
@@ -194,9 +194,9 @@ class App extends Component {
                             // status={callWindow}
                             // localSrc={localSrc}
                             // peerSrc={peerSrc}
-                            config={this.config}
+                            config={ this.config }
                             // mediaDevice={pc ? pc.mediaDevice : {}}
-                            endCall={this.endCallHandler}
+                            endCall={ this.endCallHandler }
                         />
                 }
                 {/* {!_.isEmpty(this.config) && false (
@@ -213,10 +213,10 @@ class App extends Component {
                     />
                 )} */}
                 <CallModal
-                    status={callModal}
-                    startCall={this.startCallHandler}
-                    rejectCall={this.rejectCallHandler}
-                    callFrom={callFrom}
+                    status={ callModal }
+                    startCall={ this.startCallHandler }
+                    rejectCall={ this.rejectCallHandler }
+                    callFrom={ callFrom }
                 />
             </div>
         );
@@ -235,7 +235,7 @@ const WrapApp = () => {
         if (!state.streams.empty) {
             actions.addStream({ name: 'empty', stream: emptyStream })
         }
-        effects.setActionsAndState(actions,state)
+        effects.setActionsAndState(actions, state)
         effects.socket.events.setRegisterAction(actions.register)
         if (state.streams.cascade) {
             // console.log('using cascade stream', json(state.streams.cascade))
@@ -257,40 +257,35 @@ const WrapApp = () => {
 
 
     const localVideo = React.useRef(null)
-    const localVideo1 = React.useRef(null)
 
     React.useEffect(() => {
         if (localVideo && localVideo.current && stream) {
             // console.log('Using The Effect',  stream)
             localVideo.current.srcObject = stream
         }
-        if (localVideo1 && localVideo1.current && stream) {
-            // console.log('Using The Effect',  stream)
-            localVideo1.current.srcObject = stream
-        }
-    }, [localVideo, localVideo1, stream])
+
+    }, [localVideo, stream])
     return <div>
 
-        {state.cascadeVideo ? null : (<React.Fragment>
+        { state.cascadeVideo ? null : (<React.Fragment>
             <div className="flex" >
                 <div className="mt-2 h-25 w-40">
                     <div className=" h-25 w-40">
-                    <video   ref={localVideo} autoPlay muted />
+                        <video ref={ localVideo } autoPlay muted />
 
                     </div>
-                    <div className=" p-1 h-8 text-black bg-yellow-100">{state.attrs.id}</div>
+                    <div className=" p-1 h-8 text-black bg-yellow-100">{ state.attrs.name !== 'undefined' ? state.attrs.name : state.attrs.id }</div>
                 </div>
-                {Object.values(state.roomStreams).map(entry => {
-                    return <div key={entry.name} className="m-2 h-25 w-40" > 
-                    <div className=" h-24 text-black bg-gray-800  "> </div>
-                    <div className = "p-1 h-8 text-black bg-yellow-100" > {entry.name}</div> 
+                { Object.values(state.roomStreams).map(entry => {
+                    return <div key={ entry.name } className="m-2 h-25 w-40" >
+                        <div className=" h-24 text-black bg-gray-800  "> </div>
+                        <div className="p-1 h-8 text-black bg-yellow-100" > { entry.name } ({ entry.control })</div>
                     </div>
-                })}
-                {/* <video height={100} ref={localVideo1} autoPlay muted /> */}
+                }) }
             </div>
         </React.Fragment>)
         }
-        <App overmind={{ state, actions, effects }} />
+        <App overmind={ { state, actions, effects } } />
     </div>
 
 }
