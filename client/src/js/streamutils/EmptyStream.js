@@ -18,7 +18,7 @@ function EmptyStream() {
     this.title = 'Nothing'
     canvas.setAttribute('style', 'position:fixed; left: 110%; pointer-events: none') // Push off screen
     const draw = () =>  {
-        console.log('Drew canvas')
+        // console.log('Drew canvas')
         ctx.font = '100px serif';
         toggle =!toggle
         ctx.fillStyle = toggle ? 'white' : 'black';

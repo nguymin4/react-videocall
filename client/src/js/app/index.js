@@ -10,6 +10,8 @@ const state = {
     title: 'This title',
     diags: [],
     showCascade: false,
+    roomStreams: {
+    },
     streams: {
         empty: null,
         local: null,
@@ -33,16 +35,27 @@ socket.off('confirm')
 
 // socket.off('confirm',cb)
 const actions = {
-    diag({state},diag){
+    fakeStreams({ state }) {
+        state.roomStreams = {
+            'Session-1': {
+                name: 'Noel',
+                stream: null
+            }, 'Session-2': {
+                name: 'Jess',
+                stream: null
+            }
+        }
+    },
+    diag({ state }, diag) {
         state.diags.push(diag)
     },
     clearCascade({ state }) {
         state.showCascade = false
         delete state.streams.cascade
-        if (state.streams.cascadeMerger ) {
+        if (state.streams.cascadeMerger) {
             json(state.streams.cascadeMerger).destroy()
             delete state.streams.cascadeMerger
-        }``
+        } ``
 
     },
     // flashCascade({ state, actions }) {
@@ -53,9 +66,9 @@ const actions = {
         console.log('add stream', name, stream)
         state.streams[name] = stream
     },
-    addPeerToCascade({state}, src){
+    addPeerToCascade({ state }, src) {
         state.streams.peer = src
-        if(state.cascade.index !== 0 ){
+        if (state.cascade.index !== 0) {
 
             const merger = json(state.streams.cascadeMerger)
             merger.addStream(src, {
@@ -67,14 +80,14 @@ const actions = {
             })
         }
     },
-    setCascade({ state,actions }, opts) {
-        if(state.cascade.index !== opts.index || !state.streams.cascade){
+    setCascade({ state, actions }, opts) {
+        if (state.cascade.index !== opts.index || !state.streams.cascade) {
             if (state.streams.cascade) {
                 json(state.streams.cascade).merger.destroy()
             }
             const merger = labeledStream(json(state.streams.local), state.attrs.name,
-            opts.index,
-            opts.members)
+                opts.index,
+                opts.members)
             state.streams.cascadeMerger = merger
             actions.addStream({ name: 'cascade', stream: merger.result })
             state.cascade.index = opts.index

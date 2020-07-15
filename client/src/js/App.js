@@ -68,7 +68,7 @@ class App extends Component {
             })
             .on('cascade', (data) => {
                 this.actions.setCascade({ index: data.index, members: data.members })
-                
+
             }
 
             )
@@ -92,7 +92,7 @@ class App extends Component {
 
     startCall(isCaller, friendID, config, opts = {}) {
         this.config = config;
-            const pc = new PeerConnection(friendID, opts, this.oState, this.actions)
+        const pc = new PeerConnection(friendID, opts, this.oState, this.actions)
 
         this.pcs[friendID] = pc
         // this.setState({nPCs: Object.keys(this.pcs).length})
@@ -181,7 +181,7 @@ class App extends Component {
             <div>
                 <ToastContainer />
 
-               {'CASCADE ' + this.oState.showCascade}
+                {'CASCADE ' + this.oState.showCascade}
                 {
                     !this.oState.showCascade ?
                         <MainWindow
@@ -258,19 +258,34 @@ const WrapApp = () => {
 
 
     const localVideo = React.useRef(null)
+    const localVideo1 = React.useRef(null)
+
     React.useEffect(() => {
         if (localVideo && localVideo.current && stream) {
             // console.log('Using The Effect',  stream)
             localVideo.current.srcObject = stream
         }
-    }, [localVideo, stream])
-    return <div>
-        <div>The id is {state.attrs.id} role: {state.attrs.role}</div>
-        { state.cascadeVideo? null : 
-        <video height={100} ref={localVideo} autoPlay muted />
+        if (localVideo1 && localVideo1.current && stream) {
+            // console.log('Using The Effect',  stream)
+            localVideo1.current.srcObject = stream
+        }
+    }, [localVideo, localVideo1, stream])
+    return <div> 
+        <div >The id is {state.attrs.id} role: {state.attrs.role}</div>
+        
+        {state.cascadeVideo ? null : (<React.Fragment>
+            <div className="flex" >
+            <video height={100} width={200} ref={localVideo} autoPlay muted />
+            {Object.values(state.roomStreams).map(entry => {
+                return <div key={entry.name} className="m-2 text-center text-black w-40 bg-yellow-100"> {entry.name}</div>
+            })}
+            {/* <video height={100} ref={localVideo1} autoPlay muted /> */}
+        </div>
+        </React.Fragment>)
 }
         <App overmind={{ state, actions, effects }} />
     </div>
+
 }
 
 

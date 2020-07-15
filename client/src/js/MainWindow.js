@@ -76,7 +76,9 @@ function MainWindow({ startCall, clientId }) {
                 <button
                     type='button'
                     className='btn-action'
-                    onClick={() => actions.register({ roomID, controlValue, userID })}
+                    onClick={() => {
+                        actions.register({ roomID, controlValue, userID })
+                        actions.fakeStreams()}}
                 >Go</button>
 
 

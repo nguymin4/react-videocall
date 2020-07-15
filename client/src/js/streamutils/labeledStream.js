@@ -13,11 +13,13 @@ export default function labeledStream(
         width = 400, // Width of the output video
         height = 300, // Height of the output video
         fps = 10, // Video capture frames per second
-        clearRect = true, // Clear the canvas every frame
+        clearRect = false, // Clear the canvas every frame
         audioContext = null // Supply an external AudioContext (for audio effects)
     } = {}
 ) {
     const pos = positions[iCascadeIndex]
+    let baseTime = performance.now()
+    const FRAME_DELTA = 500
     const theMerger = new VideoStreamMerger({
         width, // Width of the output video
         height, // Height of the output video
@@ -34,6 +36,14 @@ export default function labeledStream(
         // height: theMerger.height,
         mute: false, // we don't want sound from the screen (if there is any)
         draw: function (ctx, frame, done) {
+            const nowTime = performance.now()
+            if(nowTime-baseTime < FRAME_DELTA) {
+                done()
+                return
+            } else {
+                console.log("draw")
+                baseTime = nowTime
+            }
             const x = pos.x*theMerger.width
             const y = pos.y*theMerger.height
             ctx.drawImage(frame, 
