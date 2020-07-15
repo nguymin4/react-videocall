@@ -39,6 +39,8 @@ exports.computeCascade = (roomName) => {
 }
 
 exports.connect = (roomName) => {
+    console.log("Connect ", roomName)
+    const room = exports.exists(roomName)
     const cascade = room.cascade
     console.log("new cascade", cascade)
     cascade.map((member, sequence) => {
@@ -52,6 +54,7 @@ exports.connect = (roomName) => {
         const nextMember = cascade[sequence + 1]
         socket.emit("calljoin", { jointo: nextMember, opts: { type: "cascade", index: sequence, members: room.order.length } })
     })
+
     const control = users.getByRole("control")
     if (control) {
         console.log("Cascade to control")
@@ -83,7 +86,12 @@ exports.members = (roomName) => {
 }
 
 exports.cascade = (roomName) => {
-    return Object.keys(exports.exists(roomName).cascade)
+    const room = exports.exists(roomName)
+    if (room) {
+        return room.cascade
+    } else {
+        return []
+    }
 }
 
 exports.sendToMembers = (roomName, event, data) => {

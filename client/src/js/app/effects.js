@@ -4,7 +4,7 @@ const effects = {
     actions: null,
     state: {},
     setActionsAndState: (actions, state) => {
-    effects.actions = actions
+        effects.actions = actions
         effects.state = state
     },
     storage: {
@@ -33,6 +33,9 @@ const effects = {
             },
             gotEvent(data) {
                 console.log('got event', JSON.stringify(data))
+            },
+            emit(event, data) {
+                socket.emit(event, data)
             }
         },
         events: { //socket on-events

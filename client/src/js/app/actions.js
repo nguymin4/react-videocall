@@ -1,10 +1,10 @@
 import { json } from "overmind";
 import { toast } from 'react-toastify';
-
+import labeledStream from '../streamutils/labeledStream'
 const actions = {
     startCascade({ state, actions, effects }) {
         if (state.members.length < 2) {
-            actions.setMessage("Can't start a cascade with only 1")
+            actions.setMessage("Can't start a cascade with only you in the room.")
             return
         }
         effects.socket.actions.emit('cascade', { room: state.attrs.room })

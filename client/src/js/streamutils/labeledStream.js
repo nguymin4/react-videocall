@@ -8,18 +8,18 @@ export default function labeledStream(
     stream,
     label,
     iCascadeIndex,
-    iCascadeCnt,    
-  {
+    iCascadeCnt,
+    {
         width = 400, // Width of the output video
         height = 300, // Height of the output video
-        fps = 10, // Video capture frames per second
+        fps = 25, // Video capture frames per second
         clearRect = false, // Clear the canvas every frame
         audioContext = null // Supply an external AudioContext (for audio effects)
     } = {}
 ) {
     const pos = positions[iCascadeIndex]
     let baseTime = performance.now()
-    const FRAME_DELTA = 500
+    const FRAME_DELTA = 5 //diff between frames in ms
     const theMerger = new VideoStreamMerger({
         width, // Width of the output video
         height, // Height of the output video
@@ -37,26 +37,26 @@ export default function labeledStream(
         mute: false, // we don't want sound from the screen (if there is any)
         draw: function (ctx, frame, done) {
             const nowTime = performance.now()
-            if(nowTime-baseTime < FRAME_DELTA) {
+            if (nowTime - baseTime < FRAME_DELTA) {
                 done()
                 return
             } else {
                 console.log("draw")
                 baseTime = nowTime
             }
-            const x = pos.x*theMerger.width
-            const y = pos.y*theMerger.height
-            ctx.drawImage(frame, 
-               x,
-               y,
-                pos.width*theMerger.width, 
-                pos.height*theMerger.height);
+            const x = pos.x * theMerger.width
+            const y = pos.y * theMerger.height
+            ctx.drawImage(frame,
+                x,
+                y,
+                pos.width * theMerger.width,
+                pos.height * theMerger.height);
 
             ctx.font = '48px serif';
             ctx.fillStyle = 'white';
             ctx.strokeStyle = 'boack';
-            ctx.fillText(label, x+10, y+50);
-            ctx.strokeText(label, x+10, y+50);
+            ctx.fillText(label, x + 10, y + 50);
+            ctx.strokeText(label, x + 10, y + 50);
             done();
         }
     });
