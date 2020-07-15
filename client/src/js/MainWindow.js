@@ -19,20 +19,9 @@ function MainWindow({ startCall, clientId }) {
     return (
         <div className='container main-window'>
             <div>
-                <h1>Welcome to h00tnet</h1>
-                <h3>
-                    Your session ID is
-          <input
-                        type='text'
-                        className='txt-clientId'
-                        defaultValue={clientId}
-                        readOnly
-                    />
-                </h3>
-
+                <h1 className="text-5xl">Welcome to h00tnet</h1>
             </div>
             <div>
-                <h4>h00tnet: enter session, name, or role</h4>
                 <input
                     type='text'
                     className='txt-clientId'
@@ -58,14 +47,14 @@ function MainWindow({ startCall, clientId }) {
                     onChange={(event) => setControlValue(event.target.value)}
                 />
                 <div>
-               
-                
-          {/* <button
+
+
+                    {/* <button
             type='button'
             className='btn-action fa fa-video-camera'
             onClick={callWithVideo(true)}
           /> */}
-             {/* 
+                    {/* 
 
           <button
             type='button'
@@ -73,19 +62,20 @@ function MainWindow({ startCall, clientId }) {
             onClick={callWithVideo(false)}
           />
            */}
-                <button
-                    type='button'
-                    className='btn-action'
-                    onClick={() => {
-                        actions.register({ roomID, controlValue, userID })
-                        actions.fakeStreams()}}
-                >Go</button>
+                    <button
+                        type='button'
+                        className='btn-action'
+                        onClick={() => {
+                            actions.register({ roomID, controlValue, userID })
+                            actions.fakeStreams()
+                        }}
+                    >Go</button>
 
 
+                </div>
             </div>
-        </div>
-    </div >
-  );
+        </div >
+    );
 }
 
 MainWindow.propTypes = {

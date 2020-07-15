@@ -181,7 +181,6 @@ class App extends Component {
             <div>
                 <ToastContainer />
 
-                {'CASCADE ' + this.oState.showCascade}
                 {
                     !this.oState.showCascade ?
                         <MainWindow
@@ -270,19 +269,21 @@ const WrapApp = () => {
             localVideo1.current.srcObject = stream
         }
     }, [localVideo, localVideo1, stream])
-    return <div> 
-        <div >The id is {state.attrs.id} role: {state.attrs.role}</div>
-        
+    return <div>
+
         {state.cascadeVideo ? null : (<React.Fragment>
             <div className="flex" >
-            <video height={100} width={200} ref={localVideo} autoPlay muted />
-            {Object.values(state.roomStreams).map(entry => {
-                return <div key={entry.name} className="m-2 text-center text-black w-40 bg-yellow-100"> {entry.name}</div>
-            })}
-            {/* <video height={100} ref={localVideo1} autoPlay muted /> */}
-        </div>
+                <div>
+                    <video height={100} width={200} ref={localVideo} autoPlay muted />
+                    <div>{state.attrs.id}</div>
+                </div>
+                {Object.values(state.roomStreams).map(entry => {
+                    return <div key={entry.name} className="m-2 text-center text-black w-40 bg-yellow-100"> {entry.name}</div>
+                })}
+                {/* <video height={100} ref={localVideo1} autoPlay muted /> */}
+            </div>
         </React.Fragment>)
-}
+        }
         <App overmind={{ state, actions, effects }} />
     </div>
 
