@@ -273,12 +273,18 @@ const WrapApp = () => {
 
         {state.cascadeVideo ? null : (<React.Fragment>
             <div className="flex" >
-                <div>
-                    <video height={100} width={200} ref={localVideo} autoPlay muted />
-                    <div>{state.attrs.id}</div>
+                <div className="mt-2 h-25 w-40">
+                    <div className=" h-25 w-40"s>
+                    <video   ref={localVideo} autoPlay muted />
+
+                    </div>
+                    <div className=" p-1 h-8 text-black bg-yellow-100">{state.attrs.id}</div>
                 </div>
                 {Object.values(state.roomStreams).map(entry => {
-                    return <div key={entry.name} className="m-2 text-center text-black w-40 bg-yellow-100"> {entry.name}</div>
+                    return <div key={entry.name} className="m-2 h-25 w-40" > 
+                    <div className=" h-24 text-black bg-gray-800  "> </div>
+                    <div className = "p-1 h-8 text-black bg-yellow-100" > {entry.name}</div> 
+                    </div>
                 })}
                 {/* <video height={100} ref={localVideo1} autoPlay muted /> */}
             </div>
