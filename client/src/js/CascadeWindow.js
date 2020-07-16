@@ -45,7 +45,7 @@ function CascadeWindow({ endCall }) {
 
     React.useEffect(() => {
 
-        const stream = json(state.streams.cascade)
+        const stream = json(state.streams.cascadeStream)
         if (localVideo && localVideo.current && stream) {
             // console.log('Using The Effect',  stream)
             localVideo.current.srcObject = stream

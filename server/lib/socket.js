@@ -223,9 +223,9 @@ function initSocket(socket) {
             }
         })
         .on('end', (data) => {
-            if (version) {
-                rooms.clearRoom(users.getRoom(id))
-            }
+            // if (version) {
+            //     rooms.clearRoom(users.getRoom(id))
+            // }
             const receiver = users.getReceiver(data.to);
             if (receiver) {
                 receiver.emit('end', { from: id });

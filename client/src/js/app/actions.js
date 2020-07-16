@@ -133,10 +133,10 @@ const actions = {
     },
     clearCascade({ state }) {
         state.showCascade = false
-        delete state.streams.cascade
-        if (state.streams.cascadeMerger) {
-            json(state.streams.cascadeMerger).destroy()
-            delete state.streams.cascadeMerger
+        delete state.streams.cascadeStream
+        if (state.streams.cascadeMergerStream) {
+            json(state.streams.cascadeMergerStream).destroy()
+            delete state.streams.cascadeMergerStream
         } ``
 
     },
@@ -148,10 +148,10 @@ const actions = {
         state.streams[name] = stream
     },
     addPeerToCascade({ state }, src) {
-        state.streams.peer = src
+        state.streams.peerStream = src
         if (state.cascade.index !== 0) {
 
-            const merger = json(state.streams.cascadeMerger)
+            const merger = json(state.streams.cascadeMergerStream)
             merger.addStream(src, {
                 index: -1,
                 x: 0, // position of the topleft corner
@@ -162,15 +162,15 @@ const actions = {
         }
     },
     setCascade({ state, actions }, opts) {
-        if (state.cascade.index !== opts.index || !state.streams.cascade) {
-            if (state.streams.cascade) {
-                json(state.streams.cascade).merger.destroy()
+        if (state.cascade.index !== opts.index || !state.streams.cascadeStream) {
+            if (state.streams.cascadeStream) {
+                json(state.streams.cascade).mergerStream.destroy()
             }
-            const merger = labeledStream(json(state.streams.local), state.attrs.name,
+            const merger = labeledStream(json(state.streams.localStream), state.attrs.name,
                 opts.index,
                 opts.members)
-            state.streams.cascadeMerger = merger
-            actions.addStream({ name: 'cascade', stream: merger.result })
+            state.streams.cascadeMergerStream = merger
+            actions.addStream({ name: 'cascadeStream', stream: merger.result })
             state.cascade.index = opts.index
         }
         state.cascade.members = opts.members
