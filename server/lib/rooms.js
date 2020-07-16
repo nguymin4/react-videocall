@@ -76,14 +76,17 @@ exports.join = (roomName, id) => {
     room.members[id] = {}
 }
 exports.leave = (roomName, id) => {
-    delete exports.exists(roomName).members[id]
+    const room = exports.exists(roomName)
+    if (room) delete room.members[id]
 }
 exports.lastId = (roomName) => {
     return exports.exists(roomName).lastId
 }
 
 exports.members = (roomName) => {
-    return Object.keys(exports.exists(roomName).members)
+    const room = exports.exists(roomName)
+    if (room && room.members) return Object.keys(room.members)
+    return []
 }
 
 exports.cascade = (roomName) => {

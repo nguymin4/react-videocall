@@ -15,6 +15,8 @@ const state = {
     showCascade: false,
     members: [], //array of member session numbers
     cascade: [], //array of session numbers in order
+    sessions: {},
+    allSessions: [],
     users: {}, // keyed list of users with their data
     roomStreams: { //keyed list of stream information with names
     },

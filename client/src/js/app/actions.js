@@ -2,6 +2,32 @@ import { json } from "overmind";
 import { toast } from 'react-toastify';
 import labeledStream from '../streamutils/labeledStream'
 const actions = {
+    computeCategories({ state }) {
+        let cascaders = []
+        const controllers = []
+        const viewers = []
+        state.members.forEach(key => {
+            const user = state.users[key]
+            if (!user) return
+            const control = user.control
+            const seq = parseInt(control)
+            if (seq) {
+                if (!cascaders[seq]) cascaders[seq] = []
+                cascaders[seq].push(key)
+            } else if (control.match(/^c/)) {
+                controllers.push(key)
+            } else {
+                viewers.push(key)
+            }
+        })
+        cascaders = cascaders.flat().filter(a => a)
+        state.allSessions = cascaders.concat(controllers).concat(viewers)
+        state.sessions = {
+            cascaders,
+            controllers,
+            viewers
+        }
+    },
     startCascade({ state, actions, effects }) {
         if (state.members.length < 2) {
             actions.setMessage("Can't start a cascade with only you in the room.")
@@ -30,7 +56,7 @@ const actions = {
         }
 
     },
-    sendUserInfo({ state, effects }, request) {
+    sendUserInfo({ state, actions, effects }, request) {
         console.log("REQUEST", request)
         const data = Object.assign(json(state.attrs), request)
 
@@ -45,6 +71,7 @@ const actions = {
         for (const key in data) {
             state.users[id][key] = data[key]
         }
+        actions.computeCategories()
     },
     setMessage({ state, actions }, value = "default message") {
         state._message.text = value;

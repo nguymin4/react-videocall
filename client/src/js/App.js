@@ -276,10 +276,11 @@ const WrapApp = () => {
                     </div>
                     <div className=" p-1 h-8 text-black bg-yellow-100">{ state.attrs.name !== 'undefined' ? state.attrs.name : state.attrs.id }</div>
                 </div>
-                { Object.values(state.roomStreams).map(entry => {
-                    return <div key={ entry.name } className="m-2 h-25 w-40" >
+                { state.allSessions.map(key => {
+                    const user = state.users[key]
+                    return <div key={ key } className="m-2 h-25 w-40" >
                         <div className=" h-24 text-black bg-gray-800  "> </div>
-                        <div className="p-1 h-8 text-black bg-yellow-100" > { entry.name } ({ entry.control })</div>
+                        <div className="p-1 h-8 text-black bg-yellow-100" > { user.name } ({ user.control })</div>
                     </div>
                 }) }
             </div>
