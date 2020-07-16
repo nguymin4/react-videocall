@@ -8,10 +8,10 @@ import { json } from 'overmind';
 
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
 
-function CascadeWindow({  endCall }) {
+function CascadeWindow({ endCall }) {
     //   const peerVideo = useRef(null);
     // const localVideo = useRef(null);
-const [video, setVideo] = useState(true);
+    const [video, setVideo] = useState(true);
     const [audio, setAudio] = useState(true);
     const { state, actions } = useApp()
     const localVideo = React.useRef(null)
@@ -42,40 +42,41 @@ const [video, setVideo] = useState(true);
         //     mediaDevice.toggle('Audio');
         // }
     };
-    
-     React.useEffect(() => {
-         
+
+    React.useEffect(() => {
+
         const stream = json(state.streams.cascade)
         if (localVideo && localVideo.current && stream) {
             // console.log('Using The Effect',  stream)
             localVideo.current.srcObject = stream
-            console.log('SET STREAM')
         }
-    }, [ localVideo])
+    }, [localVideo])
 
     return (
-        <div className={classnames('cascade-window')}>
-            {'CASCADE'}
-            <video height={300} ref={localVideo} autoPlay  />
+        <div className={ classnames('cascade-window') }>
+            { 'CASCADE' }
+            <video height={ 300 } ref={ localVideo } autoPlay />
 
             <div className='video-control'>
                 <button
                     key='btnVideo'
                     type='button'
-                    className={getButtonClass('fa-video-camera', video)}
-                    onClick={() => toggleMediaDevice('video')}
+                    className={ getButtonClass('fa-video-camera', video) }
+                    onClick={ () => toggleMediaDevice('video') }
                 />
                 <button
                     key='btnAudio'
                     type='button'
-                    className={getButtonClass('fa-microphone', audio)}
-                    onClick={() => toggleMediaDevice('audio')}
+                    className={ getButtonClass('fa-microphone', audio) }
+                    onClick={ () => toggleMediaDevice('audio') }
                 />
                 <button
-                    type='button'   
+                    type='button'
                     className='btn-action hangup fa fa-phone'
-                    onClick={() => {actions.clearCascade();
-                        endCall(true)}}
+                    onClick={ () => {
+                        actions.clearCascade();
+                        endCall(true)
+                    } }
                 />
             </div>
         </div>

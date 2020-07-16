@@ -19,7 +19,6 @@ class PeerConnection extends Emitter {
        */
     static instance = 0
     constructor(friendID, opts, oState, actions) {
-        console.log('STATE IN', oState)
         super();
         PeerConnection.instance++
         // debug(`PeerConnection from ${friendID} to ${opts.id}`)

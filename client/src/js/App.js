@@ -40,7 +40,6 @@ class App extends Component {
     }
 
     componentDidMount() {
-        console.log('component mounted!!')
         'init,calljoin,request,call,end'.split(',').forEach(key => socket.off(key))
         const cl = (...args) => {
             console.log(...args)
@@ -62,7 +61,7 @@ class App extends Component {
             .on('calljoin', (data) => {
                 const leader = data.jointo
                 // socket.emit('debug', 'calljoin received')
-                console.log('join received', data)
+                // console.log('join received', data)
                 data.opts.id = this.state.clientId
                 this.startCallHandler(true, leader, { video: true, audio: true }, data.opts)
             })
@@ -274,7 +273,7 @@ const WrapApp = () => {
                         <video ref={ localVideo } autoPlay muted />
 
                     </div>
-                    <div className=" p-1 h-8 text-black bg-yellow-100">{ state.attrs.name !== 'undefined' ? state.attrs.name : state.attrs.id }</div>
+                    <div className=" p-1 h-8 text-black bg-yellow-100">{ state.attrs.name !== 'undefined' ? `${state.attrs.name} (${state.attrs.id})` : state.attrs.id }</div>
                 </div>
                 { state.allSessions.map(key => {
                     const user = state.users[key]

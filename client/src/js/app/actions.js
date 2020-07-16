@@ -1,7 +1,37 @@
+
 import { json } from "overmind";
 import { toast } from 'react-toastify';
 import labeledStream from '../streamutils/labeledStream'
+import PeerConnection from "../PeerConnection"
 const actions = {
+    startCall({ state, actions }, { isCaller, friendID, config, opts }) {
+        if (state.callInfo[friendID]) {
+        }
+        const pc = new PeerConnection(friendID, opts, state, actions)
+        state.callInfo[friendID] = {
+            pc,
+            config,
+            isCaller,
+            opts
+        }
+        return pc
+    },
+    peerTrackEvent({ state, actions }, { friendID, event: e }) {
+        const src = e.streams[0]
+        const pc = json(state.callInfo[friendID].pc)
+        pc.peerSrc = src
+        state.callInfo[friendID].pc = pc
+        this.actions.addPeerToCascade(src)
+
+        // pc.merger.addStre
+
+    },
+    endCall({ state, actions }, { isStarter, from }) {
+        actions.clearCascade()
+        const callInfo = state.callInfo[from]
+        callInfo.pc.stop(isStarter.from)
+        callInfo.pc = null
+    },
     computeCategories({ state }) {
         let cascaders = []
         const controllers = []
@@ -49,7 +79,6 @@ const actions = {
 
         })
         for (const key in json(state.roomStreams)) {
-            console.log(" Roomstream Key")
             if (!(key in state.members)) {
                 delete state.roomStreams[key]
             }
@@ -57,7 +86,6 @@ const actions = {
 
     },
     sendUserInfo({ state, actions, effects }, request) {
-        console.log("REQUEST", request)
         const data = Object.assign(json(state.attrs), request)
 
         effects.socket.actions.relay(request.from, 'info', data)
@@ -117,7 +145,6 @@ const actions = {
     //     setTimeout(() => actions.clearCascade(), 5000)
     // },
     addStream({ state }, { name, stream }) {
-        console.log('add stream', name, stream)
         state.streams[name] = stream
     },
     addPeerToCascade({ state }, src) {

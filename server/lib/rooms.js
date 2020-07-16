@@ -29,7 +29,6 @@ exports.computeCascade = (roomName) => {
     delete room.members[null]
     Object.keys(room.members).map(key => {
         const control = users.getControlOf(key)
-        console.log("key/control", key, control)
         const seq = parseInt(control)
         if (seq) {
             if (!cascade[seq]) cascade[seq] = []
@@ -50,19 +49,21 @@ exports.connect = (roomName) => {
         socket.emit("cascade", { name: users.getName(member), index: sequence, members: room.order.length })
     })
     room.cascade.slice(0, -1).map((member, sequence) => {
-        console.log("calljoin", member)
         const socket = users.getReceiver(member)
         const nextMember = cascade[sequence + 1]
+        console.log("calljoin", member, nextMember)
         socket.emit("calljoin", { jointo: nextMember, opts: { type: "cascade", index: sequence, members: room.order.length } })
     })
 
     const control = users.getByRole("control")
     if (control) {
-        console.log("Cascade to control")
         const lastMember = cascade[cascade.length - 1]
+        console.log("Cascade to control", control, lastMember)
         const socket = users.getReceiver(lastMember)
         socket.emit("calljoin", { jointo: control, opts: { type: "cascadeToControl" } })
 
+    } else {
+        console.log("NO CONTROL")
     }
 }
 

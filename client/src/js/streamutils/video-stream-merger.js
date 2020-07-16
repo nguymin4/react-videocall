@@ -4,7 +4,6 @@ module.exports = VideoStreamMerger
 console.log("merger is now loaded")
 function VideoStreamMerger (opts) {
   if (!(this instanceof VideoStreamMerger)) return new VideoStreamMerger(opts)
-  console.log("new merger")
   opts = opts || {}
 
   const AudioContext = window.AudioContext || window.webkitAudioContext

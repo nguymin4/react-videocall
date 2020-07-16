@@ -51,7 +51,6 @@ const effects = {
                 effects.actions.setMembers(data)
             },
             setRegisterAction(func) {
-                console.log('register action called')
                 effects.socket.events.registerAction = func
             },
 

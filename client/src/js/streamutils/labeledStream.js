@@ -41,7 +41,7 @@ export default function labeledStream(
                 done()
                 return
             } else {
-                console.log("draw")
+                // console.log("draw")
                 baseTime = nowTime
             }
             const x = pos.x * theMerger.width
