@@ -23,8 +23,6 @@ const actions = {
         state.callInfo[friendID].pc = pc
         this.actions.addPeerToCascade(src)
 
-        // pc.merger.addStre
-
     },
     endCall({ state, actions }, { isStarter, from }) {
         actions.clearCascade()
@@ -163,8 +161,8 @@ const actions = {
     },
     setCascade({ state, actions }, opts) {
         if (state.cascade.index !== opts.index || !state.streams.cascadeStream) {
-            if (state.streams.cascadeStream) {
-                json(state.streams.cascade).mergerStream.destroy()
+            if (state.streams.cascadeMergerStream) {
+                state.streams.cascadeMergerStream.destroy()
             }
             const merger = labeledStream(json(state.streams.localStream), state.attrs.name,
                 opts.index,

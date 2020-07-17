@@ -91,9 +91,11 @@ class App extends Component {
 
     startCall(isCaller, friendID, config, opts = {}) {
         this.config = config;
-        const pc = new PeerConnection(friendID, opts, this.oState, this.actions)
 
+        // const pc = new PeerConnection(friendID, opts, this.oState, this.actions)
+        const pc = this.actions.startCall({ isCaller, friendID, config, opts });
         this.pcs[friendID] = pc
+
         // this.setState({nPCs: Object.keys(this.pcs).length})
         pc
             .on('localStream', (src) => {

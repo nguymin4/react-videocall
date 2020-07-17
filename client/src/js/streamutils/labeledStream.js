@@ -61,7 +61,7 @@ export default function labeledStream(
         }
     });
     theMerger.start();
-    theMerger.result.merger = theMerger
+    // theMerger.result.merger = theMerger
     return theMerger;
 }
 

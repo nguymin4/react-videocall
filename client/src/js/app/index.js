@@ -15,6 +15,7 @@ const state = {
     showCascade: false,
     members: [], //array of member session numbers
     cascade: [], //array of session numbers in order
+    callInfo: {},
     sessions: {},
     allSessions: [],
     users: {}, // keyed list of users with their data
@@ -36,7 +37,6 @@ const state = {
     lastEvent: {},
     control: null,
     leader: null,
-    cascade: { index: null, members: 0 },
     otherRoles: {
 
     }
