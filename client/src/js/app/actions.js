@@ -20,15 +20,24 @@ const actions = {
         const src = e.streams[0]
         const pc = json(state.callInfo[friendID].pc)
         pc.peerSrc = src
-        state.callInfo[friendID].pc = pc
-        this.actions.addPeerToCascade(src)
+        state.callInfo[friendID] = {
+            pc,
+            stopped: false
+        }
+        state.callInfo[friendID].stopped
+        actions.addPeerToCascade(src)
 
     },
     endCall({ state, actions }, { isStarter, from }) {
         actions.clearCascade()
-        const callInfo = state.callInfo[from]
-        callInfo.pc.stop(isStarter.from)
-        callInfo.pc = null
+        if (state.callInfo[from] && !state.callInfo[from].stopped) {
+            const callInfo = json(state.callInfo[from])
+            callInfo.pc.stop(isStarter.from)
+            state.callInfo[from] = {
+                pc: null,
+                stopped: true
+            }
+        }
     },
     computeCategories({ state }) {
         let cascaders = []
@@ -135,7 +144,7 @@ const actions = {
         if (state.streams.cascadeMergerStream) {
             json(state.streams.cascadeMergerStream).destroy()
             delete state.streams.cascadeMergerStream
-        } ``
+        }
 
     },
     // flashCascade({ state, actions }) {

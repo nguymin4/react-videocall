@@ -105,12 +105,9 @@ class App extends Component {
                 // this.setState(newState);
             })
             .on('peerTrackEvent', (e) => {
+                this.actions.peerTrackEvent({ friendID, event: e })
                 const src = e.streams[0]
-                const track = e.track
-                console.log('Track', track)
                 this.setState({ peerSrc: src })
-                this.actions.addPeerToCascade(src)
-                pc.peerSrc = src
             })
             .start(isCaller, config, this.pcs);
     }
@@ -122,7 +119,7 @@ class App extends Component {
     }
 
     endCall(isStarter, from) {
-        this.actions.clearCascade()
+        this.actions.endCall({ isStarter, from })
         let keys
         if (from) {
             keys = Object.keys(this.pcs).filter(key => (key === from) || key.startsWith('X' + from))

@@ -79,6 +79,7 @@ class PeerConnection extends Emitter {
      * @param {Boolean} isStarter
      */
     stop(isStarter) {
+        if (!this.pc) return this
         if (isStarter) {
             socket.emit('end', { to: this.friendID });
         }
