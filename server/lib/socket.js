@@ -134,9 +134,14 @@ let messageNo = 0
 function initSocket(socket) {
     let id;
     // proxyMethods('socket-' + (socketNo + 1), socket)
-    const registerOrIdentify = (data) => {
-        if (data.room === 'undefined') return
+    const registerOrIdentify = async (data) => {
+        id = await users.create(socket, data);
         const roomName = data.room
+        id = await users.create(socket, data);
+        if (!rooms.exists(roomName) || ((data.control === 'reset') || (version === 2 && data.control === 'r'))) {
+            rooms.create(roomName, data.id)
+        }
+        if (data.room === 'undefined') return
         rooms.join(roomName, data.id)
         rooms.computeCascade(roomName)
         rooms.sendToMembers(roomName, 'members', { members: rooms.members(roomName), cascade: rooms.cascade(roomName) })
@@ -146,9 +151,7 @@ function initSocket(socket) {
 
         socket.emit('identify')
             .on('identified', async (data) => {
-                await handleRegistration(socket, data)
                 console.log("identified client", data.id, data.name)
-                id = await users.create(socket, data);
                 registerOrIdentify(data)
             })
     }
@@ -182,11 +185,7 @@ function initSocket(socket) {
             }
         })
         .on('register', async (data) => {
-            const roomName = data.room
-            id = await users.create(socket, data);
-            if (!rooms.exists(roomName) || ((data.control === 'reset') || (version === 2 && data.control === 'r'))) {
-                rooms.create(roomName, data.id)
-            }
+
             registerOrIdentify(data)
 
         })

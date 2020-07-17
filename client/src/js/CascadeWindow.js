@@ -74,8 +74,7 @@ function CascadeWindow({ endCall }) {
                     type='button'
                     className='btn-action hangup fa fa-phone'
                     onClick={ () => {
-                        actions.clearCascade();
-                        endCall(true)
+                        actions.endCascade();
                     } }
                 />
             </div>

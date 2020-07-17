@@ -28,6 +28,7 @@ const actions = {
         actions.addPeerToCascade(src)
 
     },
+
     endCall({ state, actions }, { isStarter, from }) {
         actions.clearCascade()
         if (state.callInfo[from] && !state.callInfo[from].stopped) {
@@ -71,6 +72,14 @@ const actions = {
             return
         }
         effects.socket.actions.emit('cascade', { room: state.attrs.room })
+
+
+    },
+    endCascade({ state, actions, effects }, data) {
+        actions.setMessage(`Ending cascade for room '${state.attrs.room}'.`)
+        state.members.forEach(id => {
+            effects.socket.actions.relay(id, 'end', { from: state.attrs.id })
+        })
 
 
     },
