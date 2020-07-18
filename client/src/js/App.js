@@ -4,6 +4,7 @@ import socket from './socket';
 import PeerConnection from './PeerConnection';
 import MainWindow from './MainWindow';
 import CascadeWindow from './CascadeWindow';
+import ControlRoomWindow from './ControlRoomWindow';
 
 import CallModal from './CallModal';
 import MediaDevice from './MediaDevice';

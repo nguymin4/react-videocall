@@ -58,15 +58,15 @@ const actions = {
                 data: { jointo: nextMember }
             })
         })
-        // state.sessions.controllers.map((member, sequence) => {
+        state.sessions.controllers.map((member, sequence) => {
 
-        //     actions.relayAction({
-        //         to: nextMember,
-        //         op: "calljoin",
-        //         data: { jointo: member }
-        //     })
-        //     nextMember = member
-        // })
+            actions.relayAction({
+                to: nextMember,
+                op: "calljoin",
+                data: { jointo: member }
+            })
+            nextMember = member
+        })
     },
     clearCascade({ state }) {
         state.showCascade = false
@@ -215,9 +215,12 @@ const actions = {
             }
             state.showCascade = true
         } else {
-            console.log("set up control")
-            if (state.sessions.controllers.find(e => state.users[e] === 'control')) {
+            console.log("set up control", json(state.sessions.controllers), id)
+            if (json(state.sessions.controllers).find(e => state.users[e].control === 'control')) {
+                console.log("Show")
                 state.showControlRoom = true
+                state.showCascade = true
+
             }
         }
     },
