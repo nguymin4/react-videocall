@@ -47,6 +47,19 @@ const actions = {
             })
         })
     },
+    startCall({ state, actions }, { isCaller, friendID, config, opts }) {
+        if (state.callInfo[friendID]) {
+        }
+        actions.setupStreams()
+        const pc = new PeerConnection(friendID, opts, state, actions)
+        state.callInfo[friendID] = {
+            pc,
+            config,
+            isCaller,
+            opts
+        }
+        return pc
+    },
 
     endCall({ state, actions }, { isStarter, from }) {
         actions.clearCascade()
