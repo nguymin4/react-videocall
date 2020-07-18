@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 
@@ -38,9 +37,9 @@ function CallWindowPeer({ pc, name, seq, nPCs, xid, peerSrc, status }) {
     });
 
     return (
-        <div className={classnames('call-window', status)}>
+        <div className={ classnames('call-window', status) }>
             Testing testing
-            <video style={videoStyle} id={xid} ref={peerVideo} autoPlay />
+            <video style={ videoStyle } id={ xid } ref={ peerVideo } autoPlay />
         </div>
     )
 }

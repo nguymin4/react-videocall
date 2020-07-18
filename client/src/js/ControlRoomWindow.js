@@ -16,17 +16,6 @@ function CascadeWindow({ endCall }) {
     const { state, actions } = useApp()
     const localVideo = React.useRef(null)
 
-    // useEffect(() => {
-    //     // if (peerVideo.current && peerSrc) peerVideo.current.srcObject = peerSrc;
-    //     if (localVideo.current && localSrc) localVideo.current.srcObject = localSrc;
-    // });
-
-    // useEffect(() => {
-    //     if (mediaDevice) {
-    //         mediaDevice.toggle('Video', video);
-    //         mediaDevice.toggle('Audio', audio);
-    //     }
-    // });
 
     /**
      * Turn on/off a media device
@@ -46,11 +35,13 @@ function CascadeWindow({ endCall }) {
     React.useEffect(() => {
 
         const stream = json(state.streams.cascadeStream)
+        console.log("IN EFFECT", stream)
         if (localVideo && localVideo.current && stream) {
             // console.log('Using The Effect',  stream)
+            console.log("QUALITIED")
             localVideo.current.srcObject = stream
         }
-    }, [localVideo])
+    }, [localVideo, state.streams.cascadeStream])
 
     return (
         <div className={ classnames('cascade-window') }>

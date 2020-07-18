@@ -184,13 +184,21 @@ const actions = {
 
     },
     addPeerToCascade({ state, actions }, src) {
-        state.streams.peerStream = src
         const id = state.attrs.id
+        const control = state.users[id].control
+        console.log("CONTROL IS ", control)
+        let delta = -1
+        if (control === 'control') {
+            delta = 1
+        }
+
+        state.streams.peerStream = src
+
         if (state.sessions.cascaders.find(entry => entry === id)) {
             if (state.sessions.cascaders[0] !== id) {
                 const merger = json(state.streams.cascadeMerger)
                 merger.addStream(src, {
-                    index: -1,
+                    index: delta,
                     x: 0, // position of the topleft corner
                     y: 0,
                     width: merger.width,
