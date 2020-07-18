@@ -7,6 +7,7 @@ const actions = {
     startCall({ state, actions }, { isCaller, friendID, config, opts }) {
         if (state.callInfo[friendID]) {
         }
+        actions.setupStreams()
         const pc = new PeerConnection(friendID, opts, state, actions)
         state.callInfo[friendID] = {
             pc,
@@ -24,7 +25,6 @@ const actions = {
             pc,
             stopped: false
         }
-        state.callInfo[friendID].stopped
         actions.addPeerToCascade(src)
 
     },
@@ -39,6 +39,7 @@ const actions = {
                 stopped: true
             }
         }
+
     },
     computeCategories({ state }) {
         let cascaders = []
@@ -66,52 +67,66 @@ const actions = {
             viewers
         }
     },
+    relayAction({ state, effects }, { to, op, data }) {
+        effects.socket.actions.relayEffect(to, op, data)
+    },
     startCascade({ state, actions, effects }) {
         if (state.members.length < 2) {
             actions.setMessage("Can't start a cascade with only you in the room.")
             return
         }
-        effects.socket.actions.emit('cascade', { room: state.attrs.room })
-
-
+        actions.diag('start cascade')
+        state.sessions.cascaders.slice(0, -1).map((member, sequence) => {
+            const nextMember = state.sessions.cascaders[sequence + 1]
+            actions.relayAction({
+                to: member,
+                op: "calljoin",
+                data: { jointo: nextMember }
+            })
+        })
+    },
+    broadcastToRoom({ state, actions }, { message, data }) {
+        state.members.forEach(id => {
+            effects.socket.actions.relay(id, message, data)
+        })
     },
     endCascade({ state, actions, effects }, data) {
         actions.setMessage(`Ending cascade for room '${state.attrs.room}'.`)
         state.members.forEach(id => {
-            effects.socket.actions.relay(id, 'end', { from: state.attrs.id })
+            actions.relayAction({ to: id, op: 'end', data: { from: state.attrs.id } })
         })
 
 
     },
     setUserEntries({ state }, id) {
         if (!state.users[id]) state.users[id] = {}
-        if (!state.roomStreams[id]) state.roomStreams[id] = {}
     },
-    setMembers({ state, effects }, data) {
-        state.members = data.members
-        state.cascade = data.cascade
-        state.members.forEach(id => {
-            effects.socket.actions.relay(id, 'getInfo')
-
-        })
-        for (const key in json(state.roomStreams)) {
-            if (!(key in state.members)) {
-                delete state.roomStreams[key]
-            }
+    setMembers({ state, actions }, data) {
+        const inArray = (val, array) => {
+            return array.filter(e => e === val)
         }
+        data.members.forEach(member => {
+            if (!inArray(member, state.members) || !state.users[member]) {
+                // of user is not in the array then send a 
+                actions.relayAction({ to: member, op: 'getInfo' })
+
+            }
+        })
+        state.members = data.members
+        actions.computeCategories()
+
 
     },
     sendUserInfo({ state, actions, effects }, request) {
         const data = Object.assign(json(state.attrs), request)
-
-        effects.socket.actions.relay(request.from, 'info', data)
+        actions.relayAction({ to: request.from, op: 'info', data })
     },
     setUserInfo({ state, actions }, data) {
         const id = data.id
         delete data.id
         actions.setUserEntries(id)
-        state.roomStreams[id].name = data.name
-        state.roomStreams[id].control = data.control
+        // state.roomStreams[id].name = data.name
+        // state.roomStreams[id].control = data.control
         for (const key in data) {
             state.users[id][key] = data[key]
         }
@@ -133,26 +148,27 @@ const actions = {
     clearMessage({ state, actions }) {
         state._message.text = "";
     },
-    fakeStreams({ state }) {
-        state.roomStreams = {
-            'Session-1': {
-                name: 'Noel',
-                stream: null
-            }, 'Session-2': {
-                name: 'Jess',
-                stream: null
-            }
-        }
-    },
+    // fakeStreams({ state }) {
+    //     state.roomStreams = {
+    //         'Session-1': {
+    //             name: 'Noel',
+    //             stream: null
+    //         }, 'Session-2': {
+    //             name: 'Jess',
+    //             stream: null
+    //         }
+    //     }
+    // },
     diag({ state }, diag) {
+        console.log(diag)
         state.diags.push(diag)
     },
     clearCascade({ state }) {
         state.showCascade = false
         delete state.streams.cascadeStream
-        if (state.streams.cascadeMergerStream) {
-            json(state.streams.cascadeMergerStream).destroy()
-            delete state.streams.cascadeMergerStream
+        if (state.streams.cascadeMerger) {
+            json(state.streams.cascadeMerger).destroy()
+            delete state.streams.cascadeMerger
         }
 
     },
@@ -163,33 +179,38 @@ const actions = {
     addStream({ state }, { name, stream }) {
         state.streams[name] = stream
     },
-    addPeerToCascade({ state }, src) {
-        state.streams.peerStream = src
-        if (state.cascade.index !== 0) {
+    addControllerPeer({ state }, src) {
 
-            const merger = json(state.streams.cascadeMergerStream)
-            merger.addStream(src, {
-                index: -1,
-                x: 0, // position of the topleft corner
-                y: 0,
-                width: merger.width,
-                height: merger.height,
-            })
+    },
+    addPeerToCascade({ state, actions }, src) {
+        state.streams.peerStream = src
+        const id = state.attrs.id
+        if (state.sessions.cascaders.find(entry => entry === id)) {
+            if (state.sessions.cascaders[0] !== id) {
+                const merger = json(state.streams.cascadeMerger)
+                merger.addStream(src, {
+                    index: -1,
+                    x: 0, // position of the topleft corner
+                    y: 0,
+                    width: merger.width,
+                    height: merger.height,
+                })
+            } else if (id in state.sesionss.controllers) {
+                actions.addControllerPeer(src)
+            }
         }
     },
-    setCascade({ state, actions }, opts) {
-        if (state.cascade.index !== opts.index || !state.streams.cascadeStream) {
-            if (state.streams.cascadeMergerStream) {
-                state.streams.cascadeMergerStream.destroy()
-            }
+    setupStreams({ state, actions }, opts) {
+        const id = state.attrs.id
+        const index = state.sessions.cascaders.findIndex(e => e === id)
+        if ((index !== -1) && !state.streams.cascadeStream) {
             const merger = labeledStream(json(state.streams.localStream), state.attrs.name,
-                opts.index,
-                opts.members)
-            state.streams.cascadeMergerStream = merger
+                index,
+                state.sessions.cascaders.length)
+            actions.addStream({ name: 'cascadeMerger', stream: merger })
+
             actions.addStream({ name: 'cascadeStream', stream: merger.result })
-            state.cascade.index = opts.index
         }
-        state.cascade.members = opts.members
         state.showCascade = true
     },
     logEvent({ state }, { evType, message, zargs, cb }) {

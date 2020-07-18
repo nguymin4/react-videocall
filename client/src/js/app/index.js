@@ -19,8 +19,6 @@ const state = {
     sessions: {},
     allSessions: [],
     users: {}, // keyed list of users with their data
-    roomStreams: { //keyed list of stream information with names
-    },
     _message: {
         text: '',
         delay: 1000

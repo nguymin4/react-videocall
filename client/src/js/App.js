@@ -62,16 +62,10 @@ class App extends Component {
                 const leader = data.jointo
                 // socket.emit('debug', 'calljoin received')
                 // console.log('join received', data)
-                data.opts.id = this.state.clientId
                 this.startCallHandler(true, leader, { video: true, audio: true }, data.opts)
             })
-            .on('cascade', (data) => {
-                this.actions.setCascade({ index: data.index, members: data.members })
-
-            }
-
-            )
             .on('request', ({ from: callFrom }) => {
+                console.log("request")
                 const opts = { id: this.state.clientId + 'R' }
                 this.startCallHandler(false, callFrom, { video: true, audio: true }, opts)
                 // return
@@ -91,25 +85,19 @@ class App extends Component {
 
     startCall(isCaller, friendID, config, opts = {}) {
         this.config = config;
-
         // const pc = new PeerConnection(friendID, opts, this.oState, this.actions)
         const pc = this.actions.startCall({ isCaller, friendID, config, opts });
         this.pcs[friendID] = pc
-
         // this.setState({nPCs: Object.keys(this.pcs).length})
         pc
             .on('localStream', (src) => {
-                // if(this.oState.cascade.index === 0 )return
-                // const newState = { callWindow: 'active', localSrc: src };
-                // if (!isCaller) newState.callModal = '';
-                // this.setState(newState);
             })
             .on('peerTrackEvent', (e) => {
-                this.actions.peerTrackEvent({ friendID, event: e })
                 const src = e.streams[0]
+                this.actions.peerTrackEvent({ friendID, event: e })
                 this.setState({ peerSrc: src })
             })
-            .start(isCaller, config, this.pcs);
+            .startPeer(isCaller, config, this.oState, this.pcs);
     }
 
     rejectCall() {

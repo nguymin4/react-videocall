@@ -173,10 +173,11 @@ function initSocket(socket) {
             // rooms.next()
         })
         .on('cascade', async (data) => {
-            doConnect(data.room)
+            console.log("GOT CASCADE")
+            // doConnect(data.room)
         })
         .on('relay', (data) => {
-            // console.log("Relay ", JSON.stringify(data))
+            console.log("Relay ", data.op, "from", id, "to", data.to)
             const receiver = users.getReceiver(data.to);
             if (receiver) {
                 receiver.emit(data.op, data);

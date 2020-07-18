@@ -18,15 +18,13 @@ class PeerConnection extends Emitter {
        * @param {String} friendID - ID of the friend you want to call.
        */
     static instance = 0
-    constructor(friendID, opts, oState, actions) {
+    constructor(friendID, actions) {
         super();
         PeerConnection.instance++
         // debug(`PeerConnection from ${friendID} to ${opts.id}`)
         this.pc = new RTCPeerConnection(PC_CONFIG);
         this.tracks = 0
-        this.state = oState
         this.actions = actions
-        this.opts = opts
         this.pc.onicecandidate = (event) => socket.emit('call', {
             to: this.friendID,
             candidate: event.candidate
@@ -50,23 +48,20 @@ class PeerConnection extends Emitter {
      * @param {Boolean} isCaller
      * @param {Object} config - configuration for the call {audio: boolean, video: boolean}
      */
-    start(isCaller, config, pcs) {
+    startPeer(isCaller, config, state, pcs) {
         this.isCaller = isCaller
         let stream
-        stream = json(this.state.streams.cascadeStream)
+        stream = json(state.streams.cascadeStream)
         if (isCaller) {
-            this.actions.diag('NotCaller');
-            stream = json(this.state.streams.emptyStream)
-            stream = json(this.state.streams.cascadeStream)
+            stream = json(state.streams.emptyStream)
+            stream = json(state.streams.cascadeStream)
 
         }
         else {
-            this.actions.diag('Caller')
-            stream = json(this.state.streams.cascadeStream)
+            stream = json(state.streams.cascadeStream)
         }
         stream.getTracks().forEach((track) => {
             this.pc.addTrack(track, stream);
-            console.log('Add cascadeTrack')
         });
         this.emit('localStream', stream);
         if (isCaller) socket.emit('request', { to: this.friendID });

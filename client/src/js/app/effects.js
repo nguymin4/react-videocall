@@ -21,7 +21,7 @@ const effects = {
 
     socket: {
         actions: {
-            relay(to, op, params = {}) {
+            relayEffect(to, op, params = {}) {
                 socket.emit('relay', { ...params, to, op, from: effects.state.attrs.id })
             },
             register(data) {
