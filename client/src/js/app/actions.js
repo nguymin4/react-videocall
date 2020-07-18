@@ -17,18 +17,6 @@ const actions = {
         }
         return pc
     },
-    peerTrackEvent({ state, actions }, { friendID, event: e }) {
-        const src = e.streams[0]
-        const pc = json(state.callInfo[friendID].pc)
-        pc.peerSrc = src
-        state.callInfo[friendID] = {
-            pc,
-            stopped: false
-        }
-        actions.addPeerToCascade(src)
-
-    },
-
     endCall({ state, actions }, { isStarter, from }) {
         actions.clearCascade()
         if (state.callInfo[from] && !state.callInfo[from].stopped) {
@@ -41,31 +29,16 @@ const actions = {
         }
 
     },
-    computeCategories({ state }) {
-        let cascaders = []
-        const controllers = []
-        const viewers = []
-        state.members.forEach(key => {
-            const user = state.users[key]
-            if (!user) return
-            const control = user.control
-            const seq = parseInt(control)
-            if (seq) {
-                if (!cascaders[seq]) cascaders[seq] = []
-                cascaders[seq].push(key)
-            } else if (control.match(/^c/)) {
-                controllers.push(key)
-            } else {
-                viewers.push(key)
-            }
-        })
-        cascaders = cascaders.flat().filter(a => a)
-        state.allSessions = cascaders.concat(controllers).concat(viewers)
-        state.sessions = {
-            cascaders,
-            controllers,
-            viewers
+    peerTrackEvent({ state, actions }, { friendID, event: e }) {
+        const src = e.streams[0]
+        const pc = json(state.callInfo[friendID].pc)
+        pc.peerSrc = src
+        state.callInfo[friendID] = {
+            pc,
+            stopped: false
         }
+        actions.addPeerToCascade(src)
+
     },
     relayAction({ state, effects }, { to, op, data }) {
         effects.socket.actions.relayEffect(to, op, data)
@@ -76,14 +49,34 @@ const actions = {
             return
         }
         actions.diag('start cascade')
+        let nextMember
         state.sessions.cascaders.slice(0, -1).map((member, sequence) => {
-            const nextMember = state.sessions.cascaders[sequence + 1]
+            nextMember = state.sessions.cascaders[sequence + 1]
             actions.relayAction({
                 to: member,
                 op: "calljoin",
                 data: { jointo: nextMember }
             })
         })
+        // state.sessions.controllers.map((member, sequence) => {
+
+        //     actions.relayAction({
+        //         to: nextMember,
+        //         op: "calljoin",
+        //         data: { jointo: member }
+        //     })
+        //     nextMember = member
+        // })
+    },
+    clearCascade({ state }) {
+        state.showCascade = false
+        state.showControlRoom = false
+        delete state.streams.cascadeStream
+        if (state.streams.cascadeMerger) {
+            json(state.streams.cascadeMerger).destroy()
+            delete state.streams.cascadeMerger
+        }
+
     },
     broadcastToRoom({ state, actions }, { message, data }) {
         state.members.forEach(id => {
@@ -117,6 +110,32 @@ const actions = {
 
 
     },
+    computeCategories({ state }) {
+        let cascaders = []
+        const controllers = []
+        const viewers = []
+        state.members.forEach(key => {
+            const user = state.users[key]
+            if (!user) return
+            const control = user.control
+            const seq = parseInt(control)
+            if (seq) {
+                if (!cascaders[seq]) cascaders[seq] = []
+                cascaders[seq].push(key)
+            } else if (control.match(/^c/)) {
+                controllers.push(key)
+            } else {
+                viewers.push(key)
+            }
+        })
+        cascaders = cascaders.flat().filter(a => a)
+        state.allSessions = cascaders.concat(controllers).concat(viewers)
+        state.sessions = {
+            cascaders,
+            controllers,
+            viewers
+        }
+    },
     sendUserInfo({ state, actions, effects }, request) {
         const data = Object.assign(json(state.attrs), request)
         actions.relayAction({ to: request.from, op: 'info', data })
@@ -148,30 +167,12 @@ const actions = {
     clearMessage({ state, actions }) {
         state._message.text = "";
     },
-    // fakeStreams({ state }) {
-    //     state.roomStreams = {
-    //         'Session-1': {
-    //             name: 'Noel',
-    //             stream: null
-    //         }, 'Session-2': {
-    //             name: 'Jess',
-    //             stream: null
-    //         }
-    //     }
-    // },
+
     diag({ state }, diag) {
         console.log(diag)
         state.diags.push(diag)
     },
-    clearCascade({ state }) {
-        state.showCascade = false
-        delete state.streams.cascadeStream
-        if (state.streams.cascadeMerger) {
-            json(state.streams.cascadeMerger).destroy()
-            delete state.streams.cascadeMerger
-        }
 
-    },
     // flashCascade({ state, actions }) {
     //     state.showCascade = true
     //     setTimeout(() => actions.clearCascade(), 5000)
@@ -203,15 +204,22 @@ const actions = {
     setupStreams({ state, actions }, opts) {
         const id = state.attrs.id
         const index = state.sessions.cascaders.findIndex(e => e === id)
-        if ((index !== -1) && !state.streams.cascadeStream) {
-            const merger = labeledStream(json(state.streams.localStream), state.attrs.name,
-                index,
-                state.sessions.cascaders.length)
-            actions.addStream({ name: 'cascadeMerger', stream: merger })
+        if (index !== -1) { //part of cascade
+            if (!state.streams.cascadeStream) {
+                const merger = labeledStream(json(state.streams.localStream), state.attrs.name,
+                    index,
+                    state.sessions.cascaders.length)
+                actions.addStream({ name: 'cascadeMerger', stream: merger })
 
-            actions.addStream({ name: 'cascadeStream', stream: merger.result })
+                actions.addStream({ name: 'cascadeStream', stream: merger.result })
+            }
+            state.showCascade = true
+        } else {
+            console.log("set up control")
+            if (state.sessions.controllers.find(e => state.users[e] === 'control')) {
+                state.showControlRoom = true
+            }
         }
-        state.showCascade = true
     },
     logEvent({ state }, { evType, message, zargs, cb }) {
         const lastEvent = { evType, message, zargs }

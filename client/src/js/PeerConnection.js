@@ -52,14 +52,18 @@ class PeerConnection extends Emitter {
         this.isCaller = isCaller
         let stream
         stream = json(state.streams.cascadeStream)
-        if (isCaller) {
+        if (!stream) {
             stream = json(state.streams.emptyStream)
-            stream = json(state.streams.cascadeStream)
+            console.log("Stream is", stream, state.streams)
+        }
+        // if (isCaller) {
+        //     stream = json(state.streams.emptyStream)
+        //     stream = json(state.streams.cascadeStream)
 
-        }
-        else {
-            stream = json(state.streams.cascadeStream)
-        }
+        // }
+        // else {
+        //     stream = json(state.streams.cascadeStream)
+        // }
         stream.getTracks().forEach((track) => {
             this.pc.addTrack(track, stream);
         });

@@ -13,6 +13,7 @@ const state = {
     title: 'This title',
     diags: [],
     showCascade: false,
+    showControlRoom: false,
     members: [], //array of member session numbers
     cascade: [], //array of session numbers in order
     callInfo: {},

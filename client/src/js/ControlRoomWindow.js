@@ -8,7 +8,7 @@ import { json } from 'overmind';
 
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
 
-function CascadeWindow() {
+function CascadeWindow({ endCall }) {
     //   const peerVideo = useRef(null);
     // const localVideo = useRef(null);
     const [video, setVideo] = useState(true);
@@ -81,5 +81,8 @@ function CascadeWindow() {
     );
 }
 
+CascadeWindow.propTypes = {
+    endCall: PropTypes.func.isRequired
+};
 
 export default CascadeWindow;

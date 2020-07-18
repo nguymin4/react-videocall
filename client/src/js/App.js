@@ -156,16 +156,10 @@ class App extends Component {
                             startCall={ this.startCallHandler }
                         />
                         :
-                        <CascadeWindow
-                            // allpcs={this.pcs}
-                            // nPCs={Object.keys(this.pcs).length}
-                            // status={callWindow}
-                            // localSrc={localSrc}
-                            // peerSrc={peerSrc}
-                            config={ this.config }
-                            // mediaDevice={pc ? pc.mediaDevice : {}}
-                            endCall={ this.endCallHandler }
-                        />
+                        this.oState.showControlRoom ?
+                            <ControlRoomWindow />
+                            :
+                            <CascadeWindow />
                 }
                 {/* {!_.isEmpty(this.config) && false (
 
