@@ -4,19 +4,50 @@ import { toast } from 'react-toastify';
 import labeledStream from '../streamutils/labeledStream'
 import PeerConnection from "../PeerConnection"
 const actions = {
-    startCall({ state, actions }, { isCaller, friendID, config, opts }) {
-        if (state.callInfo[friendID]) {
-        }
-        actions.setupStreams()
-        const pc = new PeerConnection(friendID, opts, state, actions)
-        state.callInfo[friendID] = {
-            pc,
-            config,
-            isCaller,
-            opts
-        }
-        return pc
+    relayAction({ state, effects }, { to, op, data }) {
+        effects.socket.actions.relayEffect(to, op, data)
     },
+    startCascade({ state, actions, effects }) {
+        if (state.members.length < 2) {
+            actions.setMessage("Can't start a cascade with only you in the room.")
+            return
+        }
+        actions.startCascaders()
+        actions.startControllers()
+        actions.startViewers()
+    },
+    startCascaders({ state, actions }) {
+        state.sessions.cascaders.slice(0, -1).map((member, sequence) => {
+            state.nextMember = state.sessions.cascaders[sequence + 1]
+            actions.relayAction({
+                to: member,
+                op: "calljoin",
+                data: { jointo: state.nextMember }
+            })
+        })
+    },
+    startControllers({ state, actions }) {
+        state.sessions.controllers.map((member, sequence) => {
+            actions.relayAction({
+                to: state.nextMember,
+                op: "calljoin",
+                data: { jointo: member }
+            })
+            state.nextMember = member
+        })
+    },
+    startViewers({ state, actions }) {
+        const nControllers = state.sessions.controllers.length
+        state.sessions.viewers.map((member, sequence) => {
+            const controller = state.sessions.controllers[sequence % nControllers]
+            actions.relayAction({
+                to: controller,
+                op: "calljoin",
+                data: { jointo: member }
+            })
+        })
+    },
+
     endCall({ state, actions }, { isStarter, from }) {
         actions.clearCascade()
         if (state.callInfo[from] && !state.callInfo[from].stopped) {
@@ -40,34 +71,34 @@ const actions = {
         actions.addPeerToCascade(src)
 
     },
-    relayAction({ state, effects }, { to, op, data }) {
-        effects.socket.actions.relayEffect(to, op, data)
-    },
-    startCascade({ state, actions, effects }) {
-        if (state.members.length < 2) {
-            actions.setMessage("Can't start a cascade with only you in the room.")
-            return
-        }
-        actions.diag('start cascade')
-        let nextMember
-        state.sessions.cascaders.slice(0, -1).map((member, sequence) => {
-            nextMember = state.sessions.cascaders[sequence + 1]
-            actions.relayAction({
-                to: member,
-                op: "calljoin",
-                data: { jointo: nextMember }
-            })
-        })
-        state.sessions.controllers.map((member, sequence) => {
+    // relayAction({ state, effects }, { to, op, data }) {
+    //     effects.socket.actions.relayEffect(to, op, data)
+    // },
+    // startCascade({ state, actions, effects }) {
+    //     if (state.members.length < 2) {
+    //         actions.setMessage("Can't start a cascade with only you in the room.")
+    //         return
+    //     }
+    //     actions.diag('start cascade')
+    //     let nextMember
+    //     state.sessions.cascaders.slice(0, -1).map((member, sequence) => {
+    //         nextMember = state.sessions.cascaders[sequence + 1]
+    //         actions.relayAction({
+    //             to: member,
+    //             op: "calljoin",
+    //             data: { jointo: nextMember }
+    //         })
+    //     })
+    //     state.sessions.controllers.map((member, sequence) => {
 
-            actions.relayAction({
-                to: nextMember,
-                op: "calljoin",
-                data: { jointo: member }
-            })
-            nextMember = member
-        })
-    },
+    //         actions.relayAction({
+    //             to: nextMember,
+    //             op: "calljoin",
+    //             data: { jointo: member }
+    //         })
+    //         nextMember = member
+    //     })
+    // },
     clearCascade({ state }) {
         state.showCascade = false
         state.showControlRoom = false
