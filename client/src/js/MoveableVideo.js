@@ -2,7 +2,7 @@ import Moveable from "react-moveable";
 import React from "react";
 
 
-const ThingToMove = () => {
+const MoveableVideo = ({ target }) => {
     const [renderMovable, settRenderMovable] = React.useState(false);
 
     React.useEffect(() => {
@@ -29,6 +29,7 @@ const ThingToMove = () => {
                     transform: style
                 } }
             >
+                { target }
                 Move me
       </h2>
             {/* <MovableComponent moveRef={moveRef} setStyle={setStyle} /> */ }
@@ -36,4 +37,4 @@ const ThingToMove = () => {
     );
 };
 
-export default ThingToMove;
+export default MoveableVideo;

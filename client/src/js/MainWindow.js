@@ -25,7 +25,7 @@ function MainWindow({ startCall, clientId }) {
     }
     return (
         <div className='container main-window'>
-            <MovableVideo />
+            <MovableVideo target={ <div>SOMETHING ELSE HERE</div> } />
             <div>
                 <h1 className="text-5xl">Welcome to h00tnet</h1>
             </div>
