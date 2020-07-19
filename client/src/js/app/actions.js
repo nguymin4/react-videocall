@@ -75,14 +75,7 @@ const actions = {
 
     setupStreams({ state, actions }, opts) {
         const id = state.attrs.id
-        if (state.index !== -1) { //part of cascade
-            actions.createCasdadeStream(index)
-        } else {
-            console.log("set up control", json(state.sessions.controllers), id)
-            if (state.attrs.control === 'control') {
-                console.log("Show CONTROL")
-            }
-        }
+        actions.createCasdadeStream(index)
     },
     createCascadeStream({ state, actions }) {
         if (!state.streams.cascadeStream) {
@@ -94,23 +87,6 @@ const actions = {
         }
 
     },
-    createControllerStream({ state, actions }, stream) {
-        console.log(stream)
-        const merger = new VideoStreamMerger({
-            width: 800, // Width of the output video
-            height: 600, // Height of the output video
-            fps: 25, // Video capture frames per second
-            clearRect: false, // Clear the canvas every frame
-            audioContext: null // Supply an external AudioContext (for audio effects)
-        })
-        merger.addStream(stream, {
-            mute: false, // we don't want sound from the screen (if there is any)
-        });
-        theMerger.start();
-        state.streams.controllerStream = merger.result
-        state.streams.controllerMerger = merger
-    },
-
     endCall({ state, actions }, { isStarter, from }) {
         actions.clearCascade()
         if (state.callInfo[from] && !state.callInfo[from].stopped) {
@@ -131,12 +107,7 @@ const actions = {
             pc,
             stopped: false
         }
-        if (state.index != -1) {
-            actions.addPeerToCascade(src)
-        } else if (state.attrs.control === 'control') {
-            actions.createControllerStream(src)
-        }
-
+        actions.addPeerToCascade(src)
     },
     // relayAction({ state, effects }, { to, op, data }) {
     //     effects.socket.actions.relayEffect(to, op, data)
@@ -174,12 +145,6 @@ const actions = {
             json(state.streams.cascadeMerger).destroy()
             delete state.streams.cascadeMerger
         }
-        if (state.streams.controllerMerger) {
-            json(state.streams.controllerMerger).destroy()
-            delete state.streams.controllerMerger
-            delete state.streams.controllerStream
-        }
-
     },
     broadcastToRoom({ state, actions }, { message, data }) {
         state.members.forEach(id => {
@@ -248,8 +213,6 @@ const actions = {
         const id = data.id
         delete data.id
         actions.setUserEntries(id)
-        // state.roomStreams[id].name = data.name
-        // state.roomStreams[id].control = data.control
         for (const key in data) {
             state.users[id][key] = data[key]
         }
@@ -290,50 +253,29 @@ const actions = {
     addPeerToCascade({ state, actions }, src) {
         const id = state.attrs.id
         const control = state.users[id].control
-        console.log("CONTROL IS ", control)
-        let delta = -1
-        if (control === 'control') {
-            delta = 1
-        }
 
         state.streams.peerStream = src
 
-        if (state.index !== -1) {
-            if (state.sessions.cascaders[0] !== id) {
-                const merger = json(state.streams.cascadeMerger)
-                merger.addStream(src, {
-                    index: delta,
-                    x: 0, // position of the topleft corner
-                    y: 0,
-                    width: merger.width,
-                    height: merger.height,
-                })
-            } else if (state.attrs.controller === 'control') {
-                actions.addControllerPeer(src)
-            }
+        if (state.sessions.cascaders[0] !== id) {
+            const merger = json(state.streams.cascadeMerger)
+            merger.addStream(src, {
+                index: -1,
+                x: 0, // position of the topleft corner
+                y: 0,
+                width: merger.width,
+                height: merger.height,
+            })
         }
     },
     setupStreams({ state, actions }, opts) {
         const id = state.attrs.id
-        const index = state.sessions.cascaders.findIndex(e => e === id)
-        if (index !== -1) { //part of cascade
-            if (!state.streams.cascadeStream) {
-                const merger = labeledStream(json(state.streams.localStream), state.attrs.name,
-                    index,
-                    state.sessions.cascaders.length)
-                actions.addStream({ name: 'cascadeMerger', stream: merger })
+        if (!state.streams.cascadeStream) {
+            const merger = labeledStream(json(state.streams.localStream), state.attrs.name,
+                state.index,
+                state.sessions.cascaders.length)
+            actions.addStream({ name: 'cascadeMerger', stream: merger })
 
-                actions.addStream({ name: 'cascadeStream', stream: merger.result })
-            }
-            state.showCascade = true
-        } else {
-            console.log("set up control", json(state.sessions.controllers), id)
-            if (json(state.sessions.controllers).find(e => state.users[e].control === 'control')) {
-                console.log("Show")
-                state.showControlRoom = true
-                state.showCascade = true
-
-            }
+            actions.addStream({ name: 'cascadeStream', stream: merger.result })
         }
     },
     logEvent({ state }, { evType, message, zargs, cb }) {

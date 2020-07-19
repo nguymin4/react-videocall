@@ -27,39 +27,56 @@ export default function labeledStream(
         clearRect, // Clear the canvas every frame
         audioContext // Supply an external AudioContext (for audio effects)
     });
-    theMerger.addStream(stream, {
-        // x: pos.x*MULT, // position of the topleft corner
-        // y: pos.y*MULT,
-        // width: pos.width * MULT,
-        // height: pos.width * MULT,
-        // width: theMerger.width,
-        // height: theMerger.height,
-        mute: false, // we don't want sound from the screen (if there is any)
-        draw: function (ctx, frame, done) {
-            const nowTime = performance.now()
-            if (nowTime - baseTime < FRAME_DELTA) {
-                done()
-                return
-            } else {
-                // console.log("draw")
-                baseTime = nowTime
+    if (iCascadeIndex === -1) {
+        theMerger.addStream(stream, {
+            // x: pos.x*MULT, // position of the topleft corner
+            // y: pos.y*MULT,
+            // width: pos.width * MULT,
+            // height: pos.width * MULT,
+            // width: theMerger.width,
+            // height: theMerger.height,
+            mute: false, // we don't want sound from the screen (if there is any)
+            draw: function (ctx, frame, done) {
+                done();
             }
-            const x = pos.x * theMerger.width
-            const y = pos.y * theMerger.height
-            ctx.drawImage(frame,
-                x,
-                y,
-                pos.width * theMerger.width,
-                pos.height * theMerger.height);
+        });
 
-            ctx.font = '48px serif';
-            ctx.fillStyle = 'white';
-            ctx.strokeStyle = 'boack';
-            ctx.fillText(label, x + 10, y + 50);
-            ctx.strokeText(label, x + 10, y + 50);
-            done();
-        }
-    });
+    } else {
+
+        theMerger.addStream(stream, {
+            // x: pos.x*MULT, // position of the topleft corner
+            // y: pos.y*MULT,
+            // width: pos.width * MULT,
+            // height: pos.width * MULT,
+            // width: theMerger.width,
+            // height: theMerger.height,
+            mute: false, // we don't want sound from the screen (if there is any)
+            draw: function (ctx, frame, done) {
+                const nowTime = performance.now()
+                if (nowTime - baseTime < FRAME_DELTA) {
+                    done()
+                    return
+                } else {
+                    // console.log("draw")
+                    baseTime = nowTime
+                }
+                const x = pos.x * theMerger.width
+                const y = pos.y * theMerger.height
+                ctx.drawImage(frame,
+                    x,
+                    y,
+                    pos.width * theMerger.width,
+                    pos.height * theMerger.height);
+
+                ctx.font = '48px serif';
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = 'black';
+                ctx.fillText(label, x + 10, y + 50);
+                ctx.strokeText(label, x + 10, y + 50);
+                done();
+            }
+        });
+    }
     theMerger.start();
     // theMerger.result.merger = theMerger
     return theMerger;
