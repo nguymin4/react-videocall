@@ -4,6 +4,13 @@ export const positions = [
     { 'x': .5, 'y': 0, 'width': .5, 'height': .5 },
     { 'x': 0, 'y': .5, 'width': .5, 'height': .5 },
     { 'x': .5, 'y': .5, 'width': .5, 'height': .5 }]
+const drawLabel = (ctx, { label = null, font = '48px serif', fill = 'white', stroke = 'black', x = 10, y = 50 } = {}) => {
+    ctx.font = font;
+    ctx.fillStyle = fill
+    ctx.strokeStyle = stroke;
+    ctx.fillText(label, x + 10, y + 50);
+    ctx.strokeText(label, x + 10, y + 50);
+}
 export default function labeledStream(
     stream,
     label,
@@ -29,6 +36,11 @@ export default function labeledStream(
         audioContext // Supply an external AudioContext (for audio effects)
     });
     if (extract) {
+        const x = pos.x * theMerger.width
+        const y = pos.y * theMerger.height
+        const w = theMerger.width * pos.width
+        const h = theMerger.height * pos.height
+        console.log("EXTRACT", { x, y, w, h })
         theMerger.setOutputSize(pos.width * theMerger.width,
             pos.height * theMerger.height)
         theMerger.addStream(stream, {
@@ -36,19 +48,12 @@ export default function labeledStream(
             mute: false, // we don't want sound from the screen (if there is any)
             draw: function (ctx, frame, done) {
 
-                const x = pos.x * theMerger.width
-                const y = pos.y * theMerger.height
                 // ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
                 ctx.drawImage(frame,
-                    x,
-                    y,
-                    pos.width * theMerger.width,
-                    pos.height * theMerger.height,
-                    0,
-                    0,
-                    theMerger.width,
-                    theMerger.height,
+                    x, y, w, h,
+                    0, 0, w, h
                 )
+                drawLabel(ctx, { label: iCascadeIndex, fill: "red" })
                 done();
             }
         });
