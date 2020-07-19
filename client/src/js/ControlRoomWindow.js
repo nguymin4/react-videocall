@@ -55,8 +55,8 @@ function ControlRoomWindow({ endCall }) {
     return (
         <div className={ classnames('cascade-window') }>
             <video height={ 300 } ref={ localVideo } autoPlay />
-            { mergers.map(merger => {
-                <video height={ 300 } srcObj={ merger.result } autoPlay />
+            { mergers.map((merger, i) => {
+                return <video height={ 300 } key={ i } srcObj={ merger.result } autoPlay />
 
             }) }
             <div className='video-control'>

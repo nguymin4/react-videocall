@@ -29,7 +29,7 @@ export default function labeledStream(
         audioContext // Supply an external AudioContext (for audio effects)
     });
     if (extract) {
-        merger.setOutputSize(pos.width * theMerger.width,
+        theMerger.setOutputSize(pos.width * theMerger.width,
             pos.height * theMerger.height)
         theMerger.addStream(stream, {
 
@@ -38,14 +38,17 @@ export default function labeledStream(
 
                 const x = pos.x * theMerger.width
                 const y = pos.y * theMerger.height
-                ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+                // ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
                 ctx.drawImage(frame,
                     x,
                     y,
                     pos.width * theMerger.width,
                     pos.height * theMerger.height,
                     0,
-                    0)
+                    0,
+                    pos.width * theMerger.width,
+                    pos.height * theMerger.height,
+                )
                 done();
             }
         });
