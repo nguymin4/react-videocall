@@ -17,6 +17,7 @@ function ControlRoomWindow({ endCall }) {
     const { state, actions } = useApp()
     const localVideo = React.useRef(null)
     const [mergers, setMergers] = useState([])
+    const videoRefs = state.sessions.cascaders.map(cascader => useRef(null))
 
     /**
      * Turn on/off a media device
@@ -34,7 +35,6 @@ function ControlRoomWindow({ endCall }) {
     };
 
     React.useEffect(() => {
-
         const stream = json(state.streams.cascadeStream)
         console.log("IN CONTROL ROOM EFFECT", stream)
         if (localVideo && localVideo.current && stream) {
@@ -51,12 +51,19 @@ function ControlRoomWindow({ endCall }) {
             })
         }
     }, [localVideo, state.streams.cascadeStream])
+    React.useEffect(() => {
+        videoRefs.forEach((videoRef, i) => {
+            if (videoRef && videoRef.current) {
+                videoRef.current.srcObject = mergers[i].result
+            }
+        })
+    }, [videoRefs])
 
     return (
         <div className={ classnames('cascade-window') }>
             <video height={ 300 } ref={ localVideo } autoPlay />
             { mergers.map((merger, i) => {
-                return <video height={ 300 } key={ i } srcObj={ merger.result } autoPlay />
+                return <video height={ 300 } key={ i } ref={ videoRefs[i] } autoPlay />
 
             }) }
             <div className='video-control'>

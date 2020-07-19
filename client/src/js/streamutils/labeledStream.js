@@ -9,8 +9,8 @@ export default function labeledStream(
     label,
     iCascadeIndex,
     iCascadeCnt,
-    extract = false,
     {
+        extract = false,
         width = 400, // Width of the output video
         height = 300, // Height of the output video
         fps = 25, // Video capture frames per second
@@ -46,8 +46,8 @@ export default function labeledStream(
                     pos.height * theMerger.height,
                     0,
                     0,
-                    pos.width * theMerger.width,
-                    pos.height * theMerger.height,
+                    theMerger.width,
+                    theMerger.height,
                 )
                 done();
             }
