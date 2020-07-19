@@ -23,15 +23,15 @@ const MoveableVideo = ({ target }) => {
                     throttleDrag={ 0 }
                     onDrag={ handleDrag }
                 /> : "FOO" }
-            <h2
+            <div
                 ref={ moveRef }
                 style={ {
                     transform: style
                 } }
             >
                 { target }
-                Move me
-      </h2>
+                {/* Move me */ }
+            </div>
             {/* <MovableComponent moveRef={moveRef} setStyle={setStyle} /> */ }
         </div>
     );

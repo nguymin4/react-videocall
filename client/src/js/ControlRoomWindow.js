@@ -5,6 +5,7 @@ import CallWindowPeer from './CallWindowPeer'
 import { useApp } from './app'
 import { json } from 'overmind';
 import labeledStream from './streamutils/labeledStream'
+import MoveableVideo from './MoveableVideo'
 
 
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
@@ -63,7 +64,9 @@ function ControlRoomWindow({ endCall }) {
         <div className={ classnames('cascade-window') }>
             <video height={ 300 } ref={ localVideo } autoPlay />
             { mergers.map((merger, i) => {
-                return <video height={ 300 } key={ i } ref={ videoRefs[i] } autoPlay />
+                return <MoveableVideo key={ i }
+                    target={ <video height={ 300 } ref={ videoRefs[i] } autoPlay /> }
+                />
 
             }) }
             <div className='video-control'>
