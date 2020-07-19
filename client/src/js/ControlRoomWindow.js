@@ -34,14 +34,14 @@ function CascadeWindow({ endCall }) {
 
     React.useEffect(() => {
 
-        const stream = json(state.streams.cascadeStream)
-        console.log("IN EFFECT", stream)
+        const stream = json(state.streams.controllerStream)
+        console.log("IN CONTROL ROOM EFFECT", stream)
         if (localVideo && localVideo.current && stream) {
             // console.log('Using The Effect',  stream)
-            console.log("QUALITIED")
+            console.log("CONTROL ROOM ADDED")
             localVideo.current.srcObject = stream
         }
-    }, [localVideo, state.streams.cascadeStream])
+    }, [localVideo, state.streams.controllerStream])
 
     return (
         <div className={ classnames('cascade-window') }>

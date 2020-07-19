@@ -3,11 +3,14 @@ import { json } from "overmind";
 import { toast } from 'react-toastify';
 import labeledStream from '../streamutils/labeledStream'
 import PeerConnection from "../PeerConnection"
+import VideoStreamMerger from '../streamutils/video-stream-merger';
+
 const actions = {
     relayAction({ state, effects }, { to, op, data }) {
         effects.socket.actions.relayEffect(to, op, data)
     },
     startCascade({ state, actions, effects }) {
+        console.clear()
         if (state.members.length < 2) {
             actions.setMessage("Can't start a cascade with only you in the room.")
             return
@@ -48,9 +51,10 @@ const actions = {
         })
     },
     startCall({ state, actions }, { isCaller, friendID, config, opts }) {
-        if (state.callInfo[friendID]) {
-        }
+        // if (state.callInfo[friendID]) {
+        // }
         actions.setupStreams()
+        actions.showCallPage()
         const pc = new PeerConnection(friendID, opts, state, actions)
         state.callInfo[friendID] = {
             pc,
@@ -59,6 +63,52 @@ const actions = {
             opts
         }
         return pc
+    },
+    showCallPage({ state }) {
+        if (state.index !== -1) { //part of cascade
+            state.showCascade = true
+        } else if (state.attrs.control === 'control') {
+            state.showControlRoom = true
+            state.showCascade = true
+        }
+    },
+
+    setupStreams({ state, actions }, opts) {
+        const id = state.attrs.id
+        if (state.index !== -1) { //part of cascade
+            actions.createCasdadeStream(index)
+        } else {
+            console.log("set up control", json(state.sessions.controllers), id)
+            if (state.attrs.control === 'control') {
+                console.log("Show CONTROL")
+            }
+        }
+    },
+    createCascadeStream({ state, actions }) {
+        if (!state.streams.cascadeStream) {
+            const merger = labeledStream(json(state.streams.localStream), state.attrs.name,
+                state.index,
+                state.sessions.cascaders.length)
+            state.streams.cascadeMerger = merger
+            state.streams.cascadeStream = merger.result
+        }
+
+    },
+    createControllerStream({ state, actions }, stream) {
+        console.log(stream)
+        const merger = new VideoStreamMerger({
+            width: 800, // Width of the output video
+            height: 600, // Height of the output video
+            fps: 25, // Video capture frames per second
+            clearRect: false, // Clear the canvas every frame
+            audioContext: null // Supply an external AudioContext (for audio effects)
+        })
+        merger.addStream(stream, {
+            mute: false, // we don't want sound from the screen (if there is any)
+        });
+        theMerger.start();
+        state.streams.controllerStream = merger.result
+        state.streams.controllerMerger = merger
     },
 
     endCall({ state, actions }, { isStarter, from }) {
@@ -81,7 +131,11 @@ const actions = {
             pc,
             stopped: false
         }
-        actions.addPeerToCascade(src)
+        if (state.index != -1) {
+            actions.addPeerToCascade(src)
+        } else if (state.attrs.control === 'control') {
+            actions.createControllerStream(src)
+        }
 
     },
     // relayAction({ state, effects }, { to, op, data }) {
@@ -119,6 +173,11 @@ const actions = {
         if (state.streams.cascadeMerger) {
             json(state.streams.cascadeMerger).destroy()
             delete state.streams.cascadeMerger
+        }
+        if (state.streams.controllerMerger) {
+            json(state.streams.controllerMerger).destroy()
+            delete state.streams.controllerMerger
+            delete state.streams.controllerStream
         }
 
     },
@@ -179,8 +238,9 @@ const actions = {
             controllers,
             viewers
         }
-    },
-    sendUserInfo({ state, actions, effects }, request) {
+        state.index = state.sessions.cascaders.findIndex(e => e === state.attrs.id)
+
+    }, sendUserInfo({ state, actions, effects }, request) {
         const data = Object.assign(json(state.attrs), request)
         actions.relayAction({ to: request.from, op: 'info', data })
     },
@@ -238,7 +298,7 @@ const actions = {
 
         state.streams.peerStream = src
 
-        if (state.sessions.cascaders.find(entry => entry === id)) {
+        if (state.index !== -1) {
             if (state.sessions.cascaders[0] !== id) {
                 const merger = json(state.streams.cascadeMerger)
                 merger.addStream(src, {
@@ -248,7 +308,7 @@ const actions = {
                     width: merger.width,
                     height: merger.height,
                 })
-            } else if (id in state.sesionss.controllers) {
+            } else if (state.attrs.controller === 'control') {
                 actions.addControllerPeer(src)
             }
         }
