@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useApp } from './app'
-
+import MovableVideo from './MoveableVideo'
 function MainWindow({ startCall, clientId }) {
     const { state, actions } = useApp()
     const [roomID, setRoomID] = useState(state.attrs.room);
@@ -25,6 +25,7 @@ function MainWindow({ startCall, clientId }) {
     }
     return (
         <div className='container main-window'>
+            <MovableVideo />
             <div>
                 <h1 className="text-5xl">Welcome to h00tnet</h1>
             </div>

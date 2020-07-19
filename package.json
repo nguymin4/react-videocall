@@ -37,6 +37,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-hot-loader": "^4.12.21",
+    "react-moveable": "^0.21.6",
     "react-toastify": "^6.0.5",
     "sass-loader": "8.0.2",
     "socket.io": "2.3.0",
