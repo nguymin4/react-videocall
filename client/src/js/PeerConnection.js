@@ -1,7 +1,6 @@
 import MediaDevice from './MediaDevice';
 import Emitter from './Emitter';
 import socket from './socket';
-import labeledStream from './streamutils/labeledStream'
 import { json } from 'overmind'
 
 import { proxyMethods } from './app'

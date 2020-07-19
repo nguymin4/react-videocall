@@ -9,6 +9,7 @@ export default function labeledStream(
     label,
     iCascadeIndex,
     iCascadeCnt,
+    extract = false,
     {
         width = 400, // Width of the output video
         height = 300, // Height of the output video
@@ -27,7 +28,29 @@ export default function labeledStream(
         clearRect, // Clear the canvas every frame
         audioContext // Supply an external AudioContext (for audio effects)
     });
-    if (iCascadeIndex === -1) {
+    if (extract) {
+        merger.setOutputSize(pos.width * theMerger.width,
+            pos.height * theMerger.height)
+        theMerger.addStream(stream, {
+
+            mute: false, // we don't want sound from the screen (if there is any)
+            draw: function (ctx, frame, done) {
+
+                const x = pos.x * theMerger.width
+                const y = pos.y * theMerger.height
+                ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+                ctx.drawImage(frame,
+                    x,
+                    y,
+                    pos.width * theMerger.width,
+                    pos.height * theMerger.height,
+                    0,
+                    0)
+                done();
+            }
+        });
+
+    } else if (iCascadeIndex === -1) {
         theMerger.addStream(stream, {
             // x: pos.x*MULT, // position of the topleft corner
             // y: pos.y*MULT,

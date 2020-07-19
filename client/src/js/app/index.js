@@ -2,7 +2,6 @@ import { createHook } from 'overmind-react';
 import { createOvermind } from 'overmind';
 import { logLoader } from '../../util/logloader';
 import { toast } from 'react-toastify';
-import labeledStream from '../streamutils/labeledStream'
 import actions from './actions'
 import effects from './effects'
 import state from './state'
