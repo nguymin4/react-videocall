@@ -20,9 +20,10 @@ const MoveableVideo = ({ target }) => {
                 <Moveable
                     target={ moveRef && moveRef.current }
                     draggable={ true }
-                    throttleDrag={ 0 }
+                    // throttleDrag={ 0 }
+                    origin={ false }
                     onDrag={ handleDrag }
-                /> : "FOO" }
+                /> : null }
             <div
                 ref={ moveRef }
                 style={ {

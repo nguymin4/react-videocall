@@ -42,6 +42,8 @@ function ControlRoomWindow({ endCall }) {
             // console.log('Using The Effect',  stream)
             console.log("CONTROL ROOM ADDED")
             localVideo.current.srcObject = stream
+        }
+        if (stream) {
             const newMergers = []
             state.sessions.cascaders.forEach((cascader, index) => {
                 const merger = labeledStream(json(stream), "unlabeled",
@@ -62,7 +64,7 @@ function ControlRoomWindow({ endCall }) {
 
     return (
         <div className={ classnames('cascade-window') }>
-            <video height={ 300 } ref={ localVideo } autoPlay />
+            {/* <video style{{height={ 300 } ref={ localVideo } autoPlay /> */ }
             { mergers.map((merger, i) => {
                 return <MoveableVideo key={ i }
                     target={ <video height={ 300 } ref={ videoRefs[i] } autoPlay /> }
