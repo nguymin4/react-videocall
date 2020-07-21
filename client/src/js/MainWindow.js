@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useApp } from './app'
+import { useQueryState } from "use-location-state";
+
 function MainWindow({ startCall, clientId }) {
     const { state, actions } = useApp()
-    const [roomID, setRoomID] = useState(state.attrs.room);
+    const [roomID, setRoomID] = useQueryState("room", "main");
     const [controlValue, setControlValue] = useState(state.attrs.control)
     const [userID, setUserID] = useState(state.attrs.name);
     /**
