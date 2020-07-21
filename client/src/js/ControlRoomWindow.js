@@ -37,10 +37,8 @@ function ControlRoomWindow({ endCall }) {
 
     React.useEffect(() => {
         const stream = json(state.streams.cascadeStream)
-        console.log("IN CONTROL ROOM EFFECT", stream)
         if (localVideo && localVideo.current && stream) {
             // console.log('Using The Effect',  stream)
-            console.log("CONTROL ROOM ADDED")
             localVideo.current.srcObject = stream
         }
         if (stream) {

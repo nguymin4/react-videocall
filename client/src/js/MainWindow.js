@@ -20,6 +20,7 @@ function MainWindow({ startCall, clientId }) {
         if (e.shiftKey || e.ctrlKey) {
             actions.startCascade()
         } else {
+        
             actions.register({ roomID, controlValue, userID })
         }
         // actions.fakeStreams()
@@ -75,7 +76,7 @@ function MainWindow({ startCall, clientId }) {
                         className='btn-action'
                         onClick={ onClick }
 
-                    >Go</button>
+                    >Hoot</button>
 
 
                 </div>
