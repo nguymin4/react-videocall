@@ -38,14 +38,11 @@ const handleRegistration = async (socket, data) => {
     }
 
     const roomName = data.room || "main"
-    if (version) {
-        if (!rooms.exists(roomName) || ((data.control === 'reset') || (version === 2 && data.control === 'r'))) {
-            console.log("reset")
-            rooms.create(roomName, data.id)
-        }
-        rooms.join(roomName, data.id)
-        return
+    if (!rooms.exists(roomName)) {
+        rooms.create(roomName, data.id)
     }
+    rooms.join(roomName, data.id)
+    return
 }
 
 /**
@@ -62,7 +59,7 @@ function initSocket(socket) {
         id = await users.create(socket, data);
         const roomName = data.room
         id = await users.create(socket, data);
-        if (!rooms.exists(roomName) || ((data.control === 'reset') || (version === 2 && data.control === 'r'))) {
+        if (!rooms.exists(roomName)) {
             rooms.create(roomName, data.id)
         }
         if (data.room === 'undefined') return
