@@ -47,7 +47,7 @@ class PeerConnection extends Emitter {
      * @param {Boolean} isCaller
      * @param {Object} config - configuration for the call {audio: boolean, video: boolean}
      */
-    startPeer(isCaller, config, state, pcs) {
+    startPeer(isCaller, config, state) {
         this.isCaller = isCaller
         let stream
         stream = json(state.streams.cascadeStream)

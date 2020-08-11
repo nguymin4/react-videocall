@@ -21,13 +21,22 @@ const actions = {
         actions.startControllers();
         actions.startViewers();
     },
+    startChattters({ state, actions }) {
+        state.sessions.cmembers.map((member, sequence) => {
+            actions.relayAction({
+                to: member,
+                op: "calljoin",
+                data: { jointo: state.nextMember, role: 'chat' }
+            });
+        });
+    },
     startCascaders({ state, actions }) {
         state.sessions.cascaders.slice(0, -1).map((member, sequence) => {
             state.nextMember = state.sessions.cascaders[sequence + 1];
             actions.relayAction({
                 to: member,
                 op: "calljoin",
-                data: { jointo: state.nextMember }
+                data: { jointo: state.nextMember, role: 'cascade' }
             });
         });
     },
@@ -36,7 +45,7 @@ const actions = {
             actions.relayAction({
                 to: state.nextMember,
                 op: "calljoin",
-                data: { jointo: member }
+                data: { jointo: member, role: 'control' }
             });
             state.nextMember = member;
         });
@@ -48,7 +57,7 @@ const actions = {
             actions.relayAction({
                 to: controller,
                 op: "calljoin",
-                data: { jointo: member }
+                data: { jointo: member, role: 'view' }
             });
         });
     },
@@ -64,6 +73,14 @@ const actions = {
             isCaller,
             opts
         };
+        pc
+            .on('localStream', (src) => {
+            })
+            .on('peerTrackEvent', (e) => {
+                const src = e.streams[0]
+                actions.peerTrackEvent({ friendID, event: e })
+            })
+            .startPeer(isCaller, config, state);
         return pc;
     },
     showCallPage({ state }) {

@@ -85,14 +85,14 @@ class App extends Component {
         const pc = this.actions.startCall({ isCaller, friendID, config, opts });
         this.pcs[friendID] = pc
         // this.setState({nPCs: Object.keys(this.pcs).length})
-        pc
-            .on('localStream', (src) => {
-            })
-            .on('peerTrackEvent', (e) => {
-                const src = e.streams[0]
-                this.actions.peerTrackEvent({ friendID, event: e })
-            })
-            .startPeer(isCaller, config, this.oState, this.pcs);
+        // pc
+        //     .on('localStream', (src) => {
+        //     })
+        //     .on('peerTrackEvent', (e) => {
+        //         const src = e.streams[0]
+        //         this.actions.peerTrackEvent({ friendID, event: e })
+        //     })
+        //     .startPeer(isCaller, config, this.oState);
     }
 
     rejectCall() {
