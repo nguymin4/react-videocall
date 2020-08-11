@@ -42,8 +42,9 @@ export let useApp;
 
 const initialize = () => {
     app = createOvermind(config, {
-        // devtools: 'penguin.linux.test:3031',
-        devtools: 'localhost:3031'
+        devtools: navigator.userAgent.match(/ CrOS /)
+            ? 'penguin.linux.test:3031'
+            : 'localhost:3031',
     });
     console.log(app.state);
     setProxyActions(app.actions)
