@@ -60,12 +60,13 @@ class App extends Component {
                 const leader = data.jointo
                 // socket.emit('debug', 'calljoin received')
                 // console.log('join received', data)
-                this.startCallHandler(true, leader, { video: true, audio: true }, data.opts)
+                this.startCallHandler(true, leader, { video: true, audio: true }, data)
             })
-            .on('request', ({ from: callFrom }) => {
+            .on('request', (data) => {
+
                 console.log("request")
                 const opts = { id: this.state.clientId + 'R' }
-                this.startCallHandler(false, callFrom, { video: true, audio: true }, opts)
+                this.startCallHandler(false, data.from, { video: true, audio: true }, data)
             })
             .on('call', (data) => {
                 console.log('Call from ', data.from)

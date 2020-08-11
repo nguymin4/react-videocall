@@ -61,7 +61,7 @@ const actions = {
             });
         });
     },
-    startCall({ state, actions }, { isCaller, friendID, config, opts }) {
+    startCall({ state, actions }, { isCaller, friendID, config, data }) {
         // if (state.callInfo[friendID]) {
         // }
         actions.setupStreams();
@@ -71,7 +71,7 @@ const actions = {
             pc,
             config,
             isCaller,
-            opts
+            data
         };
         pc
             .on('localStream', (src) => {
