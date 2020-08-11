@@ -6,7 +6,6 @@ import MainWindow from './MainWindow';
 import CascadeWindow from './CascadeWindow';
 import ControlRoomWindow from './ControlRoomWindow';
 
-import CallModal from './CallModal';
 import MediaDevice from './MediaDevice';
 import EmptyStream from './streamutils/EmptyStream';
 import { json } from 'overmind'
@@ -25,10 +24,8 @@ class App extends Component {
             room: this.oState.attrs.room,
             clientId: this.oState.attrs.id || '',
             callWindow: '',
-            callModal: '',
             callFrom: '',
             localSrc: null,
-            peerSrc: null,
             // nPCs:0
         };
 
@@ -69,8 +66,6 @@ class App extends Component {
                 console.log("request")
                 const opts = { id: this.state.clientId + 'R' }
                 this.startCallHandler(false, callFrom, { video: true, audio: true }, opts)
-                // return
-                // this.setState({ callModal: 'active', callFrom });
             })
             .on('call', (data) => {
                 console.log('Call from ', data.from)
@@ -96,7 +91,6 @@ class App extends Component {
             .on('peerTrackEvent', (e) => {
                 const src = e.streams[0]
                 this.actions.peerTrackEvent({ friendID, event: e })
-                this.setState({ peerSrc: src })
             })
             .startPeer(isCaller, config, this.oState, this.pcs);
     }
@@ -104,7 +98,6 @@ class App extends Component {
     rejectCall() {
         const { callFrom } = this.state;
         socket.emit('end', { to: callFrom });
-        this.setState({ callModal: '' });
     }
 
     endCall(isStarter, from) {
@@ -130,9 +123,7 @@ class App extends Component {
             this.pcs = {}
             this.setState({
                 callWindow: '',
-                callModal: '',
                 localSrc: null,
-                peerSrc: null,
                 // nPCs: 0
             })
 
@@ -143,7 +134,7 @@ class App extends Component {
     }
 
     render() {
-        const { clientId, callFrom, callModal, callWindow, localSrc, peerSrc } = this.state;
+        const { clientId, callFrom, callWindow, localSrc } = this.state;
         const pc = this.pcs[Object.keys(this.pcs)[0]]
 
         return (
@@ -162,25 +153,8 @@ class App extends Component {
                             :
                             <CascadeWindow />
                 }
-                {/* {!_.isEmpty(this.config) && false (
 
-                    <CallWindow
-                        allpcs={this.pcs}
-                        nPCs={Object.keys(this.pcs).length}
-                        status={callWindow}
-                        localSrc={localSrc}
-                        peerSrc={peerSrc}
-                        config={this.config}
-                        mediaDevice={pc ? pc.mediaDevice : {}}
-                        endCall={this.endCallHandler}
-                    />
-                )} */}
-                <CallModal
-                    status={ callModal }
-                    startCall={ this.startCallHandler }
-                    rejectCall={ this.rejectCallHandler }
-                    callFrom={ callFrom }
-                />
+
             </div>
         );
     }

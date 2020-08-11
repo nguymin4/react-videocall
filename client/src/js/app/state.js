@@ -4,7 +4,6 @@ const state = {
         room: '',
         clientId: '',
         callWindow: '',
-        callModal: '',
         callFrom: '',
         localSrc: null,
         peerSrc: null,
