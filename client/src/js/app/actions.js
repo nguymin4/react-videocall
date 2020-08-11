@@ -66,7 +66,7 @@ const actions = {
         // }
         actions.setupStreams();
         actions.showCallPage();
-        const pc = new PeerConnection(friendID, opts, state, actions);
+        const pc = new PeerConnection(friendID);
         state.callInfo[friendID] = {
             pc,
             config,

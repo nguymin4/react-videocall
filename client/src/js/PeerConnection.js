@@ -17,13 +17,12 @@ class PeerConnection extends Emitter {
        * @param {String} friendID - ID of the friend you want to call.
        */
     static instance = 0
-    constructor(friendID, actions) {
+    constructor(friendID, ) {
         super();
         PeerConnection.instance++
         // debug(`PeerConnection from ${friendID} to ${opts.id}`)
         this.pc = new RTCPeerConnection(PC_CONFIG);
         this.tracks = 0
-        this.actions = actions
         this.pc.onicecandidate = (event) => socket.emit('call', {
             to: this.friendID,
             candidate: event.candidate
