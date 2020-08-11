@@ -38,34 +38,34 @@ exports.computeCascade = (roomName) => {
     room.cascade = cascade.flat().filter(a => a)
 }
 
-exports.connect = (roomName) => {
-    console.log("Connect ", roomName)
-    const room = exports.exists(roomName)
-    const cascade = room.cascade
-    console.log("new cascade", cascade)
-    cascade.map((member, sequence) => {
-        // console.log("cascade member", member)
-        const socket = users.getReceiver(member)
-        socket.emit("cascade", { name: users.getName(member), index: sequence, members: room.order.length })
-    })
-    room.cascade.slice(0, -1).map((member, sequence) => {
-        const socket = users.getReceiver(member)
-        const nextMember = cascade[sequence + 1]
-        console.log("calljoin", member, nextMember)
-        socket.emit("calljoin", { jointo: nextMember, opts: { type: "cascade", index: sequence, members: room.order.length } })
-    })
+// exports.connect = (roomName) => {
+//     console.log("Connect ", roomName)
+//     const room = exports.exists(roomName)
+//     const cascade = room.cascade
+//     console.log("new cascade", cascade)
+//     cascade.map((member, sequence) => {
+//         // console.log("cascade member", member)
+//         const socket = users.getReceiver(member)
+//         socket.emit("cascade", { name: users.getName(member), index: sequence, members: room.order.length })
+//     })
+//     room.cascade.slice(0, -1).map((member, sequence) => {
+//         const socket = users.getReceiver(member)
+//         const nextMember = cascade[sequence + 1]
+//         console.log("calljoin", member, nextMember)
+//         socket.emit("calljoin", { jointo: nextMember, opts: { type: "cascade", index: sequence, members: room.order.length } })
+//     })
 
-    const control = users.getByRole("control")
-    if (control) {
-        const lastMember = cascade[cascade.length - 1]
-        console.log("Cascade to control", control, lastMember)
-        const socket = users.getReceiver(lastMember)
-        socket.emit("calljoin", { jointo: control, opts: { type: "cascadeToControl" } })
+//     const control = users.getByRole("control")
+//     if (control) {
+//         const lastMember = cascade[cascade.length - 1]
+//         console.log("Cascade to control", control, lastMember)
+//         const socket = users.getReceiver(lastMember)
+//         socket.emit("calljoin", { jointo: control, opts: { type: "cascadeToControl" } })
 
-    } else {
-        console.log("NO CONTROL")
-    }
-}
+//     } else {
+//         console.log("NO CONTROL")
+//     }
+// }
 
 
 exports.create = (roomName) => {

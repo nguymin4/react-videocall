@@ -22,12 +22,12 @@ const joinByName = (name) => {
     rooms.join("main", users.nameToSession(name))
 }
 
-const doConnect = async (room) => {
-    await awaitUsers(room, 2)
-    console.log("Two users")
-    rooms.create(room)
-    rooms.connect(room)
-}
+//  doConnect = async (room) => {
+//     await awaitUsers(room, 2)
+//     console.log("Two users")
+//     rooms.create(room)
+//     rooms.connect(room)
+// }
 const handleRegistration = async (socket, data) => {
     const broadcast = (message) => {
         socket.broadcast.emit("message", { message })
