@@ -146,6 +146,7 @@ const actions = {
     //     })
     // },
     clearCascade({ state }) {
+        console.log("clear cascade")
         state.showCascade = false;
         state.showControlRoom = false;
         delete state.streams.cascadeStream;

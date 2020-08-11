@@ -1,5 +1,15 @@
 const state = {
     title: 'This title',
+    AppState: {
+        room: '',
+        clientId: '',
+        callWindow: '',
+        callModal: '',
+        callFrom: '',
+        localSrc: null,
+        peerSrc: null,
+
+    },
     diags: [],
     showCascade: false,
     showControlRoom: false,
