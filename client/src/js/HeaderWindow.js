@@ -55,9 +55,20 @@ const HeaderWindow = () => {
             console.log("assign stream effect")
             const user = users[key]
             const ref = refs[key]
-            if (ref && user.remoteStream) {
-                console.log("assign remote Stream", user.remoteStream)
-                ref.srcObject = user.remoteStream
+            if (ref) {
+                if (state.attrs.id === key) {
+                    if (state.isChatting) {
+                        ref.srcObject = json(state.streams.localStream)
+                    } else {
+                        ref.srcObject = null
+                    }
+                } else {
+
+                    if (user.remoteStream) {
+                        console.log("assign remote Stream", user.remoteStream)
+                        ref.srcObject = user.remoteStream
+                    }
+                }
             }
 
         })
