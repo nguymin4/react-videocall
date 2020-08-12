@@ -77,6 +77,7 @@ const HeaderWindow = () => {
                     </div>
                     { state.allSessions.map((key, index) => {
                         const user = json(state.users[key])
+                        if (!user) return null
                         return <div key={ key } className="m-2 h-25 w-40" >
                             <div className=" h-24 text-black bg-gray-800  ">
                                 <video ref={ el => {

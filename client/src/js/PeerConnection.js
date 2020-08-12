@@ -30,7 +30,8 @@ class PeerConnection extends Emitter {
         this.pc.ontrack = (event) => {
             console.log('On track')
             event.trackNo = this.tracks++
-            if (!this.isCaller && (this.tracks === 1)) this.emit('peerTrackEvent', event);
+            // if (!this.isCaller && (this.tracks === 1)) 
+            this.emit('peerTrackEvent', event);
         }
 
         this.mediaDevice = new MediaDevice();
@@ -47,6 +48,7 @@ class PeerConnection extends Emitter {
      * @param {Object} config - configuration for the call {audio: boolean, video: boolean}
      */
     startPeer(isCaller, config, state) {
+        console.log("start peer")
         this.isCaller = isCaller
         let stream
         if (state.showCascade) {

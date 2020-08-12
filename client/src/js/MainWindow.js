@@ -86,7 +86,7 @@ function MainWindow({ startCall, clientId }) {
                     <button
                         type='button'
                         className='btn-action'
-                        onClick={ actions.endChatters }
+                        onClick={ actions.endChat }
 
                     >End</button>
 

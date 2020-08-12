@@ -30,10 +30,20 @@ const actions = {
             });
         });
     },
+    endChat({ state, actions }) {
+        state.members.forEach(id => {
+            actions.relayAction({
+                to: id,
+                op: "endChat",
+                data: { from: state.attrs.id }
+            });
+        });
+    },
     initiatesTo({ state }, member) {
         return state.attrs.id < member
     },
     startChatters({ state, actions }) {
+        state.isChatting = true
         state.members.map((member, sequence) => {
             if (!state.users[member]) return // not set up yet
             if (!state.users[member].remoteStream) state.users[member].remoteStream = new MediaStream()
@@ -51,9 +61,10 @@ const actions = {
         });
     },
     endChatters({ state, actions, effects }, data) {
+        console.log("ENDING CHATTERS    ")
         state.isChatting = false;
         actions.setMessage(`Ending chat for room '${state.attrs.room}'.`);
-        actions.endCall({ from: state.attrs.id })
+        // actions.endCall({ from: state.attrs.id })
         state.members.forEach(id => {
             actions.relayAction({
                 to: id,
@@ -62,9 +73,10 @@ const actions = {
             });
             if (state.users[id] && state.users[id].remoteStream) {
                 const stream = json(state.users[id].remoteStream)
-                state.users[id].remoteStream = null
+                state.users[id].remoteStream = new MediaStream()
                 stream.getTracks().forEach(track => {
                     track.stop()
+                    stream.removeTrack(track)
                 })
             }
         }
@@ -246,17 +258,45 @@ const actions = {
     setUserEntries({ state }, id) {
         if (!state.users[id]) state.users[id] = {};
     },
+    deleteUserEntry({ state }, id) {
+        const user = state.users[id]
+        if (user.remoteStream) {
+            const stream = json(user.remoteStream)
+            stream.getTracks().forEach(track => {
+                track.stop()
+                stream.removeTrack(track)
+            })
+        }
+        delete state.users[id]
+    },
+    fadeUserEntry({ state }, id) {
+        const user = state.users[id]
+        user.opacity = user.opacity
+
+    },
     setMembers({ state, actions }, data) {
         const inArray = (val, array) => {
             return array.filter(e => e === val);
         };
+        const droppedMembers = []
         data.members.forEach(member => {
             if (!inArray(member, state.members) || !state.users[member]) {
                 // of user is not in the array then send a
                 actions.relayAction({ to: member, op: "getInfo" });
+            } else {
+                droppedMembers.push(member)
             }
         });
         state.members = data.members;
+        droppedMembers.forEach(member => {
+            const user = json(state.users[member])
+            if (!user) return
+            if (user.timeOut) return
+            user.timeOut = setTimeout(() => {
+                actions.fadeUserEntry(member)
+            }, 2000)
+
+        })
         actions.computeCategories();
     },
     computeCategories({ state }) {
@@ -307,6 +347,7 @@ const actions = {
         for (const key in data) {
             state.users[id][key] = data[key];
         }
+        state.users[id].opacity = 1
         actions.computeCategories();
         if (state.isChatting) {
             // actions.startChatters(data)
