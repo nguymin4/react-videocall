@@ -80,10 +80,10 @@ class App extends Component {
             .emit('init', this.oState.attrs);
     }
 
-    startCall(isCaller, friendID, config, opts = {}) {
+    startCall(isCaller, friendID, config, data) {
         this.config = config;
         // const pc = new PeerConnection(friendID, opts, this.oState, this.actions)
-        const pc = this.actions.startCall({ isCaller, friendID, config, opts });
+        const pc = this.actions.startCall({ isCaller, friendID, config, data });
         this.pcs[friendID] = pc
         // this.setState({nPCs: Object.keys(this.pcs).length})
         // pc

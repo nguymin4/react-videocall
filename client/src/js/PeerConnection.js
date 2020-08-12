@@ -49,7 +49,13 @@ class PeerConnection extends Emitter {
     startPeer(isCaller, config, state) {
         this.isCaller = isCaller
         let stream
-        stream = json(state.streams.cascadeStream)
+        if (state.showCascade) {
+            stream = json(state.streams.cascadeStream)
+        }
+        else {
+            stream = json(state.streams.localStream)
+        }
+
         if (!stream) {
             stream = json(state.streams.emptyStream)
             console.log("Stream is", stream, state.streams)

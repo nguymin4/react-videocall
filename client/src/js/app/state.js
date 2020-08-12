@@ -12,6 +12,7 @@ const state = {
     diags: [],
     showCascade: false,
     showControlRoom: false,
+    isChatting: false,
     attrs: {},
     index: -1, //index in cascade. -1 if not in cascade
     nextMember: null,

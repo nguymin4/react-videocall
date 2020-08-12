@@ -40,6 +40,12 @@ const effects = {
         },
         events: { //socket on-events
             registerAction: null,
+            startChat(data) {
+                effects.actions.startChatters()
+            },
+            endChat(data) {
+                effects.actions.endChatters()
+            },
             getInfo(data) {
                 effects.actions.sendUserInfo(data)
             },
