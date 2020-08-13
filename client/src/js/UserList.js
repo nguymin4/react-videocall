@@ -11,7 +11,7 @@ export default function List() {
                     const user = users[key];
                     const statusColor = user.status === 'ready' ? ' bg-green-800 text-white' : ''
                     return (
-                        <React.Fragment>
+                        <React.Fragment key={ key }>
                             <div className="flex py-1 pt-2" key={ key }>
                                 <span className={ "w-64 border mx-3 px-3 bg-white" + statusColor }>
                                     { user.status }

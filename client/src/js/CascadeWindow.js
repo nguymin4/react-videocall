@@ -52,6 +52,7 @@ function CascadeWindow() {
         }
     }, [localVideo])
 
+
     return (
         <div className={ classnames('cascade-window') }>
             <video className={ "w-4/5" } ref={ localVideo } autoPlay />
@@ -76,6 +77,9 @@ function CascadeWindow() {
                         actions.endCascade();
                     } }
                 />
+
+            </div>
+            { state.attrs.id !== state.sessions.cascaders[0] ?
                 <div className="inline-block ml-10">
                     <button
                         type='button'
@@ -85,8 +89,8 @@ function CascadeWindow() {
                         } }
                     />
                 </div>
-                <UserList />
-            </div>
+                :
+                <UserList /> }
         </div>
     );
 }

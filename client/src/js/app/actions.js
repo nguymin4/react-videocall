@@ -11,6 +11,7 @@ const actions = {
     relayAction({ state, effects }, { to, op, data }) {
         effects.socket.actions.relayEffect(to, op, data);
     },
+
     startCascade({ state, actions, effects }) {
         console.clear();
         if (state.members.length < 2) {
@@ -343,6 +344,14 @@ const actions = {
         state.members.map(member => {
             actions.relayAction({ to: member, op: "info", data: json(state.attrs) });
         })
+    },
+    toggleReady({ state, actions }) {
+        if (state.users[state.attrs.id].status !== 'ready') {
+            actions.setStatus('ready')
+        } else {
+            actions.setStatus('wait!')
+        }
+        actions.broadcastUserInfo()
     },
     setUserInfo({ state, actions }, data) {
         const id = data.id;
