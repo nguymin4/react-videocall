@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import CallWindowPeer from './CallWindowPeer'
 import { useApp } from './app'
 import { json } from 'overmind';
-
+import UserList from './UserList'
 
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
 
@@ -54,7 +54,7 @@ function CascadeWindow() {
 
     return (
         <div className={ classnames('cascade-window') }>
-            <video height={ 300 } ref={ localVideo } autoPlay />
+            <video className={ "w-4/5" } ref={ localVideo } autoPlay />
 
             <div className='video-control'>
                 <button
@@ -76,6 +76,16 @@ function CascadeWindow() {
                         actions.endCascade();
                     } }
                 />
+                <div className="inline-block ml-10">
+                    <button
+                        type='button'
+                        className='w-12 h-12 bg-green-400 fa fa-check-circle'
+                        onClick={ () => {
+                            actions.toggleReady();
+                        } }
+                    />
+                </div>
+                <UserList />
             </div>
         </div>
     );

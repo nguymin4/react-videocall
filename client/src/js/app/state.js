@@ -13,7 +13,13 @@ const state = {
     showCascade: false,
     showControlRoom: false,
     isChatting: false,
-    attrs: {},
+    attrs: {
+        id: 'undefined',
+        name: "undefined",
+        role: "undefined",
+        room: "main",
+        status: "disconnected"
+    },
     index: -1, //index in cascade. -1 if not in cascade
     nextMember: null,
     members: [], //array of member session numbers

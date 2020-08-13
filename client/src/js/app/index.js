@@ -26,7 +26,8 @@ const onInitialize = (
 
 ) => {
     const attrs = effects.storage.getAttrs()
-    theActions = actions
+    // theActions = actions
+    attrs.status = 'initialized'
     actions.setAttrs(attrs)
 
 }

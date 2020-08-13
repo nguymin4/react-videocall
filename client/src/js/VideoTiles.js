@@ -52,7 +52,7 @@ const VideoTiles = () => {
 
                     </div>
                     <div className="p-1 h-8 text-black bg-yellow-100" >
-                        { user.name } ({ user.control })</div>
+                        { user.name }  { state.users[key].status } ({ user.control })</div>
                 </div>
             }) }
         </div>

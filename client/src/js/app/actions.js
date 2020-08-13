@@ -44,6 +44,8 @@ const actions = {
     },
     startChatters({ state, actions }) {
         state.isChatting = true
+        actions.setStatus('chatting')
+
         state.members.map((member, sequence) => {
             if (!state.users[member]) return // not set up yet
             if (!state.users[member].remoteStream) state.users[member].remoteStream = new MediaStream()
@@ -63,6 +65,7 @@ const actions = {
     endChatters({ state, actions, effects }, data) {
         console.log("ENDING CHATTERS    ")
         state.isChatting = false;
+        actions.setStatus('registered')
         actions.setMessage(`Ending chat for room '${state.attrs.room}'.`);
         // actions.endCall({ from: state.attrs.id })
         state.members.forEach(id => {
@@ -118,6 +121,7 @@ const actions = {
         // if (state.callInfo[friendID]) {
         // }
         if (!state.isChatting) {
+            actions.setStatus('connecting')
             actions.setupStreams();
             actions.showCallPage();
         }
@@ -184,6 +188,7 @@ const actions = {
         const src = e.streams[0];
         const stream = json(state.users[friendID].remoteStream)
         if (state.isChatting) {
+            state.users[state.attrs.id].status
             state.users[friendID].status = 'connected'
             const tracks = src.getTracks()
             tracks.forEach(track => {
@@ -255,7 +260,7 @@ const actions = {
             });
         });
     },
-    setUserEntries({ state }, id) {
+    createUser({ state }, id) {
         if (!state.users[id]) state.users[id] = {};
     },
     deleteUserEntry({ state }, id) {
@@ -343,7 +348,7 @@ const actions = {
         const id = data.id;
         delete data.id;
         console.log("got user info for ", id)
-        actions.setUserEntries(id);
+        actions.createUser(id);
         for (const key in data) {
             state.users[id][key] = data[key];
         }
@@ -423,6 +428,9 @@ const actions = {
     clearEvents({ state }) {
         state.events = [];
     },
+    setStatus({ state }, status) {
+        state.attrs.status = status;
+    },
 
     setAttrs({ state, effects }, attrs) {
         if (!attrs)
@@ -468,6 +476,7 @@ const actions = {
         // console.log('registering ', json(state.attrs))
         effects.storage.setAttrs(json(state.attrs));
         if (!error) {
+            actions.setStatus('registered')
             actions.broadcastUserInfo()
             effects.socket.actions.register(json(state.attrs));
         }

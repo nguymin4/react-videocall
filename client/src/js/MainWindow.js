@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useApp } from './app'
 import { useQueryState } from "use-location-state";
-
+import UserList from './UserList'
 function MainWindow({ startCall, clientId }) {
     const { state, actions } = useApp()
     const [roomID, setRoomID] = useQueryState("room", "main");
@@ -28,7 +28,7 @@ function MainWindow({ startCall, clientId }) {
     return (
         <div className='container main-window'>
             <div>
-                <h1 className="text-5xl">Welcome to h00tnet</h1>
+                <h1 className="text-5xl">Welcome to our  h00tnet</h1>
             </div>
             <div>
                 <input
@@ -92,6 +92,7 @@ function MainWindow({ startCall, clientId }) {
 
 
                 </div>
+                <UserList />
             </div>
         </div >
     );
