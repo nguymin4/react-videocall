@@ -36,7 +36,7 @@ const HeaderWindow = () => {
 
         // }
 
-    }, [])
+    }, [state.isChatting])
 
 
     const localVideo = React.useRef(null)
@@ -53,17 +53,15 @@ const HeaderWindow = () => {
 
         { (!!state.showCascade) ? null :
             (<React.Fragment>
-                <div className="flex" >
-                    <div className="mt-2 h-25 w-40">
-                        <div className=" h-25 w-40">
-                            <video ref={ localVideo } autoPlay muted />
+                { !state.isChatting ? <div className="mt-2 h-25 w-40">
+                    <div className=" h-25 w-40">
+                        <video ref={ localVideo } autoPlay muted />
 
-                        </div>
-                        <div className=" p-1 h-8 text-black bg-yellow-100">{ state.attrs.name !== 'undefined' ? `${state.attrs.name} (${state.attrs.id})` : state.attrs.id }</div>
                     </div>
-
-                    <VideoTiles />
+                    <div className=" p-1 h-8 text-black bg-yellow-100">{ state.attrs.name !== 'undefined' ? `${state.attrs.name} (${state.attrs.id})` : state.attrs.id }</div>
                 </div>
+
+                    : <VideoTiles /> }
             </React.Fragment>)
         }
     </div>
