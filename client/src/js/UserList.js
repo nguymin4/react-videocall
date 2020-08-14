@@ -5,7 +5,7 @@ export default function List() {
     const { state } = useApp()
     const users = state.users
     return (
-        <div id="menu" className="p-6">
+        <div id="menu" className="flex justify-center   p-6">
             <div className="max-w-lg grid gap-1 pt p-3 border border-gray-500 divide-y-4 divide-blue-200 text-black">
                 { Object.keys(users).map((key) => {
                     const user = users[key];
