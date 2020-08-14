@@ -9,6 +9,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
 import { makeStyles } from "@material-ui/core/styles";
+import { H1, H3 } from './Typography';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -46,85 +47,102 @@ function MainWindow({ startCall, clientId }) {
     };
     return (
         <div className="bg-wite">
+            <div style={ { textAlign: 'center', width: '100%' } }>
+                <H1> HootNet </H1>
+                <H3> make music together </H3>
+                <form className={ classes.root } noValidate autoComplete="off">
+                    <div className="m-4  w-full">
 
-            <form className={ classes.root } noValidate autoComplete="off">
-                <div className="container main-window">
-                    <div>
-                        <h1 className="text-5xl">Welcome to our h00tnet</h1>
-                    </div>
-                    <div>
-                        <div className="p-10">
-                            <TextField
-                                id="outlined-name"
-                                label="Room"
-                                value={ roomID }
-                                onChange={ (event) => setRoomID(event.target.value) }
-                                variant="outlined"
-                            />
-                            <br />
+                        <div>
+                            <div className=" w-full p-10">
+                                <TextField
+                                    id="outlined-name"
+                                    label="Room"
+                                    value={ roomID }
+                                    onChange={ (event) => setRoomID(event.target.value) }
+                                    variant="outlined"
+                                />
+                                <br />
 
-                            <TextField
-                                id="outlined-name"
-                                label="Name"
-                                value={ userID }
-                                onChange={ (event) => setUserID(event.target.value) }
-                                variant="outlined"
-                            />
+                                <TextField
+                                    id="outlined-name"
+                                    label="Name"
+                                    value={ userID }
+                                    onChange={ (event) => setUserID(event.target.value) }
+                                    variant="outlined"
+                                />
 
-                            <br />
-                            <TextField
-                                id="outlined-name"
-                                label="Control"
-                                value={ controlValue }
-                                onChange={ (event) => setControlValue(event.target.value) }
-                                variant="outlined"
-                            />
-                            <br />
-                            <div className="inline m-2">
-                                <Button
-                                    type="Button"
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={ onClick }
-                                >
-                                    Hoot
+                                <br />
+                                <TextField
+                                    id="outlined-name"
+                                    label="Control"
+                                    value={ controlValue }
+                                    onChange={ (event) => setControlValue(event.target.value) }
+                                    variant="outlined"
+                                />
+                                <br />
+                                <div className="inline m-2">
+                                    <Button
+                                        type="Button"
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={ () => actions.register({ roomID, controlValue, userID }) }
+                                    >
+                                        Register
+                         </Button>
+                                </div>
+                                <div className="inline m-2">
+                                    <Button
+                                        type="Button"
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={ actions.startCascade }
+                                    >
+                                        Cacade
               </Button>
-                            </div>
-                            <div className="inline m-2">
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={ actions.startChat }
-                                >
-                                    Chat
+                                </div>
+                                <br />
+                                <br />
+                                <br />
+
+                                <div className="inline m-2">
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={ actions.startChat }
+                                    >
+                                        Chat
               </Button>
-                            </div>
-                            <div className="inline m-2">
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={ actions.endChat }
-                                >
-                                    End
+                                </div>
+                                <div className="inline m-2">
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={ actions.endChat }
+                                    >
+                                        End
               </Button>
-                            </div>
-                            <div className="inline m-2">
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={ actions.changeMedia }
-                                >
-                                    Change
+                                </div>
+                                <div className="inline m-2">
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={ actions.changeMedia }
+                                    >
+                                        Change
               </Button>
+                                </div>
+                                <div className="m-2"></div>
+                                { state.changeMedia ? <MediaSelector /> : <UserList /> }
                             </div>
-                            <div></div>
+
                         </div>
 
-                        { state.changeMedia ? <MediaSelector /> : <UserList /> }
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+
+        </div >
 
     );
 }
