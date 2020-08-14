@@ -4,7 +4,6 @@ import socket from './socket';
 import { json } from 'overmind'
 
 import { proxyMethods } from './app'
-console.log('Peer loaded')
 const debug = (message) => {
     console.log(message)
     socket.emit('debug', message)
@@ -28,7 +27,6 @@ class PeerConnection extends Emitter {
             candidate: event.candidate
         });
         this.pc.ontrack = (event) => {
-            console.log('On track')
             event.trackNo = this.tracks++
             // if (!this.isCaller && (this.tracks === 1)) 
             this.emit('peerTrackEvent', event);

@@ -69,7 +69,6 @@ class App extends Component {
                 this.startCallHandler(false, data.from, { video: true, audio: true }, data)
             })
             .on('call', (data) => {
-                console.log('Call from ', data.from)
                 const pc = this.pcs[data.from]
                 if (data.sdp) {
                     pc.setRemoteDescription(data.sdp);

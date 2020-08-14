@@ -5,6 +5,22 @@ import PeerConnection from "../PeerConnection";
 import VideoStreamMerger from "../streamutils/video-stream-merger";
 
 const actions = {
+    setMediaDevices({ state }, mediaDevices) {
+        state.mediaDevices = mediaDevices
+    },
+    getMediaDevices({ state }) {
+        navigator.mediaDevices.enumerateDevices().then((devices) => {
+            const extracts = devices.map((device) => {
+                const { kind, deviceId, label } = device
+                return { kind, deviceId, label }
+
+            })
+            state.mediaDevices = extracts
+        })
+    },
+    changeMedia({ state }) {
+        state.changeMedia = !state.changeMedia
+    },
     setAppState({ state }, { prop, value }) {
         state.AppState[prop] = value;
     },

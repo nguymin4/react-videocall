@@ -1,5 +1,7 @@
 const state = {
     title: 'This title',
+    changeMedia: false,
+    mediaDevices: [],
     AppState: {
         room: '',
         clientId: '',

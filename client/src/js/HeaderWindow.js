@@ -28,11 +28,24 @@ const HeaderWindow = () => {
         // } else if (state.streams.localStream) {
         //     setStream(json(state.streams.localStream))
         // } else {
-        mediaDevice.start()
+        // console.log("STARTING MEDIA")
         mediaDevice.on('stream', (stream) => {
             actions.addStream({ name: 'localStream', stream })
+            if (state.mediaDevices.length === 0) {
+                navigator.mediaDevices.enumerateDevices().then((devices) => {
+                    const extracts = devices.map((device) => {
+                        const { kind, deviceId, label } = device
+                        return { kind, deviceId, label }
+
+                    })
+                    // console.log("EXTRACTS", extracts)
+
+                    setTimeout(() => actions.setMediaDevices(extracts), 2000)
+                })
+            }
             setStream(stream)
         })
+        mediaDevice.start()
 
         // }
 

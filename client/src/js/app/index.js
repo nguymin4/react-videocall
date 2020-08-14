@@ -25,10 +25,11 @@ const onInitialize = (
     //  , 
 
 ) => {
-    const attrs = effects.storage.getAttrs()
+    const attrs = effects.storage.getAttrs() || {}
     // theActions = actions
     attrs.status = 'initialized'
     actions.setAttrs(attrs)
+    // actions.getMediaDevices()
 
 }
 const config =
