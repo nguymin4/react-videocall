@@ -12,7 +12,8 @@ const useStyles = makeStyles((theme) => ({
     root: {
         width: "100%",
         maxWidth: 360,
-        backgroundColor: theme.palette.background.paper
+        backgroundColor: theme.palette.background.paper,
+        color: "black"
     }
 }));
 
@@ -68,6 +69,14 @@ const MediaSelector = () => {
                         onClick={ chooseDevices }
                     >
                         Select
+          </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className="border border-black border-solid"
+                        onClick={ actions.changeMedia }
+                    >
+                        Cancel
           </Button>
                 </div>
             </div>
