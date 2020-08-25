@@ -60,6 +60,7 @@ const actions = {
         return state.attrs.id < member
     },
     startChatters({ state, actions }) {
+        if (state.isChatting) return
         state.isChatting = true
         actions.setStatus('chatting')
 
@@ -81,6 +82,7 @@ const actions = {
     },
     endChatters({ state, actions, effects }, data) {
         console.log("ENDING CHATTERS    ")
+        if (!state.isChatting) return
         state.isChatting = false;
         actions.setStatus('registered')
         actions.setMessage(`Ending chat for room '${state.attrs.room}'.`);
@@ -135,14 +137,18 @@ const actions = {
         });
     },
     startCall({ state, actions }, { isCaller, friendID, config, data }) {
-        // if (state.callInfo[friendID]) {
-        // }
+        if (!state.streams.localStream) {
+            const retryCall = () => {
+                actions.startCall({ isCaller, friendID, config, data })
+            }
+            setTimeout(retryCall, 1000)
+        }
         if (!state.isChatting) {
             actions.setStatus('connecting')
             actions.setupStreams();
             actions.showCallPage();
         }
-        const pc = new PeerConnection(friendID);
+        const pc = new PeerConnection(friendID, state);
         state.callInfo[friendID] = {
             pc,
             config,
@@ -163,10 +169,10 @@ const actions = {
         if (state.index !== -1) {
             //part of cascade
             state.showCascade = true;
-        } else if (
+        } else if (state.attrs.control && (
             parseInt(state.attrs.control, 10) ||
             state.attrs.control.toLowerCase() === "control" ||
-            state.attrs.control.toLowerCase() === "viewer"
+            state.attrs.control.toLowerCase() === "viewer")
         ) {
             state.showControlRoom = true;
             state.showCascade = true;
@@ -209,7 +215,7 @@ const actions = {
             state.users[friendID].status = 'connected'
             const tracks = src.getTracks()
             tracks.forEach(track => {
-                console.log("adding a track")
+                // console.log("adding a track", track.kind)
                 stream.addTrack(track, src)
             })
         } else {
@@ -379,12 +385,13 @@ const actions = {
         }
         state.users[id].opacity = 1
         actions.computeCategories();
-        if (state.isChatting) {
-            // actions.startChatters(data)
-        }
+        // if (!state.showCascade && !state.isChatting && state.allSessions.length > 1) {
+        //     actions.startChat()
+        // }
 
     },
     setMessage({ state, actions }, value = "default message") {
+        console.log("Setmessage", state)
         state._message.text = value;
         toast(value, {
             position: "top-center",

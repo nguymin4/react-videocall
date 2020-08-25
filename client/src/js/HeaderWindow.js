@@ -30,7 +30,9 @@ const HeaderWindow = () => {
         // } else {
         // console.log("STARTING MEDIA")
         mediaDevice.on('stream', (stream) => {
-            actions.addStream({ name: 'localStream', stream })
+
+            actions.addStream({ name: 'localStream', stream, from: "HeaderWindow onStream" })
+            // if (!state.isChatting) actions.startChat()
             if (state.mediaDevices.length === 0) {
                 navigator.mediaDevices.enumerateDevices().then((devices) => {
                     const extracts = devices.map((device) => {
@@ -55,6 +57,7 @@ const HeaderWindow = () => {
     const localVideo = React.useRef(null)
 
     React.useEffect(() => {
+
         if (localVideo && localVideo.current && stream) {
             // console.log('Using The Effect',  stream)
             localVideo.current.srcObject = stream

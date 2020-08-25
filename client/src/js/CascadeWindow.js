@@ -5,20 +5,22 @@ import CallWindowPeer from './CallWindowPeer'
 import { useApp } from './app'
 import { json } from 'overmind';
 import UserList from './UserList'
+import { positions } from './streamutils/labeledStream'
 
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
 
 function CascadeWindow() {
     //   const peerVideo = useRef(null);
-    // const localVideo = useRef(null);
+    // const peerVideo = useRef(null);
     const [video, setVideo] = useState(true);
     const [audio, setAudio] = useState(true);
     const { state, actions } = useApp()
+    const peerVideo = React.useRef(null)
     const localVideo = React.useRef(null)
 
     // useEffect(() => {
     //     // if (peerVideo.current && peerSrc) peerVideo.current.srcObject = peerSrc;
-    //     if (localVideo.current && localSrc) localVideo.current.srcObject = localSrc;
+    //     if (peerVideo.current && localSrc) peerVideo.current.srcObject = localSrc;
     // });
 
     // useEffect(() => {
@@ -44,19 +46,27 @@ function CascadeWindow() {
     };
 
     React.useEffect(() => {
-
-        const stream = json(state.streams.cascadeStream)
+        const stream = json(state.streams.peerStream)
+        if (peerVideo && peerVideo.current && stream) {
+            // console.log('Using The Effect',  stream)
+            peerVideo.current.srcObject = stream
+        }
+    }, [state.streams.peerStream, peerVideo])
+    React.useEffect(() => {
+        const stream = json(state.streams.localStream)
         if (localVideo && localVideo.current && stream) {
             // console.log('Using The Effect',  stream)
             localVideo.current.srcObject = stream
         }
-    }, [localVideo])
+    }, [state.streams.localStream, localVideo])
 
 
     return (
         <div className={ classnames('cascade-window') }>
-            <video className={ "w-4/5" } ref={ localVideo } autoPlay />
-
+            <div>
+                <video className={ "w-1/2" } ref={ peerVideo } autoPlay />
+                <video className={ "w-1/2" } ref={ localVideo } muted autoPlay />
+            </div>a
             <div className='video-control'>
                 <button
                     key='btnVideo'

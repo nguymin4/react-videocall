@@ -16,7 +16,7 @@ class PeerConnection extends Emitter {
        * @param {String} friendID - ID of the friend you want to call.
        */
     static instance = 0
-    constructor(friendID, ) {
+    constructor(friendID, state) {
         super();
         PeerConnection.instance++
         // debug(`PeerConnection from ${friendID} to ${opts.id}`)
@@ -28,8 +28,8 @@ class PeerConnection extends Emitter {
         });
         this.pc.ontrack = (event) => {
             event.trackNo = this.tracks++
-            // if (!this.isCaller && (this.tracks === 1)) 
-            this.emit('peerTrackEvent', event);
+            if (state.isChatting || !this.isCaller)
+                this.emit('peerTrackEvent', event);
         }
 
         this.mediaDevice = new MediaDevice();

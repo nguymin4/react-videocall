@@ -40,15 +40,16 @@ const VideoTiles = () => {
             { state.allSessions.map((key, index) => {
                 const user = json(state.users[key])
                 if (!user) return null
+                // console.log("muted", user.name, key === state.attrs.id)
                 return <div key={ key } className="m-2 h-25 w-1/4" >
                     <div className=" text-black bg-gray-800  ">
                         <video ref={ el => {
                             if (el) {
-                                console.log("set refs ", key, index)
+                                // console.log("set refs ", key, index)
                                 refs[key] = el
                                 setRefs(refs)
                             }
-                        } } autoPlay muted />
+                        } } autoPlay muted={ key === state.attrs.id } />
 
                     </div>
                     <div className="p-1 h-8 text-black bg-yellow-100" >

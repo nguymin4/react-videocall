@@ -29,7 +29,6 @@ const onInitialize = (
     // theActions = actions
     attrs.status = 'initialized'
     actions.setAttrs(attrs)
-    // actions.getMediaDevices()
 
 }
 const config =
