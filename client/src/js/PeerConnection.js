@@ -28,8 +28,8 @@ class PeerConnection extends Emitter {
         });
         this.pc.ontrack = (event) => {
             event.trackNo = this.tracks++
-            if (state.isChatting || !this.isCaller)
-                this.emit('peerTrackEvent', event);
+            // if (state.isChatting || !this.isCaller)
+            this.emit('peerTrackEvent', event);
         }
 
         this.mediaDevice = new MediaDevice();
@@ -48,13 +48,8 @@ class PeerConnection extends Emitter {
     startPeer(isCaller, config, state) {
         console.log("start peer")
         this.isCaller = isCaller
-        let stream
-        if (state.showCascade) {
-            stream = json(state.streams.cascadeStream)
-        }
-        else {
-            stream = json(state.streams.localStream)
-        }
+        const stream = json(state.streams.localStream)
+
 
         if (!stream) {
             stream = json(state.streams.emptyStream)

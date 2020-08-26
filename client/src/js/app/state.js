@@ -12,9 +12,8 @@ const state = {
 
     },
     diags: [],
-    showCascade: false,
-    showControlRoom: false,
-    isChatting: false,
+    currentWindow: "main",
+    isCascading: false,
     attrs: {
         id: 'undefined',
         name: "undefined",
@@ -30,6 +29,7 @@ const state = {
     sessions: {},
     allSessions: [],
     users: {}, // keyed list of users with their data
+    peerEvents: 0,
     _message: {
         text: '',
         delay: 1000

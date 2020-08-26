@@ -43,9 +43,9 @@ const effects = {
             startChat(data) {
                 effects.actions.startChatters()
             },
-            endChat(data) {
-                effects.actions.endChatters()
-            },
+            // endChat(data) {
+            //     effects.actions.endChatters()
+            // },
             getInfo(data) {
                 effects.actions.sendUserInfo(data)
             },

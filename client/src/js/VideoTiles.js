@@ -17,14 +17,11 @@ const VideoTiles = () => {
             const ref = refs[key]
             if (ref) {
                 if (state.attrs.id === key) {
-                    if (state.isChatting) {
-                        ref.srcObject = json(state.streams.localStream)
-                    } else {
-                        ref.srcObject = null
-                    }
+                    ref.srcObject = json(state.streams.localStream)
                 } else {
 
                     if (user.remoteStream) {
+                        actions.diag('assigns remote stream for ' + key + ' name = ' + user.name)
                         console.log("assign remote Stream", user.remoteStream)
                         ref.srcObject = user.remoteStream
                     }
@@ -32,8 +29,17 @@ const VideoTiles = () => {
             }
 
         })
+        actions.diag('update videoTiles ')
+    }, [refs, state.users, state.peerEvents])
+    const legend = (user) => {
+        let connectionState = 'unknown'
+        if (user.peerConnection && user.peerConnection.pc) {
+            connectionState = user.peerConnection.pc.connectionState
+        }
+        const legend = ` ${user.name} ${user.status} (${user.control} ${connectionState})`
+        return legend
 
-    }, [refs, state.users, state.isChatting])
+    }
     return <React.Fragment>
         <div className="flex" >
 
@@ -53,7 +59,8 @@ const VideoTiles = () => {
 
                     </div>
                     <div className="p-1 h-8 text-black bg-yellow-100" >
-                        { user.name }  { state.users[key].status } ({ user.control })</div>
+                        { legend(user) }
+                    </div>
                 </div>
             }) }
         </div>

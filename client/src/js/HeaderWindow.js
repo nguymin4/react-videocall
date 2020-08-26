@@ -18,21 +18,10 @@ const HeaderWindow = () => {
     useEffect(() => {
         // console.log('Effect is applied')
         effects.setActionsAndState(actions, state)
-        // if (!state.streams.emptyStream) {
-        //     actions.addStream({ name: 'emptyStream', stream: emptyStream })
-        // }
-        // effects.socket.events.setRegisterAction(actions.register)
-        // if (state.streams.cascadeStream) {
-        //     // console.log('using cascade stream', json(state.streams.cascade))
-        //     setStream(json(state.streams.cascadeStream))
-        // } else if (state.streams.localStream) {
-        //     setStream(json(state.streams.localStream))
-        // } else {
-        // console.log("STARTING MEDIA")
-        mediaDevice.on('stream', (stream) => {
 
+        mediaDevice.on('stream', (stream) => {
             actions.addStream({ name: 'localStream', stream, from: "HeaderWindow onStream" })
-            // if (!state.isChatting) actions.startChat()
+            // actions.startChat()
             if (state.mediaDevices.length === 0) {
                 navigator.mediaDevices.enumerateDevices().then((devices) => {
                     const extracts = devices.map((device) => {
@@ -51,7 +40,7 @@ const HeaderWindow = () => {
 
         // }
 
-    }, [state.isChatting])
+    }, [])
 
 
     const localVideo = React.useRef(null)
@@ -67,18 +56,11 @@ const HeaderWindow = () => {
 
     return <div>
 
-        { (!!state.showCascade) ? null :
+        { (state.currentWindow === 'chat') ?
             (<React.Fragment>
-                { !state.isChatting ? <div className="mt-2 h-25 w-40">
-                    <div className=" h-25 w-40">
-                        <video ref={ localVideo } autoPlay muted />
-
-                    </div>
-                    <div className=" p-1 h-8 text-black bg-yellow-100">{ state.attrs.name !== 'undefined' ? `${state.attrs.name} (${state.attrs.id})` : state.attrs.id }</div>
-                </div>
-
-                    : <VideoTiles /> }
+                <VideoTiles /> }
             </React.Fragment>)
+            : null
         }
     </div>
 }

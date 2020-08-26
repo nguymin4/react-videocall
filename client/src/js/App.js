@@ -142,16 +142,19 @@ class App extends Component {
                 <ToastContainer />
 
                 {
-                    !this.oState.showCascade ?
+                    this.oState.currentWindow === "main" || this.oState.currentWindow === "chat" ?
                         <MainWindow
                             clientId={ clientId }
                             startCall={ this.startCallHandler }
                         />
                         :
-                        this.oState.showControlRoom ?
-                            <ControlRoomWindow />
-                            :
+
+                        this.oState.currentWindow === "cascade" ?
                             <CascadeWindow />
+                            : this.oState.currentWindow === "control" ?
+                                <ControlRoomWindow />
+                                :
+                                null
                 }
 
 
@@ -171,7 +174,7 @@ const WrapApp = () => {
 
 
         <HeaderWindow />
-        <App overmind={ { state, actions, effects, showCascade: state.showCascade } } />
+        <App overmind={ { state, actions, effects, currentWindow: state.currentWindow } } />
     </div>
 
 }

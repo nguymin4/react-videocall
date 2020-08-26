@@ -38,16 +38,16 @@ const actions = {
         actions.startControllers();
         actions.startViewers();
     },
-    startChat({ state, actions }) {
-        state.members.forEach(id => {
-            actions.relayAction({
-                to: id,
-                op: "startChat",
-                data: { from: state.attrs.id }
-            });
-        });
-    },
-    endChat({ state, actions }) {
+    // startChat({ state, actions }) {
+    //     state.members.forEach(id => {
+    //         actions.relayAction({
+    //             to: id,
+    //             op: "startChat",
+    //             data: { from: state.attrs.id }
+    //         });
+    //     });
+    // },
+    endAllStreams({ state, actions }) {
         state.members.forEach(id => {
             actions.relayAction({
                 to: id,
@@ -56,36 +56,50 @@ const actions = {
             });
         });
     },
-    initiatesTo({ state }, member) {
-        return state.attrs.id < member
+    initiatesTo({ state, actions }, member) {
+        if (state.attrs.id < member) {
+            actions.diag(state.attrs.id + " initiates to " + member)
+            return true
+        } else {
+            actions.diag(state.attrs.id + " does not initiate to " + member)
+            return false
+        }
     },
-    startChatters({ state, actions }) {
-        if (state.isChatting) return
-        state.isChatting = true
-        actions.setStatus('chatting')
-
+    leaveRoom({ state, actions }) {
+        state.currentWindow = "main"
+        actions.setStatus("registered")
+        actions.endStreams()
+    },
+    joinRoom({ state, actions }) {
+        actions.setStatus('joining')
+        state.currentWindow = 'chat'
+        let allPresent = true
         state.members.map((member, sequence) => {
-            if (!state.users[member]) return // not set up yet
+            if (!state.users[member]) {
+                allPresent = false
+                actions.relayAction({ to: member, op: "getInfo" });
+            }
+        })
+        //If not all present, try again in a minute
+        if (!allPresent) setTimeout(() => {
+            actions.joinRoom()
+
+        }, 1000);
+        state.members.map((member, sequence) => {
             if (!state.users[member].remoteStream) state.users[member].remoteStream = new MediaStream()
-            if (actions.initiatesTo(member) && (state.users[member].status !== 'connected')) {
+            if (actions.initiatesTo(member)) {
                 actions.diag("initiating chat")
-                if (state.users[member]) {
-                    state.users[member].status = 'calling'
-                    actions.relayAction({
-                        to: member,
-                        op: "calljoin",
-                        data: { jointo: state.attrs.id, role: 'chat' }
-                    });
-                }
+                actions.relayAction({
+                    to: member,
+                    op: "calljoin",
+                    data: { jointo: state.attrs.id, role: 'chat' }
+                });
             }
         });
     },
-    endChatters({ state, actions, effects }, data) {
+    endStreams({ state, actions, effects }, data) {
         console.log("ENDING CHATTERS    ")
-        if (!state.isChatting) return
-        state.isChatting = false;
         actions.setStatus('registered')
-        actions.setMessage(`Ending chat for room '${state.attrs.room}'.`);
         // actions.endCall({ from: state.attrs.id })
         state.members.forEach(id => {
             actions.relayAction({
@@ -143,12 +157,13 @@ const actions = {
             }
             setTimeout(retryCall, 1000)
         }
-        if (!state.isChatting) {
-            actions.setStatus('connecting')
-            actions.setupStreams();
-            actions.showCallPage();
-        }
+        actions.setStatus('connecting')
+        // if (!state.isCascading) {
+        //     actions.setupStreams();
+        //     actions.showCallPage();
+        // }
         const pc = new PeerConnection(friendID, state);
+        state.users[friendID].peerConnection = pc
         state.callInfo[friendID] = {
             pc,
             config,
@@ -160,22 +175,32 @@ const actions = {
             })
             .on('peerTrackEvent', (e) => {
                 const src = e.streams[0]
+                actions.setStatus('connected')
                 actions.peerTrackEvent({ friendID, event: e })
             })
             .startPeer(isCaller, config, state);
+        pc.pc.oniceconnectionstatechange = (event) => {
+            const message = `Ice connection state change for ${friendID} ${pc.pc.iceConnectionState}`
+            actions.diag(message)
+
+        }
+        pc.pc.onconnectionstatechange = (event) => {
+            const message = `Connection state change for ${friendID} ${pc.pc.connectionState}`
+            actions.diag(message)
+
+        }
         return pc;
     },
     showCallPage({ state }) {
         if (state.index !== -1) {
             //part of cascade
-            state.showCascade = true;
+            state.currentWindow = "cascade";
         } else if (state.attrs.control && (
             parseInt(state.attrs.control, 10) ||
             state.attrs.control.toLowerCase() === "control" ||
             state.attrs.control.toLowerCase() === "viewer")
         ) {
-            state.showControlRoom = true;
-            state.showCascade = true;
+            state.currentWindow = "control";
         }
     },
 
@@ -208,9 +233,10 @@ const actions = {
         }
     },
     peerTrackEvent({ state, actions }, { friendID, event: e }) {
+        state.peerEvents = state.peerEvents + 1
         const src = e.streams[0];
         const stream = json(state.users[friendID].remoteStream)
-        if (state.isChatting) {
+        if (!state.isCascading) {
             state.users[state.attrs.id].status
             state.users[friendID].status = 'connected'
             const tracks = src.getTracks()
@@ -258,8 +284,7 @@ const actions = {
     // },
     clearCascade({ state }) {
         console.log("clear cascade")
-        state.showCascade = false;
-        state.showControlRoom = false;
+        state.currentWindow = "chat";
         delete state.streams.cascadeStream;
         if (state.streams.cascadeMerger) {
             json(state.streams.cascadeMerger).destroy();
@@ -283,9 +308,7 @@ const actions = {
             });
         });
     },
-    createUser({ state }, id) {
-        if (!state.users[id]) state.users[id] = {};
-    },
+
     deleteUserEntry({ state }, id) {
         const user = state.users[id]
         if (user.remoteStream) {
@@ -327,7 +350,7 @@ const actions = {
         })
         actions.computeCategories();
     },
-    computeCategories({ state }) {
+    computeCategories({ state, actions }) {
         let cascaders = [];
         const controllers = [];
         const viewers = [];
@@ -339,9 +362,9 @@ const actions = {
             if (seq) {
                 if (!cascaders[seq]) cascaders[seq] = [];
                 cascaders[seq].push(key);
-            } else if (control.toLowerCase() === "control") {
+            } else if (control && control.toLowerCase() === "control") {
                 controllers.push(key);
-            } else if (control.toLowerCase() === "viewer") {
+            } else if (control && control.toLowerCase() === "viewer") {
                 viewers.push(key);
             } else {
                 actions.setMessage(
@@ -379,15 +402,16 @@ const actions = {
         const id = data.id;
         delete data.id;
         console.log("got user info for ", id)
-        actions.createUser(id);
+        if (!state.users[id]) state.users[id] = {};
+        if (!state.users[id].remoteStream) state.users[id].remoteStream = new MediaStream()
+
         for (const key in data) {
             state.users[id][key] = data[key];
         }
         state.users[id].opacity = 1
         actions.computeCategories();
-        // if (!state.showCascade && !state.isChatting && state.allSessions.length > 1) {
-        //     actions.startChat()
-        // }
+
+
 
     },
     setMessage({ state, actions }, value = "default message") {
@@ -413,10 +437,7 @@ const actions = {
         state.diags.push(diag);
     },
 
-    // flashCascade({ state, actions }) {
-    //     state.showCascade = true
-    //     setTimeout(() => actions.clearCascade(), 5000)
-    // },
+
     addStream({ state }, { name, stream }) {
         state.streams[name] = stream;
     },
@@ -460,8 +481,9 @@ const actions = {
     clearEvents({ state }) {
         state.events = [];
     },
-    setStatus({ state }, status) {
+    setStatus({ state, actions }, status) {
         state.attrs.status = status;
+        actions.broadcastUserInfo()
     },
 
     setAttrs({ state, effects }, attrs) {
@@ -505,7 +527,7 @@ const actions = {
             actions.setMessage("Missing room name");
             error = true;
         }
-        // console.log('registering ', json(state.attrs))
+        console.log('registering ', json(state.attrs))
         effects.storage.setAttrs(json(state.attrs));
         if (!error) {
             actions.setStatus('registered')

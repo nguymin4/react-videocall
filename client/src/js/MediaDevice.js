@@ -9,6 +9,7 @@ class MediaDevice extends Emitter {
      * Start media devices and send stream
      */
     start() {
+        this.isStarted = true
         const constraints = {
             video: {
                 facingMode: 'user',
@@ -54,6 +55,7 @@ class MediaDevice extends Emitter {
      * Stop all media track of devices
      */
     stop() {
+        this.started = false
         if (this.stream) {
             this.stream.getTracks().forEach((track) => track.stop());
         }
