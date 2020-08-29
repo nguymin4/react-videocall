@@ -58,21 +58,28 @@ const actions = {
     },
     initiatesTo({ state, actions }, member) {
         if (state.attrs.id < member) {
-            actions.diag(state.attrs.id + " initiates to " + member)
+            // actions.diag(state.attrs.id + " initiates to " + member)
             return true
         } else {
-            actions.diag(state.attrs.id + " does not initiate to " + member)
+            // actions.diag(state.attrs.id + " does not initiate to " + member)
             return false
         }
     },
     leaveRoom({ state, actions }) {
         state.currentWindow = "main"
-        actions.setStatus("registered")
+        actions.setRoomStatus("left")
         actions.endStreams()
     },
     joinRoom({ state, actions }) {
-        actions.setStatus('joining')
+        actions.setRoomStatus('joined')
         state.currentWindow = 'chat'
+        actions.connectRoom()
+    },
+    connectRoom({ state, actions }) {
+        if (!state.streams.localStream) {
+            diag("local stream not running when trying to connect")
+            setTimeout(connectRoom, 1000)
+        }
         let allPresent = true
         state.members.map((member, sequence) => {
             if (!state.users[member]) {
@@ -82,13 +89,20 @@ const actions = {
         })
         //If not all present, try again in a minute
         if (!allPresent) setTimeout(() => {
-            actions.joinRoom()
+            actions.reconnect()
 
         }, 1000);
+        // console.log("connecting to ", state.members)
         state.members.map((member, sequence) => {
-            if (!state.users[member].remoteStream) state.users[member].remoteStream = new MediaStream()
+            if (!state.users[member]) return
+            if (state.users[member].roomStatus !== 'joined') return
+            // if (state.users[member].initStatus) return
+            const newStream = new MediaStream()
+            newStream.streamNumber = state.streamNumber++
+            state.users[member].remoteStream = newStream
+
             if (actions.initiatesTo(member)) {
-                actions.diag("initiating chat")
+                state.users[member].initStatus = true
                 actions.relayAction({
                     to: member,
                     op: "calljoin",
@@ -99,7 +113,6 @@ const actions = {
     },
     endStreams({ state, actions, effects }, data) {
         console.log("ENDING CHATTERS    ")
-        actions.setStatus('registered')
         // actions.endCall({ from: state.attrs.id })
         state.members.forEach(id => {
             actions.relayAction({
@@ -107,14 +120,19 @@ const actions = {
                 op: "end",
                 data: { from: state.attrs.id }
             });
-            if (state.users[id] && state.users[id].remoteStream) {
-                const stream = json(state.users[id].remoteStream)
-                state.users[id].remoteStream = new MediaStream()
-                stream.getTracks().forEach(track => {
-                    track.stop()
-                    stream.removeTrack(track)
-                })
-            }
+            actions.relayAction({
+                to: state.attrs.id,
+                op: "end",
+                data: { from: id }
+            });
+            // if (state.users[id] && state.users[id].remoteStream) {
+            //     const stream = json(state.users[id].remoteStream)
+            //     state.users[id].remoteStream = new MediaStream()
+            //     stream.getTracks().forEach(track => {
+            //         track.stop()
+            //         stream.removeTrack(track)
+            //     })
+            // }
         }
         )
 
@@ -151,13 +169,15 @@ const actions = {
         });
     },
     startCall({ state, actions }, { isCaller, friendID, config, data }) {
-        if (!state.streams.localStream) {
+        if (!state.streams.localStream || !state.users[friendID]) {
+            console.log("Retrying with ", { friendID }, state.streams.localStream, json(state.users[friendID]))
             const retryCall = () => {
                 actions.startCall({ isCaller, friendID, config, data })
             }
             setTimeout(retryCall, 1000)
+            return
         }
-        actions.setStatus('connecting')
+        // actions.setRoomStatus('connecting')
         // if (!state.isCascading) {
         //     actions.setupStreams();
         //     actions.showCallPage();
@@ -168,14 +188,15 @@ const actions = {
             pc,
             config,
             isCaller,
-            data
+            data,
+            status: 'connecting'
         };
         pc
             .on('localStream', (src) => {
             })
             .on('peerTrackEvent', (e) => {
                 const src = e.streams[0]
-                actions.setStatus('connected')
+                // actions.setRoomStatus('connected')
                 actions.peerTrackEvent({ friendID, event: e })
             })
             .startPeer(isCaller, config, state);
@@ -187,9 +208,14 @@ const actions = {
         pc.pc.onconnectionstatechange = (event) => {
             const message = `Connection state change for ${friendID} ${pc.pc.connectionState}`
             actions.diag(message)
+            // actions.setConnectionStatus({ id: friendID, status: pc.pc.connectionState })
 
         }
         return pc;
+    },
+    setConnectionStatus({ state }, { id, status }) {
+        state.users[id].connectionStatus = status
+
     },
     showCallPage({ state }) {
         if (state.index !== -1) {
@@ -221,38 +247,42 @@ const actions = {
         }
     },
     endCall({ state, actions }, { isStarter, from }) {
-        actions.clearCascade();
-        state.users[from].status = 'disconnected'
+        // actions.clearCascade();
+        // actions.setRoomStatus('disconnected')
+        actions.setConnectionStatus({ id: from, status: 'disconnected' })
+        state.users[from].initStatus = false
+        if (state.users[from] && state.users[from].remoteStream) {
+            const stream = json(state.users[from].remoteStream)
+            state.users[from].remoteStream = null
+            stream.getTracks().forEach(track => {
+                track.stop()
+                stream.removeTrack(track)
+            })
+        }
+
+
         if (state.callInfo[from] && !state.callInfo[from].stopped) {
             const callInfo = json(state.callInfo[from]);
             callInfo.pc.stop(isStarter.from);
             state.callInfo[from] = {
                 pc: null,
-                stopped: true
+                stopped: true,
+                status: 'disconnected'
             };
         }
+
     },
     peerTrackEvent({ state, actions }, { friendID, event: e }) {
         state.peerEvents = state.peerEvents + 1
         const src = e.streams[0];
         const stream = json(state.users[friendID].remoteStream)
-        if (!state.isCascading) {
-            state.users[state.attrs.id].status
-            state.users[friendID].status = 'connected'
-            const tracks = src.getTracks()
-            tracks.forEach(track => {
-                // console.log("adding a track", track.kind)
-                stream.addTrack(track, src)
-            })
-        } else {
-            const pc = json(state.callInfo[friendID].pc);
-            pc.peerSrc = src;
-            state.callInfo[friendID] = {
-                pc,
-                stopped: false
-            };
-            actions.addPeerToCascade(src);
-        }
+        actions.setConnectionStatus({ id: friendID, status: 'connected' })
+        const tracks = src.getTracks()
+        tracks.forEach(track => {
+            // console.log("adding a track", track.kind)
+            stream.addTrack(track, src)
+        })
+
     },
     // relayAction({ state, effects }, { to, op, data }) {
     //     effects.socket.actions.relayEffect(to, op, data)
@@ -392,25 +422,24 @@ const actions = {
     },
     toggleReady({ state, actions }) {
         if (state.users[state.attrs.id].status !== 'ready') {
-            actions.setStatus('ready')
+            actions.setRoomStatus('ready')
         } else {
-            actions.setStatus('wait!')
+            actions.setRoomStatus('wait!')
         }
         actions.broadcastUserInfo()
     },
     setUserInfo({ state, actions }, data) {
         const id = data.id;
         delete data.id;
-        console.log("got user info for ", id)
+        // console.log("got user info for ", id)
         if (!state.users[id]) state.users[id] = {};
-        if (!state.users[id].remoteStream) state.users[id].remoteStream = new MediaStream()
 
         for (const key in data) {
             state.users[id][key] = data[key];
         }
         state.users[id].opacity = 1
         actions.computeCategories();
-
+        if (state.attrs.roomStatus === 'joined') actions.connectRoom()
 
 
     },
@@ -481,8 +510,8 @@ const actions = {
     clearEvents({ state }) {
         state.events = [];
     },
-    setStatus({ state, actions }, status) {
-        state.attrs.status = status;
+    setRoomStatus({ state, actions }, status) {
+        state.attrs.roomStatus = status;
         actions.broadcastUserInfo()
     },
 
@@ -508,6 +537,7 @@ const actions = {
         effects.storage.setAttrs(json(state.attrs));
     },
     register({ state, actions, effects }, data) {
+        state.peerEvents++
         let error = false;
         if (data.controlValue !== "undefined") {
             state.attrs.control = data.controlValue;
@@ -530,7 +560,7 @@ const actions = {
         console.log('registering ', json(state.attrs))
         effects.storage.setAttrs(json(state.attrs));
         if (!error) {
-            actions.setStatus('registered')
+            actions.setRoomStatus('registered')
             actions.broadcastUserInfo()
             effects.socket.actions.register(json(state.attrs));
         }

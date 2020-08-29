@@ -14,7 +14,7 @@ export default function List() {
                         <React.Fragment key={ key }>
                             <div className="flex py-1 pt-2" key={ key }>
                                 <span className={ "w-64 border mx-3 px-3 bg-white" + statusColor }>
-                                    { user.status }
+                                    { user.roomStatus }
                                 </span>
                                 <span className="w-full border mx-1 px-3 bg-white">
                                     { user.name }

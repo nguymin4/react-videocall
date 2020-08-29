@@ -56,7 +56,7 @@ const HeaderWindow = () => {
 
     return <div>
 
-        { (state.currentWindow === 'chat') ?
+        { (true || state.currentWindow === 'chat') ?
             (<React.Fragment>
                 <VideoTiles /> }
             </React.Fragment>)

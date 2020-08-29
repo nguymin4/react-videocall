@@ -27,8 +27,8 @@ const onInitialize = (
 ) => {
     const attrs = effects.storage.getAttrs() || {}
     // theActions = actions
-    attrs.status = 'initialized'
     actions.setAttrs(attrs)
+    actions.setRoomStatus('unregistered')
 
 }
 const config =

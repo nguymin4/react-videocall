@@ -1,6 +1,7 @@
 const state = {
     title: 'This title',
     changeMedia: false,
+    streamNumber: 0,
     mediaDevices: [],
     AppState: {
         room: '',
@@ -19,7 +20,8 @@ const state = {
         name: "undefined",
         role: "undefined",
         room: "main",
-        status: "disconnected"
+        status: "disconnected",
+        roomStatus: "none"
     },
     index: -1, //index in cascade. -1 if not in cascade
     nextMember: null,
