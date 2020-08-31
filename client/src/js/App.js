@@ -38,7 +38,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        'init,calljoin,request,call,end'.split(',').forEach(key => socket.off(key))
+        'init,startcall,joincall,call,end'.split(',').forEach(key => socket.off(key))
         const cl = (...args) => {
             console.log(...args)
             socket.emit('debug')
@@ -56,15 +56,15 @@ class App extends Component {
                 // socket.emit('debug', `App initted ${clientId}`)
 
             })
-            .on('calljoin', (data) => {
+            .on('startcall', (data) => {
                 const leader = data.jointo
-                // socket.emit('debug', 'calljoin received')
+                // socket.emit('debug', 'startcall received')
                 // console.log('join received', data)
                 this.startCallHandler(true, leader, { video: true, audio: true }, data)
             })
-            .on('request', (data) => {
+            .on('joincall', (data) => {
 
-                console.log("request")
+                console.log("joincall")
                 const opts = { id: this.state.clientId + 'R' }
                 this.startCallHandler(false, data.from, { video: true, audio: true }, data)
             })

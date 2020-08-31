@@ -5,6 +5,12 @@ import PeerConnection from "../PeerConnection";
 import VideoStreamMerger from "../streamutils/video-stream-merger";
 
 const actions = {
+    test({state,actions})
+    {
+        console.log("RUNNING RELOAD TEST")
+    }
+    ,
+
     setMediaDevices({ state }, mediaDevices) {
         state.mediaDevices = mediaDevices
     },
@@ -105,7 +111,7 @@ const actions = {
                 state.users[member].initStatus = true
                 actions.relayAction({
                     to: member,
-                    op: "calljoin",
+                    op: "startcall",
                     data: { jointo: state.attrs.id, role: 'chat' }
                 });
             }
@@ -142,7 +148,7 @@ const actions = {
             state.nextMember = state.sessions.cascaders[sequence + 1];
             actions.relayAction({
                 to: member,
-                op: "calljoin",
+                op: "startcall",
                 data: { jointo: state.nextMember, role: 'cascade' }
             });
         });
@@ -151,7 +157,7 @@ const actions = {
         state.sessions.controllers.map((member, sequence) => {
             actions.relayAction({
                 to: state.nextMember,
-                op: "calljoin",
+                op: "startcall",
                 data: { jointo: member, role: 'control' }
             });
             state.nextMember = member;
@@ -163,7 +169,7 @@ const actions = {
             const controller = state.sessions.controllers[sequence % nControllers];
             actions.relayAction({
                 to: controller,
-                op: "calljoin",
+                op: "startcall",
                 data: { jointo: member, role: 'view' }
             });
         });
@@ -298,7 +304,7 @@ const actions = {
     //         nextMember = state.sessions.cascaders[sequence + 1]
     //         actions.relayAction({
     //             to: member,
-    //             op: "calljoin",
+    //             op: "startcall",
     //             data: { jointo: nextMember }
     //         })
     //     })
@@ -306,7 +312,7 @@ const actions = {
 
     //         actions.relayAction({
     //             to: nextMember,
-    //             op: "calljoin",
+    //             op: "startcall",
     //             data: { jointo: member }
     //         })
     //         nextMember = member

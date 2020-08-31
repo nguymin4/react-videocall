@@ -112,11 +112,11 @@ function initSocket(socket) {
 
         })
         .on('debug', (message) => { console.log("debug", message) })
-        .on('request', (data) => {
+        .on('joincall', (data) => {
             console.log(`request to ${data.to}`)
             const receiver = users.getReceiver(data.to);
             if (receiver) {
-                receiver.emit('request', { from: id });
+                receiver.emit('joincall', { from: id });
             }
         })
         .on('call', (data) => {

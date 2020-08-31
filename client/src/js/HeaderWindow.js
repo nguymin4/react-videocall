@@ -16,6 +16,9 @@ const HeaderWindow = () => {
     const [stream, setStream] = React.useState(null)
     const [refs, setRefs] = React.useState({})
     useEffect(() => {
+        actions.test()},
+        [])
+    useEffect(() => {
         // console.log('Effect is applied')
         effects.setActionsAndState(actions, state)
 
@@ -55,7 +58,6 @@ const HeaderWindow = () => {
     }, [localVideo, stream])
 
     return <div>
-
         { (true || state.currentWindow === 'chat') ?
             (<React.Fragment>
                 <VideoTiles /> }
