@@ -1,31 +1,31 @@
-const { HotModuleReplacementPlugin } = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const socketConfig = require('../config');
-const addBaseConfig = require('./webpack-base.config');
+const { HotModuleReplacementPlugin } = require("webpack");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const socketConfig = require("../config");
+const addBaseConfig = require("./webpack-base.config");
 
 const configs = addBaseConfig({
-    mode: 'development',
+    mode: "development",
     output: {
-        filename: 'js/[name].js'
+        filename: "js/[name].js"
     },
     module: {
         rules: [
             {
                 test: /\.scss$/,
-                use: ['style-loader', 'css-loader', 'sass-loader']
+                use: ["style-loader", "css-loader", "sass-loader"]
             },
             {
                 test: /\.css$/,
-                use: ['style-loader', 'css-loader','postcss-loader']
+                use: ["style-loader", "css-loader", "postcss-loader"]
             },
             {
                 test: /\.(png|woff|woff2|eot|ttf|svg)$/,
                 use: [
                     {
-                        loader: 'file-loader',
+                        loader: "file-loader",
                         options: {
-                            name: '[name].[ext]',
-                            outputPath: 'assets'
+                            name: "[name].[ext]",
+                            outputPath: "assets"
                         }
                     }
                 ]
@@ -35,9 +35,9 @@ const configs = addBaseConfig({
     plugins: [
         new HotModuleReplacementPlugin(),
         new HtmlWebpackPlugin({
-            title: 'React VideoCall - Minh Son Nguyen',
-            filename: 'index.html',
-            template: 'src/html/index.html'
+            title: "React VideoCall - Minh Son Nguyen",
+            filename: "index.html",
+            template: "src/html/index.html"
         })
     ],
     devServer: {
@@ -47,11 +47,11 @@ const configs = addBaseConfig({
         hot: true,
         liveReload: false,
         port: `${socketConfig.DEVPORT}`,
-        allowedHosts: ['.github.io'],
+        allowedHosts: [".github.io"],
         // public: `${socketConfig.GITPODURL}`,
-        host: 'localhost',
+        host: "localhost",
         proxy: {
-              '/bridge/': `http://localhost:${socketConfig.PORT}`
+            "/bridge/": `http://localhost:${socketConfig.PORT}`
             // '/bridge/': {
             //     target: `http://localhost:${socketConfig.PORT}`,
 
@@ -64,14 +64,21 @@ const configs = addBaseConfig({
     }
 });
 
-
-
 // module.exports = configs;
 
+// const doAsync = async () => {
+//     //   const GITPODURL = await socketConfig.GETURL()
+//     //   configs.devServer.public = GITPODURL
+//     // console.log(`UPDATE '${configs.devServer.public}' to '${GITPODURL}'`)
+//     configs.devServer.public = "https://localhost:5000";
+//     console.log(`UPDATE '${configs.devServer.public}`);
+//     return configs;
+// };
+
 const doAsync = async () => {
-  const GITPODURL = await socketConfig.GETURL()
-  configs.devServer.public = GITPODURL
-console.log(`UPDATE '${configs.devServer.public}' to '${GITPODURL}'`)
-  return configs
+    const GITPODURL = await socketConfig.GETURL()
+    configs.devServer.public = GITPODURL
+    console.log(`UPDATE '${configs.devServer.public}' to '${GITPODURL}'`)
+    return configs
 };
 module.exports = doAsync;
