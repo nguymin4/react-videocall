@@ -1,6 +1,7 @@
 const DEVPORT = 9001
 const GITPODURL = `https://${DEVPORT}-e86f92db-f24e-4089-b8df-7bed4a3a25dd.ws-us02.gitpod.io`
 const childProcess = require('child_process');
+var env = require('./env.json');
 function execute(command) {
 
     return new Promise(function (resolve, reject) {
@@ -25,11 +26,10 @@ function execute(command) {
 // get URL to use for GITPOD
 
 const GETURL = async () => {
-    const URL = await execute(`gp url ${DEVPORT}`)
+    const URL = env.devEnvironment == "local" ? `http://localhost:${DEVPORT}` : await execute(`gp url ${DEVPORT}`)
     console.log(URL)
     return URL.trim()
 }
-
 
 // setTimeout(async() => console.log('URL IS ', await GETURL()))
 
