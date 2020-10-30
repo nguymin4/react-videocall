@@ -27,7 +27,7 @@ const configs = addBaseConfig({
             options: {
               name: '[name].[ext]',
               outputPath: 'assets',
-              publicPath: '/dist/assets'
+              publicPath: '/assets'
             }
           }
         ]
@@ -38,7 +38,7 @@ const configs = addBaseConfig({
     new MiniCssExtractPlugin({ filename: 'css/[name].min.css' }),
     new HtmlWebpackPlugin({
       title: 'React VideoCall - Minh Son Nguyen',
-      filename: path.join(__dirname, 'index.html'),
+      filename: 'index.html',
       template: 'src/html/index.html'
     })
   ],
