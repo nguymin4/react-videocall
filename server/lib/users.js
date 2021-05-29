@@ -1,21 +1,26 @@
 /* eslint-disable no-await-in-loop */
+const bluebird = require('bluebird');
 const haiku = require('./haiku');
+
+const MAX_TRIES = 10;
 
 const users = {};
 
-// Random ID until the ID is not in use
-async function randomID() {
-  let id = haiku();
-  while (id in users) {
-    await Promise.delay(5);
-    id = haiku();
+// Random ID until the ID is not in used or max tries is reached
+async function randomID(counter = 0) {
+  if (counter > MAX_TRIES) {
+    return null;
   }
-  return id;
+  await bluebird.delay(10);
+  const id = haiku();
+  return id in users ? randomID(counter + 1) : id;
 }
 
 exports.create = async (socket) => {
   const id = await randomID();
-  users[id] = socket;
+  if (id) {
+    users[id] = socket;
+  }
   return id;
 };
 

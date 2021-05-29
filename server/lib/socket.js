@@ -10,7 +10,11 @@ function initSocket(socket) {
   socket
     .on('init', async () => {
       id = await users.create(socket);
-      socket.emit('init', { id });
+      if (id) {
+        socket.emit('init', { id });
+      } else {
+        socket.emit('error', { message: 'Failed to generating user id' });
+      }
     })
     .on('request', (data) => {
       const receiver = users.get(data.to);
