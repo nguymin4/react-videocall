@@ -1,16 +1,32 @@
-const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const addBaseConfig = require('./webpack-base.config');
 
-const configs = addBaseConfig({
+module.exports = {
   mode: 'production',
+  context: __dirname,
+  entry: {
+    app: './src/index.js'
+  },
   output: {
     filename: 'js/[name].min.js'
   },
   module: {
     rules: [
+      {
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-react', '@babel/preset-env']
+          }
+        }
+      },
+      {
+        test: require.resolve('webrtc-adapter'),
+        use: 'expose-loader'
+      },
       {
         test: /\.scss$/,
         use: [
@@ -50,6 +66,4 @@ const configs = addBaseConfig({
       })
     ]
   }
-});
-
-module.exports = configs;
+};
