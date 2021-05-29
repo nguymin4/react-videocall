@@ -1,15 +1,32 @@
 const { HotModuleReplacementPlugin } = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const socketConfig = require('../config');
-const addBaseConfig = require('./webpack-base.config');
 
-const configs = addBaseConfig({
+module.exports = {
   mode: 'development',
+  context: __dirname,
+  entry: {
+    app: './src/index.js'
+  },
   output: {
     filename: 'js/[name].js'
   },
   module: {
     rules: [
+      {
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-react', '@babel/preset-env']
+          }
+        }
+      },
+      {
+        test: require.resolve('webrtc-adapter'),
+        use: 'expose-loader'
+      },
       {
         test: /\.scss$/,
         use: ['style-loader', 'css-loader', 'sass-loader']
@@ -47,6 +64,4 @@ const configs = addBaseConfig({
       poll: 1000
     }
   }
-});
-
-module.exports = configs;
+};
