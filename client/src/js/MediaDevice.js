@@ -36,7 +36,7 @@ class MediaDevice extends Emitter {
 
   /**
    * Turn on/off a device
-   * @param {String} type - Type of the device
+   * @param {'Audio' | 'Video'} type - Type of the device
    * @param {Boolean} [on] - State of the device
    */
   toggle(type, on) {

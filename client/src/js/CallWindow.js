@@ -25,17 +25,16 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
 
   /**
    * Turn on/off a media device
-   * @param {String} deviceType - Type of the device eg: Video, Audio
+   * @param {'Audio' | 'Video'} deviceType - Type of the device eg: Video, Audio
    */
   const toggleMediaDevice = (deviceType) => {
-    if (deviceType === 'video') {
+    if (deviceType === 'Video') {
       setVideo(!video);
-      mediaDevice.toggle('Video');
     }
-    if (deviceType === 'audio') {
+    if (deviceType === 'Audio') {
       setAudio(!audio);
-      mediaDevice.toggle('Audio');
     }
+    mediaDevice.toggle(deviceType);
   };
 
   return (
@@ -47,13 +46,13 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
           key="btnVideo"
           type="button"
           className={getButtonClass('fa-video-camera', video)}
-          onClick={() => toggleMediaDevice('video')}
+          onClick={() => toggleMediaDevice('Video')}
         />
         <button
           key="btnAudio"
           type="button"
           className={getButtonClass('fa-microphone', audio)}
-          onClick={() => toggleMediaDevice('audio')}
+          onClick={() => toggleMediaDevice('Audio')}
         />
         <button
           type="button"

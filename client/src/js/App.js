@@ -52,7 +52,7 @@ class App extends Component {
         this.setState(newState);
       })
       .on('peerStream', (src) => this.setState({ peerSrc: src }))
-      .start(isCaller, config);
+      .start(isCaller);
   }
 
   rejectCall() {

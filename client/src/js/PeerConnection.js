@@ -25,9 +25,8 @@ class PeerConnection extends Emitter {
   /**
    * Starting the call
    * @param {Boolean} isCaller
-   * @param {Object} config - configuration for the call {audio: boolean, video: boolean}
    */
-  start(isCaller, config) {
+  start(isCaller) {
     this.mediaDevice
       .on('stream', (stream) => {
         stream.getTracks().forEach((track) => {
@@ -37,7 +36,7 @@ class PeerConnection extends Emitter {
         if (isCaller) socket.emit('request', { to: this.friendID });
         else this.createOffer();
       })
-      .start(config);
+      .start();
 
     return this;
   }
@@ -71,6 +70,9 @@ class PeerConnection extends Emitter {
     return this;
   }
 
+  /**
+   * @param {RTCLocalSessionDescriptionInit} desc - Session description
+   */
   getDescription(desc) {
     this.pc.setLocalDescription(desc);
     socket.emit('call', { to: this.friendID, sdp: desc });
@@ -78,7 +80,7 @@ class PeerConnection extends Emitter {
   }
 
   /**
-   * @param {Object} sdp - Session description
+   * @param {RTCSessionDescriptionInit} sdp - Session description
    */
   setRemoteDescription(sdp) {
     const rtcSdp = new RTCSessionDescription(sdp);
@@ -87,7 +89,7 @@ class PeerConnection extends Emitter {
   }
 
   /**
-   * @param {Object} candidate - ICE Candidate
+   * @param {RTCIceCandidateInit} candidate - ICE Candidate
    */
   addIceCandidate(candidate) {
     if (candidate) {
