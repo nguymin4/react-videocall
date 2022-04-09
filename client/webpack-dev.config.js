@@ -58,10 +58,10 @@ module.exports = {
     port: 9000,
     proxy: {
       '/bridge/': `http://localhost:${socketConfig.PORT}`
-    },
-    watchOptions: {
-      aggregateTimeout: 300,
-      poll: 1000
     }
+  },
+  watchOptions: {
+    aggregateTimeout: 300,
+    poll: 1000
   }
 };
