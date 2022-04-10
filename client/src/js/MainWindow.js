@@ -1,7 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import socket from './socket';
 
-function MainWindow({ startCall, clientId }) {
+function useClientID() {
+  const [clientID, setClientID] = useState('');
+
+  useEffect(() => {
+    socket
+      .on('init', ({ id }) => {
+        document.title = `${id} - VideoCall`;
+        setClientID(id);
+      });
+  }, []);
+
+  return clientID;
+}
+
+function MainWindow({ startCall }) {
+  const clientID = useClientID();
   const [friendID, setFriendID] = useState(null);
 
   /**
@@ -21,7 +37,7 @@ function MainWindow({ startCall, clientId }) {
           <input
             type="text"
             className="txt-clientId"
-            defaultValue={clientId}
+            defaultValue={clientID}
             readOnly
           />
         </h3>
@@ -53,7 +69,6 @@ function MainWindow({ startCall, clientId }) {
 }
 
 MainWindow.propTypes = {
-  clientId: PropTypes.string.isRequired,
   startCall: PropTypes.func.isRequired
 };
 

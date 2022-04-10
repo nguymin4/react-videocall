@@ -10,7 +10,6 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      clientId: '',
       callWindow: '',
       callModal: '',
       callFrom: '',
@@ -26,10 +25,6 @@ class App extends Component {
 
   componentDidMount() {
     socket
-      .on('init', ({ id: clientId }) => {
-        document.title = `${clientId} - VideoCall`;
-        this.setState({ clientId });
-      })
       .on('request', ({ from: callFrom }) => {
         this.setState({ callModal: 'active', callFrom });
       })
@@ -76,13 +71,10 @@ class App extends Component {
   }
 
   render() {
-    const { clientId, callFrom, callModal, callWindow, localSrc, peerSrc } = this.state;
+    const { callFrom, callModal, callWindow, localSrc, peerSrc } = this.state;
     return (
       <div>
-        <MainWindow
-          clientId={clientId}
-          startCall={this.startCallHandler}
-        />
+        <MainWindow startCall={this.startCallHandler} />
         {!_.isEmpty(this.config) && (
           <CallWindow
             status={callWindow}
