@@ -7,16 +7,23 @@ Video call to your friend without registering.
 Simply send your friend your auto-generated unique ID to make the call.  
 Everytime you open a new tab, the server gives you a totally different unique ID.
 
-### Development
+### Installation
 
 ```
-# Install dependencies
+npm install -g yarn
+
 yarn install
+```
 
-# Run server
+### Development
+
+Run server
+```
 yarn watch:server
+```
 
-# Run webpack-dev-server
+Run webpack-dev-server
+```
 yarn watch:client
 ```
 
@@ -26,13 +33,13 @@ yarn watch:client
 **Render** (Free - Recommended)
 
 <a href="https://render.com/deploy?repo=https://github.com/nguymin4/react-videocall/tree/production">
-  <img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" height="36px">
+  <img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" height="36px" style="margin-bottom: 20px">
 </a>
 
 **Heroku**
 
 <a href="https://render.com/deploy?repo=https://github.com/nguymin4/react-videocall/tree/production">
-  <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku" height="37.5px">
+  <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku" height="37.5px" style="margin-bottom: 20px">
 </a>
 
 **Custom**
