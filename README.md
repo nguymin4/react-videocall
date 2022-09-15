@@ -32,7 +32,7 @@ yarn watch:client
 **Heroku**
 
 <a href="https://render.com/deploy?repo=https://github.com/nguymin4/react-videocall/tree/production">
-  <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku" height="36px">
+  <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku" height="37.5px">
 </a>
 
 **Custom**
