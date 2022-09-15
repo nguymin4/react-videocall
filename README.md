@@ -1,5 +1,5 @@
 ## React-VideoCall
-Demo app: https://morning-escarpment-67980.herokuapp.com/  
+Demo app: https://morning-escarpment-67980.onrender.com  
 
 <img align="right" width="420" src="https://raw.githubusercontent.com/nguymin4/react-videocall/master/screenshots/1.png"  alt =" " style="border: solid 1px #d4d4d4" />
   
@@ -23,9 +23,17 @@ yarn watch:client
 
 ### Deployment
 
+**Render** (Free - Recommended)
+
+<a href="https://render.com/deploy?repo=https://github.com/nguymin4/react-videocall/tree/production">
+  <img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" height="36px">
+</a>
+
 **Heroku**
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/nguymin4/react-videocall/tree/production)
+<a href="https://render.com/deploy?repo=https://github.com/nguymin4/react-videocall/tree/production">
+  <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku" height="36px">
+</a>
 
 **Custom**
 ```
