@@ -34,7 +34,7 @@
     "socket.io-client": "4.5.2",
     "style-loader": "3.3.1",
     "terser-webpack-plugin": "5.3.6",
-    "webpack": "5.74.0",
+    "webpack": "5.76.0",
     "webpack-cli": "4.10.0",
     "webrtc-adapter": "8.1.2"
   },
