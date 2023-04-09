@@ -49,7 +49,7 @@
     "webpack-dev-server": "4.11.0"
   },
   "engines": {
-    "node": "16"
+    "node": "18"
   },
   "repository": {
     "type": "git",
