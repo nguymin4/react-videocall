@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { faPhone, faVideo } from '@fortawesome/free-solid-svg-icons';
+import ActionButton from './components/ActionButton';
 
 function CallModal({ status, callFrom, startCall, rejectCall }) {
   const acceptWithVideo = (video) => {
@@ -13,19 +15,17 @@ function CallModal({ status, callFrom, startCall, rejectCall }) {
       <p>
         <span className="caller">{`${callFrom} is calling`}</span>
       </p>
-      <button
-        type="button"
-        className="btn-action fa fa-video-camera"
+      <ActionButton
+        icon={faVideo}
         onClick={acceptWithVideo(true)}
       />
-      <button
-        type="button"
-        className="btn-action fa fa-phone"
+      <ActionButton
+        icon={faPhone}
         onClick={acceptWithVideo(false)}
       />
-      <button
-        type="button"
-        className="btn-action hangup fa fa-phone"
+      <ActionButton
+        className="hangup"
+        icon={faPhone}
         onClick={rejectCall}
       />
     </div>

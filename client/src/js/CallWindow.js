@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-
-const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
+import { faPhone, faVideo } from '@fortawesome/free-solid-svg-icons';
+import ActionButton from './components/ActionButton';
 
 function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall }) {
   const peerVideo = useRef(null);
@@ -42,21 +42,21 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
       <video id="peerVideo" ref={peerVideo} autoPlay />
       <video id="localVideo" ref={localVideo} autoPlay muted />
       <div className="video-control">
-        <button
+        <ActionButton
           key="btnVideo"
-          type="button"
-          className={getButtonClass('fa-video-camera', video)}
+          icon={faVideo}
+          disabled={!video}
           onClick={() => toggleMediaDevice('Video')}
         />
-        <button
+        <ActionButton
           key="btnAudio"
-          type="button"
-          className={getButtonClass('fa-microphone', audio)}
+          icon={faPhone}
+          disabled={!audio}
           onClick={() => toggleMediaDevice('Audio')}
         />
-        <button
-          type="button"
-          className="btn-action hangup fa fa-phone"
+        <ActionButton
+          className="hangup"
+          icon={faPhone}
           onClick={() => endCall(true)}
         />
       </div>

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { faPhone, faVideo } from '@fortawesome/free-solid-svg-icons';
+import ActionButton from './components/ActionButton';
 import socket from './socket';
 
 function useClientID() {
@@ -52,16 +54,8 @@ function MainWindow({ startCall }) {
           onChange={(event) => setFriendID(event.target.value)}
         />
         <div>
-          <button
-            type="button"
-            className="btn-action fa fa-video-camera"
-            onClick={callWithVideo(true)}
-          />
-          <button
-            type="button"
-            className="btn-action fa fa-phone"
-            onClick={callWithVideo(false)}
-          />
+          <ActionButton icon={faVideo} onClick={callWithVideo(true)} />
+          <ActionButton icon={faPhone} onClick={callWithVideo(false)} />
         </div>
       </div>
     </div>
