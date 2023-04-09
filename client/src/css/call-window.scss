@@ -83,7 +83,7 @@
 		&:not(.hangup) {
 			background-color: $blue;
 			
-			&.disable {
+			&.disabled {
 				background-color: $red;
 			}
 		}

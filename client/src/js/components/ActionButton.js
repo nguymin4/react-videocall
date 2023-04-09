@@ -7,7 +7,7 @@ export default function ActionButton({ className, disabled, icon, onClick }) {
   return (
     <button
       type="button"
-      className={classnames('btn-action', { disable: disabled }, className)}
+      className={classnames('btn-action', { disabled }, className)}
       onClick={onClick}
     >
       <FontAwesomeIcon icon={icon} color="white" />
