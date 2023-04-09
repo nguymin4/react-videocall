@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { faPhone, faVideo } from '@fortawesome/free-solid-svg-icons';
-import ActionButton from './components/ActionButton';
-import socket from './socket';
+import ActionButton from './ActionButton';
+import { socket } from '../communication';
 
 function useClientID() {
   const [clientID, setClientID] = useState('');

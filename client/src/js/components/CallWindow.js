@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { faPhone, faVideo } from '@fortawesome/free-solid-svg-icons';
-import ActionButton from './components/ActionButton';
+import ActionButton from './ActionButton';
 
 function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall }) {
   const peerVideo = useRef(null);

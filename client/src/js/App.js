@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
-import socket from './socket';
-import PeerConnection from './PeerConnection';
-import MainWindow from './MainWindow';
-import CallWindow from './CallWindow';
-import CallModal from './CallModal';
+import { socket, PeerConnection } from './communication';
+import MainWindow from './components/MainWindow';
+import CallWindow from './components/CallWindow';
+import CallModal from './components/CallModal';
 
 class App extends Component {
   constructor() {
