@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-const bluebird = require('bluebird');
+const { setTimeout } = require('node:timers/promises');
 const haiku = require('./haiku');
 
 const MAX_TRIES = 10;
@@ -11,7 +11,7 @@ async function randomID(counter = 0) {
   if (counter > MAX_TRIES) {
     return null;
   }
-  await bluebird.delay(10);
+  await setTimeout(10);
   const id = haiku();
   return id in users ? randomID(counter + 1) : id;
 }
