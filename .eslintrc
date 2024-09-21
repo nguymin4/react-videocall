@@ -6,6 +6,9 @@
   "rules": {
     "comma-dangle": ["error", "never"],
     "react/jsx-filename-extension": 0,
+    "react/require-default-props": ["error", {
+      "ignoreFunctionalComponents": true
+    }],
     "jsx-a11y/control-has-associated-label": 0,
     "object-curly-newline": 0 
   }
