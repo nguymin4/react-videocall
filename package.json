@@ -29,7 +29,7 @@
     "prop-types": "15.8.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "sass-embedded": "1.79.3",
+    "sass-embedded": "1.76.0",
     "sass-loader": "16.0.2",
     "socket.io": "4.8.0",
     "socket.io-client": "4.8.0",
