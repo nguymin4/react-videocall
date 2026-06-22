@@ -10,7 +10,7 @@
     "lint": "eslint --max-warnings 0 --ignore-path .gitignore ."
   },
   "dependencies": {
-    "@babel/core": "7.26.10",
+    "@babel/core": "7.29.6",
     "@babel/preset-env": "7.26.9",
     "@babel/preset-react": "7.26.3",
     "@fortawesome/fontawesome-svg-core": "6.7.2",
