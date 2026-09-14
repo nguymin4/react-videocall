@@ -9,6 +9,10 @@ function initSocket(socket) {
   let id;
   socket
     .on('init', async () => {
+      if (id) {
+        socket.emit('error', { message: 'User id already initialized' });
+        return;
+      }
       id = await users.create(socket);
       if (id) {
         socket.emit('init', { id });
