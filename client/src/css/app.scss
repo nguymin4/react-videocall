@@ -1,7 +1,7 @@
-@import "~bootstrap/scss/bootstrap";
-
-@import "variables";
-@import "shared/base";
+@use "bootstrap/scss/bootstrap";
+@use "sass:meta";
+@use "./variables" as *;
+@use "./shared/base" as *;
 
 html {
   background: url("https://picsum.photos/2560/1440") center no-repeat fixed;
@@ -15,6 +15,7 @@ body {
 
 .navbar-brand {
   font-size: 1.5em;
+
   img {
     display: inline-block;
     width: 50px;
@@ -37,6 +38,6 @@ body {
 }
 
 
-@import "main-window";
-@import "call-window";
-@import "call-modal";
+@include meta.load-css("main-window");
+@include meta.load-css("call-window");
+@include meta.load-css("call-modal");

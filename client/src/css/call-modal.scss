@@ -1,36 +1,50 @@
+@use "./variables" as *;
+@use "./shared/mixin" as *;
+
 .call-modal {
-	position: absolute;
-	width: 400px;
-	padding: 20px;
-	left: calc(50vw - 200px);
-	top: calc(50vh - 60px);
-	@include bg-gradient(top, #074055 0%, #030D10 100%);
-	@include border-radius(5px);
-	text-align: center;
-	display: none;
+  position: absolute;
+  width: 400px;
+  padding: 20px;
+  left: calc(50vw - 200px);
+  top: calc(50vh - 60px);
+  @include bg-gradient(top, #074055 0%, #030D10 100%);
+  @include border-radius(5px);
+  text-align: center;
+  display: none;
 
-	&.active {
-		display: block;
-		z-index: 9999;
-		@include animation(blinking 3s infinite linear);
-	}
+  &.active {
+    display: block;
+    z-index: 9999;
+    @include animation(blinking 3s infinite linear);
+  }
 
-	.btn-action:not(.hangup) {
-		background-color: $green;
-	}
+  .btn-action:not(.hangup) {
+    background-color: $green;
+  }
 
-	span.caller {
-		color: $blue;
-	}
+  span.caller {
+    color: $blue;
+  }
 
-	p {
-		font-size: 1.5em;
-	}
+  p {
+    font-size: 1.5em;
+  }
 }
 
 @include keyframes(blinking) {
-	25% {@include transform(scale(0.96))}
-	50% {@include transform(scale(1))}
-	75% {@include transform(scale(0.96))}
-	100% {@include transform(scale(1))}
+  25% {
+    @include transform(scale(0.96))
+  }
+
+  50% {
+    @include transform(scale(1))
+  }
+
+  75% {
+    @include transform(scale(0.96))
+  }
+
+  100% {
+    @include transform(scale(1))
+  }
 }
