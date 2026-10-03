@@ -50,7 +50,7 @@
     "webpack-dev-server": "5.2.4"
   },
   "engines": {
-    "node": "22"
+    "node": "24"
   },
   "repository": {
     "type": "git",
