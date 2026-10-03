@@ -1,6 +1,6 @@
 {
   "name": "react-videocall",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "React VideoCall App",
   "scripts": {
     "build": "cd client && NODE_ENV=production webpack --config webpack-prod.config.js",
