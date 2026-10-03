@@ -1,3 +1,4 @@
+const path = require('path')
 const { HotModuleReplacementPlugin } = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const socketConfig = require('../config')
@@ -29,7 +30,21 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                quietDeps: true,
+                includePaths: [
+                  path.resolve(__dirname, 'node_modules'),
+                ],
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,

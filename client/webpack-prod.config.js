@@ -1,52 +1,81 @@
+const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 
 module.exports = {
   mode: 'production',
+  devtool: false,
   context: __dirname,
   entry: {
     app: './src/index.js',
   },
   output: {
     filename: 'js/[name].min.js',
+    path: path.resolve(__dirname, 'dist'),
+    clean: true,
   },
   module: {
     rules: [
       {
-        test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-react', '@babel/preset-env'],
+            presets: [
+              [
+                '@babel/preset-react',
+                {
+                  runtime: 'automatic',
+                  development: false,
+                },
+              ],
+              '@babel/preset-env',
+            ],
           },
         },
       },
       {
         test: require.resolve('webrtc-adapter'),
-        use: 'expose-loader',
-      },
-      {
-        test: /\.scss$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          'sass-loader',
-        ],
-      },
-      {
-        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
         use: [
           {
-            loader: 'file-loader',
+            loader: 'expose-loader',
             options: {
-              name: '[name].[ext]',
-              outputPath: 'assets',
-              publicPath: '/assets',
+              exposes: {
+                globalName: 'adapter',
+                moduleLocalName: 'default',
+              },
             },
           },
         ],
+      },
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                quietDeps: true,
+                includePaths: [
+                  path.resolve(__dirname, 'node_modules'),
+                  path.resolve(__dirname, 'src/css'),
+                ],
+              },
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(png|woff|woff2|eot|ttf|svg)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/[name][ext]',
+        },
       },
     ],
   },
@@ -59,11 +88,15 @@ module.exports = {
     }),
   ],
   optimization: {
+    minimize: true,
     minimizer: [
       new TerserPlugin({
         parallel: true,
-        terserOptions: { ecma: 6 },
+        terserOptions: {
+          ecma: 2020,
+        },
       }),
+      new CssMinimizerPlugin(),
     ],
   },
 }

@@ -1,47 +1,49 @@
+@use "./variables" as *;
+@use "./shared/mixin" as *;
+
 .main-window {
-	padding-top: 80px;
-	font-size: 1.75em;
+  padding-top: 80px;
+  font-size: 1.75em;
 
-	@media screen and (max-width: 767px) {
-		padding-top: 40px;
+  @media screen and (max-width: 767px) {
+    padding-top: 40px;
 
-		.pull-left, .pull-right {
-			width: 100%;
-			text-align: center;
-		}
+    .pull-left,
+    .pull-right {
+      width: 100%;
+      text-align: center;
+    }
 
-		.pull-right {
-			margin-top: 20px;
-		}
-	}
+    .pull-right {
+      margin-top: 20px;
+    }
+  }
 
-	.btn-action {
-		$height: 60px;
-		height: $height;
-		width: $height;
-		margin: 20px 30px 0px 0px;
-		text-align: center;
-		border-radius: 50%;
-		border: solid 2px $main-color;
-		cursor: pointer;
-		transition-duration: 0.25s;
-		background-color: transparent;
+  .btn-action {
+    $height: 60px;
+    height: $height;
+    width: $height;
+    margin: 20px 30px 0px 0px;
+    text-align: center;
+    border-radius: 50%;
+    border: solid 2px $main-color;
+    cursor: pointer;
+    transition-duration: 0.25s;
+    background-color: transparent;
 
-		&:hover {
-			background-color: rgba($main-color, 0.2);
-		}
-	}
+    &:hover {
+      background-color: rgba($main-color, 0.2);
+    }
+  }
 
-	.txt-clientId {
-		height: 40px;
-		margin: 40px auto 0px 10px;
-		color: $main-color;
-		font-size: 0.9em;
-		background-color: transparent;
-		border: none;
-		border-bottom: solid 1px $main-color;
-		@include input-placeholder(rgba($main-color, 0.8));
-	}
-
+  .txt-clientId {
+    height: 40px;
+    margin: 40px auto 0px 10px;
+    color: $main-color;
+    font-size: 0.9em;
+    background-color: transparent;
+    border: none;
+    border-bottom: solid 1px $main-color;
+    @include input-placeholder(rgba($main-color, 0.8));
+  }
 }
-
