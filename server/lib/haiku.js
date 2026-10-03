@@ -7,8 +7,8 @@ const adjs = [
   'red', 'rough', 'still', 'small', 'sparkling', 'throbbing', 'shy',
   'wandering', 'withered', 'wild', 'black', 'young', 'holy', 'solitary',
   'fragrant', 'aged', 'snowy', 'proud', 'floral', 'restless', 'divine',
-  'polished', 'ancient', 'purple', 'lively', 'nameless'
-];
+  'polished', 'ancient', 'purple', 'lively', 'nameless',
+]
 
 const nouns = [
   'waterfall', 'river', 'breeze', 'moon', 'rain', 'wind', 'sea', 'morning',
@@ -19,15 +19,15 @@ const nouns = [
   'snowflake', 'silence', 'sound', 'sky', 'shape', 'surf', 'thunder',
   'violet', 'water', 'wildflower', 'wave', 'water', 'resonance', 'sun',
   'wood', 'dream', 'cherry', 'tree', 'fog', 'frost', 'voice', 'paper',
-  'frog', 'smoke', 'star'
-];
+  'frog', 'smoke', 'star',
+]
 
 module.exports = () => {
-  const adj = adjs[Math.floor(Math.random() * adjs.length)];
-  const noun = nouns[Math.floor(Math.random() * nouns.length)];
-  const MIN = 1000;
-  const MAX = 9999;
-  const num = Math.floor(Math.random() * ((MAX + 1) - MIN)) + MIN;
+  const adj = adjs[Math.floor(Math.random() * adjs.length)]
+  const noun = nouns[Math.floor(Math.random() * nouns.length)]
+  const MIN = 1000
+  const MAX = 9999
+  const num = Math.floor(Math.random() * ((MAX + 1) - MIN)) + MIN
 
-  return `${adj}-${noun}-${num}`;
-};
+  return `${adj}-${noun}-${num}`
+}

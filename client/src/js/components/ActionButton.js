@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react'
+import PropTypes from 'prop-types'
+import classnames from 'classnames'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export default function ActionButton({ className, disabled = false, icon, onClick }) {
   return (
@@ -12,13 +12,13 @@ export default function ActionButton({ className, disabled = false, icon, onClic
     >
       <FontAwesomeIcon icon={icon} color="white" />
     </button>
-  );
+  )
 }
 
 ActionButton.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
-  // eslint-disable-next-line react/forbid-prop-types
+
   icon: PropTypes.object.isRequired,
-  onClick: PropTypes.func.isRequired
-};
+  onClick: PropTypes.func.isRequired,
+}

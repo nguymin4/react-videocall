@@ -1,35 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { faPhone, faVideo } from '@fortawesome/free-solid-svg-icons';
-import ActionButton from './ActionButton';
-import { socket } from '../communication';
+import React, { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
+import { faPhone, faVideo } from '@fortawesome/free-solid-svg-icons'
+import ActionButton from './ActionButton'
+import { socket } from '../communication'
 
 function useClientID() {
-  const [clientID, setClientID] = useState('');
+  const [clientID, setClientID] = useState('')
 
   useEffect(() => {
     socket
       .on('init', ({ id }) => {
-        document.title = `${id} - VideoCall`;
-        setClientID(id);
-      });
-  }, []);
+        document.title = `${id} - VideoCall`
+        setClientID(id)
+      })
+  }, [])
 
-  return clientID;
+  return clientID
 }
 
 function MainWindow({ startCall }) {
-  const clientID = useClientID();
-  const [friendID, setFriendID] = useState(null);
+  const clientID = useClientID()
+  const [friendID, setFriendID] = useState(null)
 
   /**
    * Start the call with or without video
    * @param {Boolean} video
    */
   const callWithVideo = (video) => {
-    const config = { audio: true, video };
-    return () => friendID && startCall(true, friendID, config);
-  };
+    const config = { audio: true, video }
+    return () => friendID && startCall(true, friendID, config)
+  }
 
   return (
     <div className="container main-window">
@@ -51,7 +51,7 @@ function MainWindow({ startCall }) {
           className="txt-clientId"
           spellCheck={false}
           placeholder="Your friend ID"
-          onChange={(event) => setFriendID(event.target.value)}
+          onChange={event => setFriendID(event.target.value)}
         />
         <div>
           <ActionButton icon={faVideo} onClick={callWithVideo(true)} />
@@ -59,11 +59,11 @@ function MainWindow({ startCall }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 MainWindow.propTypes = {
-  startCall: PropTypes.func.isRequired
-};
+  startCall: PropTypes.func.isRequired,
+}
 
-export default MainWindow;
+export default MainWindow
