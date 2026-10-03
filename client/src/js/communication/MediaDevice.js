@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import Emitter from './Emitter';
+import _ from 'lodash'
+import Emitter from './Emitter'
 
 /**
  * Manage all media devices
@@ -12,26 +12,27 @@ class MediaDevice extends Emitter {
     const constraints = {
       video: {
         facingMode: 'user',
-        height: { min: 360, ideal: 720, max: 1080 }
+        height: { min: 360, ideal: 720, max: 1080 },
       },
-      audio: true
-    };
+      audio: true,
+    }
 
     navigator.mediaDevices
       .getUserMedia(constraints)
       .then((stream) => {
-        this.stream = stream;
-        this.emit('stream', stream);
+        this.stream = stream
+        this.emit('stream', stream)
       })
       .catch((err) => {
         if (err instanceof DOMException) {
-          alert('Cannot open webcam and/or microphone');
-        } else {
-          console.log(err);
+          alert('Cannot open webcam and/or microphone')
         }
-      });
+        else {
+          console.log(err)
+        }
+      })
 
-    return this;
+    return this
   }
 
   /**
@@ -40,14 +41,14 @@ class MediaDevice extends Emitter {
    * @param {Boolean} [on] - State of the device
    */
   toggle(type, on) {
-    const len = arguments.length;
+    const len = arguments.length
     if (this.stream) {
       this.stream[`get${type}Tracks`]().forEach((track) => {
-        const state = len === 2 ? on : !track.enabled;
-        _.set(track, 'enabled', state);
-      });
+        const state = len === 2 ? on : !track.enabled
+        _.set(track, 'enabled', state)
+      })
     }
-    return this;
+    return this
   }
 
   /**
@@ -55,10 +56,10 @@ class MediaDevice extends Emitter {
    */
   stop() {
     if (this.stream) {
-      this.stream.getTracks().forEach((track) => track.stop());
+      this.stream.getTracks().forEach(track => track.stop())
     }
-    return this;
+    return this
   }
 }
 
-export default MediaDevice;
+export default MediaDevice

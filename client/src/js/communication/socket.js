@@ -1,5 +1,5 @@
-import io from 'socket.io-client';
+import io from 'socket.io-client'
 
-const socket = io({ path: '/bridge' });
+const socket = io({ path: '/bridge' })
 
-export default socket;
+export default socket

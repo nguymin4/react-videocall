@@ -7,9 +7,9 @@ import importPlugin from 'eslint-plugin-import'
 import stylistic from '@stylistic/eslint-plugin'
 
 // Strips whitespace from key names supplied by third-party globals objects
-const cleanGlobals = (globalsObj) =>
+const cleanGlobals = globalsObj =>
   Object.fromEntries(
-    Object.entries(globalsObj).map(([key, value]) => [key.trim(), value])
+    Object.entries(globalsObj).map(([key, value]) => [key.trim(), value]),
   )
 
 export default [
