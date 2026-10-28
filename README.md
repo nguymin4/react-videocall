@@ -42,6 +42,12 @@ yarn watch:client
   <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku" width="160">
 </a>
 
+**Light Cloud**
+
+<a href="https://console.light-cloud.com/new?repo=https://github.com/nguymin4/react-videocall" style="display: block; margin-bottom: 20px">
+  <img src="https://light-cloud.com/button.svg" alt="Deploy to Light Cloud" width="160">
+</a>
+
 **Custom**
 ```
 # Install dependencies
